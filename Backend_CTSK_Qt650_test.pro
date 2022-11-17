@@ -35,7 +35,7 @@ FORMS    += mainwindow.ui \
 win32 {
 LIBS += -lhid -lsetupapi
 LIBS += "c:/windows/system32/winusb.dll"
-LIBS += "./libbackend/libbackend_qtlib_650_220126A.a"
+LIBS += "./libbackend/libbackend_qtlib_650_220207A.a"
 }
 
 #LIBS += "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/um/x64/SetupAPI.lib" \

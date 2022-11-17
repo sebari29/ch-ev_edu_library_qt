@@ -98,13 +98,13 @@ static char lastErrorMsg[MAX_LAST_ERROR_MSG];
 const char *myGetLastErrorString(void)
 {
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /*(LPWSTR)*/&lastErrorMsg[0], MAX_LAST_ERROR_MSG, NULL);
+        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&lastErrorMsg[0], MAX_LAST_ERROR_MSG, NULL);
     return lastErrorMsg;
 }
 const char *myGetLastErrorString2(DWORD error)
 {
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /*(LPWSTR)*/&lastErrorMsg[0], MAX_LAST_ERROR_MSG, NULL);
+        NULL, error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&lastErrorMsg[0], MAX_LAST_ERROR_MSG, NULL);
     return lastErrorMsg;
 }
 
@@ -176,6 +176,7 @@ MainWindow::MainWindow(QWidget *parent) :
     VendorID = vidStr.toUInt(&bStatus,16);
     TRACE_RELEASE("vid= 0x%x %d %d", VendorID, interfaceNum, reportId);
 
+    if (!VendorID) VendorID = 0x1FC9;
     ui->setupUi(this);
     //QLocale::setDefault(QLocale::English);
 
@@ -1090,7 +1091,7 @@ int MainWindow::HID_RecvNorRes(void)
         return TARGET_RES_ERR;
     }
     int res = aUsbIn[nBufNumber][1];
-
+#if 0
     uint16_t crc_cal = USB_CalculateCrc(&aUsbIn[nBufNumber][0], (NOR_RES_SIZE - 2));
     uint16_t crc_get = aUsbIn[nBufNumber][NOR_RES_SIZE - 1];
     crc_get = (crc_get << 8) | aUsbIn[nBufNumber][NOR_RES_SIZE - 2];
@@ -1098,6 +1099,7 @@ int MainWindow::HID_RecvNorRes(void)
         TRACE_ERROR("ERROR! HID_RecvNorRes..invalid CRC: %d, %04x, %04x", nResult, crc_cal, crc_get);
         return TARGET_RES_ERR;
     }
+#endif
     return res;
 }
 #endif //USE_USB_LIB

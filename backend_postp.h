@@ -27,7 +27,7 @@ extern "C" {
 #include <windows.h>
 #define MAX_SENSOR_POS_SIZE   500
 #define ALLOWABLE_TOUCH_IO		(ALLOWABLE_TOUCH_BE*2) //10-multi,4-fine
-#define UPDATE_TOUCH_STATUS_TEST_ENABLE (1U)  //for test
+#define UPDATE_TOUCH_STATUS_TEST_ENABLE (0U)  //for test
 extern float s_sensor_zero_x, s_sensor_end_x;
 extern float s_sensor_zero_y, s_sensor_end_y;
 extern float s_aarea_zero_x, s_aarea_end_x;
