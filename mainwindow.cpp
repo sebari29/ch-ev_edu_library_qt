@@ -2270,7 +2270,7 @@ bool MainWindow::drawOutPoly() {
 
     draw_axis();
 
-    //TRACE("drawOutMy()..%d", polgon_saved_idx);
+    //TRACE("drawOutMy()..%d", polgon_saved_idx);o
     for (j = 0; j < polgon_saved_idx; j++)
     {
         //TRACE("..len: (%d) %d", j, polygon_saved[j].len);

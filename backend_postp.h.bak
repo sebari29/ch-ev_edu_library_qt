@@ -117,6 +117,7 @@ extern int s_debug_size_type, s_debug_edge;
 #define START_LIMIT_PEN_SHORT		2 //3 //2
 #define UNALLOC_LIMIT				5
 #define PREDICTION_LIMIT			0
+#define START_FRAME_LIMIT			10	//4  //750 PV	//3	//4 R0004 YJ200428
 #define STAY_FRAME_LIMIT			10
 #define START_FRAME_LIMIT_ERASER	6	//5	//10		//YJ1127
 
@@ -145,9 +146,6 @@ extern int s_debug_size_type, s_debug_edge;
 #define BIG_ERASER_ADJ			0.75f
 
 ///////////Size Pen_marker Mode////////////////////////////////////
-#define MAX_SIZE_PEN_1          5.0f				//  < w_min  1
-#define MAX_SIZE_PEN_1_EDGE     4.0f
-#define MAX_SIZE_PEN_1_SIDE     4.0f
 #if (MODEL_SPT == MODEL_CTSK_850_V100)
 #define START_FRAME_LIMIT		7		//YJ@210323	//10 //2105	//4  //750 PV	//3	//4 R0004 YJ200428
 #define START_FRAME_MULTI3		2

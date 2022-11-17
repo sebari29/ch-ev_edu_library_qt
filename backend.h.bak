@@ -120,7 +120,7 @@
 #define TRACE_ERROR_MEM(...)
 #define TRACE_NOP
 #define TRACE_START_SIZE(...) //_myTrace(__VA_ARGS__) //_myTraceWrite
-#define TRACE_RELEASE(...) //_myTrace(__VA_ARGS__)
+#define TRACE_RELEASE(...) _myTrace(__VA_ARGS__)
 #endif
 
 #define PRG_VERSION			"nxp_backend@190125A"

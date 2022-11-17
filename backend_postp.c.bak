@@ -3521,7 +3521,6 @@ void s_smooth_filter_brush_2nd(uint32_t t_frame, uint8_t t_status, float brush_s
     }
 }
 
-#define PRESSURE_STEP 45
 void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 {
     int i, cnt;
@@ -3535,14 +3534,6 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 	float xSize_f, ySize_f, cSize_f, rSize_f, out_size_f, reSize_Ratio_f;
 	float decide_Size;
 
-	float Real_Pressure[PRESSURE_STEP] = {
-			32.35f, 50.00f, 46.67f, 65.00f, 68.00f, 63.33f, 60.00f, 60.00f, 57.78f, 54.00f,
-			52.73f, 50.00f, 47.69f, 47.14f, 46.67f, 45.00f, 44.71f, 43.33f, 44.21f, 44.00f,
-			43.81f, 43.64f, 45.22f, 45.00f, 44.80f, 44.62f, 44.44f, 45.00f, 44.83f, 44.67f,
-			44.52f, 44.38f, 44.85f, 44.71f, 45.14f, 45.00f, 45.41f, 45.26f, 45.13f, 45.00f,
-			44.88f, 44.76f, 45.58f, 45.45f, 45.49f
-		};
-	uint8_t xx;
 	uint16_t xCord_diff, yCord_diff;
 
 	TP_ID_INFO_T tp_id_info;
@@ -3581,7 +3572,7 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 		for(i=0; i < curOutLength; i++)
 	{
 			if(pCurDataIn[i].status == TOUCH_UP_STATE)
-		{
+	{
 				continue;
 			}
 			else
@@ -3646,17 +3637,13 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 		{
 			yCord = (uint16_t)s_logical_max_y;
         }
-#if 0
+
 	xSize_f = pCurBrushFilterOutSize[tBrush_ID_idx].x;
 	ySize_f = pCurBrushFilterOutSize[tBrush_ID_idx].y;
-#else
-	xSize_f = pCurDataIn[tBrush_ID_idx].xSize;
-	ySize_f = pCurDataIn[tBrush_ID_idx].ySize;
-#endif
 
 	if(xSize_f < BRUSH_MIN_OBJECT_SIZE_F) xSize_f = BRUSH_MIN_OBJECT_SIZE_F;
 	if(ySize_f < BRUSH_MIN_OBJECT_SIZE_F) ySize_f = BRUSH_MIN_OBJECT_SIZE_F;
-#if 0
+
 	reSize_Ratio_f = BRUSH_RESIZE_OFFSET_DEFAULT;	//default size 1x
 
 	if(pCurDataIn[tBrush_ID_idx].th50CntX != 0 && pCurDataIn[tBrush_ID_idx].th50CntY != 0)
@@ -3672,15 +3659,14 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 				if(pCurDataIn[tBrush_ID_idx].xSize > 4.0f && pCurDataIn[tBrush_ID_idx].ySize > 4.0f)
 		{
 					reSize_Ratio_f = BRUSH_RESIZE_OFFSET2;
-        }
+		}
         }
 		}
 	}
 	else
 		{
 		reSize_Ratio_f = 0.3f;
-        }
-#endif
+		}
 
 	if(s_Brush_Frame_Cnt < 1)	//first frame
 		{
@@ -3773,7 +3759,7 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 			}
 		}
 	}
-#if 0
+
 	s_smooth_filter_brush_2nd(s_Brush_Frame_Cnt, pCurDataIn[tBrush_ID_idx].status, out_size_f);
 
 	cSize_f = s_OutFilter_Brush_Size * reSize_Ratio_f;
@@ -3795,26 +3781,7 @@ void s_coordinates_conversion_brush(DEF_DATA_INFO *pOutBuf)
 	cSize_f = cSize_f * (float)BRUSH_PRESSURE_MIN;
 
 	pressure = (uint16_t)(cSize_f - (cSize_f * (float)BRUSH_PRESSURE_RESCALE_VAL * rSize_f));
-#else
 
-	cSize_f = out_size_f; //(xSize_f + ySize_f) / 2;
-	decide_Size = (xSize_f + ySize_f) / 2;
-	pressure = BRUSH_PRESSURE_MAX;
-	xx= 0;
-
-	if(cSize_f > PRESSURE_STEP) pressure = BRUSH_PRESSURE_MAX;
-	else
-	{
-		for(xx= 0; xx < PRESSURE_STEP; xx++ )
-		{
-			if(cSize_f <= (float)xx+1)
-			{
-				pressure = (uint16_t)(cSize_f*Real_Pressure[xx]);
-				break;
-			}
-		}
-	}
-#endif
 
 	if(pressure > BRUSH_PRESSURE_MAX) pressure = BRUSH_PRESSURE_MAX;
 	if(pressure < BRUSH_PRESSURE_MIN) pressure = BRUSH_PRESSURE_MIN;
