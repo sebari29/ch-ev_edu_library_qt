@@ -57,7 +57,7 @@
 #define FRONTEND_NO_CRC //nsmoon@210311
 #define FRONTEND_FORCED_AGC	//YJ@210624
 
-
+#define DEBUG
 #if defined(DEBUG)
 #define DEBUG_FUNCTION_ENABLE_ALL
 #endif
@@ -70,7 +70,7 @@
 #else
 #ifdef FRONTEND_LINE_THRESHOLD
 #define LINE_THRESHOLD_SIZE		(1)
-#define LINE_THRESHOLD_VALUE	(50) //(95)	//(90) R0004		//90
+#define LINE_THRESHOLD_VALUE	(70) //(95)	//(90) R0004		//90
 #endif
 #endif
 

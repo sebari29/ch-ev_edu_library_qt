@@ -8,7 +8,7 @@
     backend_postp.c
 
   @Summary
-    backend post processing
+    backend post processingo
 
   @Description
     Describe the purpose of this file.
@@ -2232,7 +2232,7 @@ static int update_touch_status(touchDataSt_t *pCurDataIn, int curInLength ,touch
             thr10_50Y = 0;
         }
         thr10_50 = GET_MAX(thr10_50X, thr10_50Y);
-        //TRACE("START:thr10_50(thr10_50X,thr10_50Y)=%0.2f (%0.2f,%0.2f)", thr10_50, thr10_50X, thr10_50Y);
+        TRACE("START:thr10_50(thr10_50X,thr10_50Y)=%0.2f (%0.2f,%0.2f)", thr10_50, thr10_50X, thr10_50Y);
 #endif
 
 #ifdef	TOUCH_SCROLL_INFO_ENABLE
@@ -2821,7 +2821,7 @@ void s_touch_point_tracking(void)
         sameIdCnt = tracking_findContinuosTouch();
         if (sameIdCnt == 0) break;
 #if (DEBUG_touchPointTracking > 0)
-    //DEBUG_DUMP_TRACKING(3, curInLength, prevInLength);
+    DEBUG_DUMP_TRACKING(3, curInLength, prevInLength);
 #endif
     }
     if (sameIdCnt != 0) {
