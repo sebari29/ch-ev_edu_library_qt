@@ -2145,7 +2145,7 @@ static void smooth_filter_init(touchDataSt_t *pCurDataIn)
 #if (MODEL_SPT == MODEL_CTSK_850_V100)
 	#define TOUCH_DOWN_MIN_MOVEMENT     0.8f	//1.2f	//YJ20200529
 #else
-	#define TOUCH_DOWN_MIN_MOVEMENT     0.8f	//2.0f
+    #define TOUCH_DOWN_MIN_MOVEMENT     0.0f//1.2f	//2.0f
 #endif
 //#define TOUCH_DOWN_MIN_MOVEMENT     1.0f //0.7f
 #define TOUCH_DOWN_ADJ_MOVEMENT     0.5f //0.7f
@@ -2232,7 +2232,7 @@ static int update_touch_status(touchDataSt_t *pCurDataIn, int curInLength ,touch
             thr10_50Y = 0;
         }
         thr10_50 = GET_MAX(thr10_50X, thr10_50Y);
-        TRACE("START:thr10_50(thr10_50X,thr10_50Y)=%0.2f (%0.2f,%0.2f)", thr10_50, thr10_50X, thr10_50Y);
+        //TRACE("START:thr10_50(thr10_50X,thr10_50Y)=%0.2f (%0.2f,%0.2f)", thr10_50, thr10_50X, thr10_50Y);
 #endif
 
 #ifdef	TOUCH_SCROLL_INFO_ENABLE
@@ -2428,6 +2428,10 @@ static int update_touch_status(touchDataSt_t *pCurDataIn, int curInLength ,touch
             //if (i == 0) {
             if (xSizeMinId >= 0) {
                 DEBUG_size_info_0205(&pCurDataIn[i], 0); //1:init
+
+                TRACE_SAVELOG(" %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f %0.1f \n\r",
+                              s_debug_sizeXMin, s_debug_sizeXMax, s_debug_sizeYMin, s_debug_sizeYMax,
+                              s_debug_th10sizeXMin, s_debug_th10sizeXMax, s_debug_th10sizeYMin, s_debug_th10sizeYMax);
             }
 #endif
 #endif //defined(_WIN32) || defined(WIN32)

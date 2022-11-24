@@ -50,7 +50,6 @@ bool MainWindow::bFromFile;
 int MainWindow::readFileSize;
 bool MainWindow::bDrawOutPoly;
 bool MainWindow::bDrawTouchPoint;
-
 bool MainWindow::AttachedState;
 unsigned long MainWindow::usb_time_out;
 //unsigned char MainWindow::aUsbIn[MAX_USB_IN_BUFF][USB_PROCESS_BUFF];
@@ -60,6 +59,9 @@ int MainWindow::HidReceiveLen;
 #if defined(USE_USB_LIB)
 int MainWindow::nDltNormal;
 #endif
+
+QFile *logFile;
+QTextStream *logOut;
 ///////////////////////////////////////////////////////
 
 //#define DEBUG_WRITE_INPUT_BUFF_GNERATE
@@ -129,6 +131,35 @@ void _myTraceNR(char const *format, ...)
     //OutputDebugString(dbgStr);
     qDebug(dbgStr);
     //puts(dbgStr);
+}
+
+void makeLogFile()
+{
+    QString filename = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmsszzz") + ".txt";
+    logFile = new QFile(filename);
+    if(!logFile->open(QIODevice::Append | QIODevice::Text)) {
+        return;
+    }
+    logOut = new QTextStream(logFile);
+}
+
+void destoryLogFile()
+{
+    logFile->close();
+}
+
+
+void _mySaveLog(char const *format, ...)
+{
+    va_list argptr;
+    va_start(argptr, format);
+    vsnprintf(dbgStr, sizeof(dbgStr), format, argptr);
+    va_end(argptr);
+
+    QString curtime = QDateTime::currentDateTime().toString("yyyy MM dd hh mm ss zzz");
+                        //context.file, context.line, context.function
+
+    *logOut << curtime << " : " << dbgStr << "\n";
 }
 #endif //nsmoon@180227
 
@@ -251,7 +282,7 @@ MainWindow::MainWindow(QWidget *parent) :
         debugLabel[i]->setStyleSheet("QLabel { color : blue; }");
         debugLabel[i]->move(LABEL_DBG_LFT, /*LABEL_DBG_TOP*/label_dbg_top_pos+(i*LABEL_RAW_GAP));
         debugLabel[i]->setFixedWidth(LABEL_DBG_WIDTH);
-        debugLabel[i]->setFont(QFont("SansSerif", 12));
+        debugLabel[i]->setFont(QFont("SansSerif", 18));//12));
         debugLabel[i]->show();
     }
 #endif
@@ -262,7 +293,7 @@ MainWindow::MainWindow(QWidget *parent) :
         //touchLabel[i]->move(0, 0+(i*20));
         touchLabel[i]->move(LABEL_TP_LFT+10, LABEL_TP_TOP+(i*LABEL_RAW_GAP));
         touchLabel[i]->setFixedWidth(LABEL_TP_WIDTH);
-        touchLabel[i]->setFont(QFont("SansSerif", 10));
+        touchLabel[i]->setFont(QFont("SansSerif", 18));//10));
         touchLabel[i]->show();
     }
 #endif
@@ -271,7 +302,7 @@ MainWindow::MainWindow(QWidget *parent) :
     recordLabel->setStyleSheet("QLabel { color : black; }");
     recordLabel->move(this->scene->width()-10, 20);
     recordLabel->setFixedWidth(LABEL_TP_WIDTH);
-    recordLabel->setFont(QFont("SansSerif", 10));
+    recordLabel->setFont(QFont("SansSerif", 18));//10));
     recordLabel->show();
 #endif
 
@@ -282,6 +313,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     pWorkThreak = new WorkThread(hidThrdUsb, this);
     pWorkThreak->start(QThread::NormalPriority);
+
+    makeLogFile();
 }
 
 void MainWindow::newFileWrite(char const *format, ...)
@@ -584,6 +617,7 @@ MainWindow::~MainWindow()
     //CBulkCom::ExitDebug();
     //delete m_pColorWithValue;
     //delete ow;
+    destoryLogFile();
     delete ui;
 }
 
@@ -3464,9 +3498,9 @@ int MainWindow::backend_process_line_data(int nBufNumber)
         return 1; //error
     }
 #if 1 //nsmoon@211018
-    TRACE_RELEASE("(([%d] %d", BG_frame_no, OutBuf2->touch_count);
+    TRACE_SAVELOG("[%d] [%d]", BG_frame_no, OutBuf2->touch_count);
     for (int i = 0; i < OutBuf2->touch_count; i++) {
-        TRACE_RELEASE("   %d %0.1f,%0.1f (%0.1f,%0.1f)", i, OutBuf2->touch_data[i].x, OutBuf2->touch_data[i].y, OutBuf2->touch_size[i].xSize, OutBuf2->touch_size[i].ySize);
+        TRACE_SAVELOG(" %d %0.1f %0.1f %0.1f %0.1f", i, OutBuf2->touch_data[i].x, OutBuf2->touch_data[i].y, OutBuf2->touch_size[i].xSize, OutBuf2->touch_size[i].ySize);
     }
 #endif
 #if 0 //nsmoon@210430
@@ -3493,7 +3527,7 @@ int MainWindow::backend_process_line_data(int nBufNumber)
             rmFrameCnt--;
         }
     }
-    TRACE("testNextScan.x1,y1= %d %d %d %d %d", testNextScan.x1 , testNextScan.y1, OutBuf2->touch_count, (int)OutBuf2->touch_data_edge.x, rmFrameCnt);
+    //TRACE("testNextScan.x1,y1= %d %d %d %d %d", testNextScan.x1 , testNextScan.y1, OutBuf2->touch_count, (int)OutBuf2->touch_data_edge.x, rmFrameCnt);
 #endif
 
     s_touch_count = OutBuf2->touch_count;

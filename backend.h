@@ -112,6 +112,7 @@
 #define TRACE_NOP (BS_debug_nop++)
 #define TRACE_START_SIZE(...) _myTrace(__VA_ARGS__) //_myTraceWrite
 #define TRACE_RELEASE(...) _myTrace(__VA_ARGS__)
+#define TRACE_SAVELOG(...) _mySaveLog(__VA_ARGS__)
 #else
 #define TRACE(...)
 #define TRACENR(...)
@@ -662,6 +663,7 @@ extern int BG_debug_pause;
 //extern unsigned long debug_cnt;
 extern void _myTrace(char const *format, ...);
 extern void _myTraceNR(char const *format, ...);
+extern void _mySaveLog(char const *format, ...);
 //extern void _myTraceWrite(char const *format, ...);
 //extern void _myTraceWriteNR(char const *format, ...);
 extern int BG_debug_flag, BG_debug_flag2, BS_debug_nop;

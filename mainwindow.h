@@ -242,6 +242,9 @@ extern "C"
 
 #define MAX_BG_DEBUG_MISC       (ALLOWABLE_TOUCH_BE * 2) //20
 
+void makeLogFile();
+void destoryLogFile();
+
 typedef struct {
     //float x, y;
     uint16_t x, y;
@@ -554,6 +557,7 @@ int ofst2_sensor_deadline(axis_t axis, uint8_t *buff);
     CTouchPanelView* view;
     QDateTime dateTime[2];
     int dateTimeCnt;
+
 };
 
 #endif // MAINWINDOW_H
