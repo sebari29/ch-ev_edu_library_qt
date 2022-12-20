@@ -18,7 +18,7 @@ SOURCES += main.cpp\
     CTouchPanelView.cpp \
     ctrldialog.cpp \
     backend_postp.c \
-    hid.c
+    hid.c \
 
 HEADERS  += mainwindow.h \
     WorkThread.h \
@@ -26,7 +26,7 @@ HEADERS  += mainwindow.h \
     backend.h \
     ctrldialog.h \
     backend_postp.h \
-    hidapi.h
+    hidapi.h \
 
 FORMS    += mainwindow.ui \
     ctrldialog.ui \
@@ -35,7 +35,7 @@ FORMS    += mainwindow.ui \
 win32 {
 LIBS += -lhid -lsetupapi
 LIBS += "c:/windows/system32/winusb.dll"
-LIBS += "./libbackend/libbackend_qtlib_650_220207A.a"
+LIBS += "./libbackend/libbackend_qtlib_GN65_221206A.a"
 }
 
 #LIBS += "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/um/x64/SetupAPI.lib" \

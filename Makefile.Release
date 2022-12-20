@@ -17,7 +17,7 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=gnu++11 -frtti -Wall -
 INCPATH       = -I. -IC:/Qt/Qt5.8.0/5.8/mingw53_32/include -IC:/Qt/Qt5.8.0/5.8/mingw53_32/include/QtWidgets -IC:/Qt/Qt5.8.0/5.8/mingw53_32/include/QtGui -IC:/Qt/Qt5.8.0/5.8/mingw53_32/include/QtANGLE -IC:/Qt/Qt5.8.0/5.8/mingw53_32/include/QtCore -Irelease -I. -IC:/Qt/Qt5.8.0/5.8/mingw53_32/mkspecs/win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads
-LIBS        =        -lhid -lsetupapi c:/windows/system32/winusb.dll libbackend/libbackend_qtlib_650_220207A.a -LC:/Qt/Qt5.8.0/5.8/mingw53_32/lib C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Widgets.a C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Gui.a C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Core.a 
+LIBS        =        -lhid -lsetupapi c:/windows/system32/winusb.dll libbackend/libbackend_qtlib_GN65_221206A.a -LC:/Qt/Qt5.8.0/5.8/mingw53_32/lib C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Widgets.a C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Gui.a C:/Qt/Qt5.8.0/5.8/mingw53_32/lib/libQt5Core.a 
 QMAKE         = C:/Qt/Qt5.8.0/5.8/mingw53_32/bin/qmake.exe
 IDC           = idc
 IDL           = midl
