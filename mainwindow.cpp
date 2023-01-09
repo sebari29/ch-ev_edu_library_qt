@@ -135,23 +135,23 @@ void _myTraceNR(char const *format, ...)
 
 void makeLogFile()
 {
-    QString filename = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmsszzz") + ".txt";
+    /*QString filename = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmsszzz") + ".txt";
     logFile = new QFile(filename);
     if(!logFile->open(QIODevice::Append | QIODevice::Text)) {
         return;
     }
-    logOut = new QTextStream(logFile);
+    logOut = new QTextStream(logFile);*/
 }
 
 void destoryLogFile()
 {
-    logFile->close();
+    //logFile->close();
 }
 
 
 void _mySaveLog(char const *format, ...)
 {
-    va_list argptr;
+    /*va_list argptr;
     va_start(argptr, format);
     vsnprintf(dbgStr, sizeof(dbgStr), format, argptr);
     va_end(argptr);
@@ -159,7 +159,7 @@ void _mySaveLog(char const *format, ...)
     QString curtime = QDateTime::currentDateTime().toString("yyyy MM dd hh mm ss zzz");
                         //context.file, context.line, context.function
 
-    *logOut << curtime << " : " << dbgStr << "\n";
+    *logOut << curtime << " : " << dbgStr << "\n";*/
 }
 #endif //nsmoon@180227
 

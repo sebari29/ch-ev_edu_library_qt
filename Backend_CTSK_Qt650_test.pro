@@ -12,6 +12,8 @@ TARGET = Backend_CTSK_Qt650_test
 TEMPLATE = app
 CONFIG += console
 
+include(./backendLib.pri)
+
 SOURCES += main.cpp\
         mainwindow.cpp \
     WorkThread.cpp \
@@ -35,7 +37,8 @@ FORMS    += mainwindow.ui \
 win32 {
 LIBS += -lhid -lsetupapi
 LIBS += "c:/windows/system32/winusb.dll"
-LIBS += "./libbackend/libbackend_qtlib_GN65_221206A.a"
+#LIBS += "./libbackend/libbackend_qtlib_GN65_221206A.a"
+
 }
 
 #LIBS += "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/um/x64/SetupAPI.lib" \

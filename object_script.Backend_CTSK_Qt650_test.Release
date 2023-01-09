@@ -1,4 +1,10 @@
 INPUT(
+./release/backend_debug.o
+./release/backend_fine.o
+./release/backend_main.o
+./release/backend_multi.o
+./release/backend_utils.o
+./release/IRTP_layout.o
 ./release/main.o
 ./release/mainwindow.o
 ./release/WorkThread.o
