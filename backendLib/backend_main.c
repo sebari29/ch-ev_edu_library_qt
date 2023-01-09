@@ -6075,7 +6075,7 @@ BACKEND_STATUS BG_call_backend2(
 #endif
 #endif //for fine
     IS_DEBUG_FLAG {
-        //goto L_BG_call_backend_test; //for test
+    //goto L_BG_call_backend_test; //for test
         //goto L_BG_call_backend_mem_error; //for test
     };
 
@@ -6341,12 +6341,12 @@ L_BG_call_backend_brush:
 L_BG_call_backend_tracking: //nsmoon@211021
     if (BG_touch_data_edge.x != 0) {
 #if 1 //nsmoon@220127
-    retTmp = BS_is_edge(ENUM_HOR_X, BG_touch_data_edge.x);
-    if (retTmp == EDGE_INNER_PD_X || retTmp == EDGE_INNER_LED_X) {
-        BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_Y);
-    }
+        retTmp = BS_is_edge(ENUM_HOR_X, BG_touch_data_edge.x);
+        if (retTmp == EDGE_INNER_PD_X || retTmp == EDGE_INNER_LED_X) {
+            BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_Y);
+        }
         retTmp = BS_is_edge(ENUM_VER_Y, BG_touch_data_edge.y);
-    if (retTmp == EDGE_INNER_PD_Y || retTmp == EDGE_INNER_LED_Y) {
+        if (retTmp == EDGE_INNER_PD_Y || retTmp == EDGE_INNER_LED_Y) {
         BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_X);
     }
         BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_X); //nsmoon@220115

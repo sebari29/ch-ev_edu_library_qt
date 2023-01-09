@@ -43,7 +43,9 @@ extern "C" {
 
 #define MODEL_CTSI_550_SINGLE_V100  	55010 //samsung, pic single chip
 
-#define MODEL_SPT			MODEL_CTSK_850_V100 //MODEL_CTKS_750_V140 //MODEL_CTSI_650_V100 // // // // //
+#define MODEL_SPT			MODEL_CTSI_650_V100 //MODEL_CTSK_850_V100 //MODEL_CTSI_650_V100 //
+
+#define GN65_TEST //nsmoon@221116 for GN65
 
 ///////////////////////////////////////////////////////////
 // Touch Size
@@ -89,6 +91,7 @@ extern "C" {
 #define MULTI_SKIP_USED_VB    //nsmoon@210218
 //#define FINE_INITIAL_LINE_NEW   //nsmoon@211119 //nsmoon@220124 not-used
 //#define TRACE_ERROR_ENABLE //nsmoon@211126
+//#define ADJUST_MIN_MAX_FINE_NEW //nsmoon@220308a //for jitter test
 
 #if !defined(MODEL_SPT)
 #error "Not defined MODEL_SPT !!!"

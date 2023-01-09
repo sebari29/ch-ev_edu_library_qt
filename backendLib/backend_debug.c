@@ -78,7 +78,7 @@ static BOOL _writeTraceToFile(char *dbgStr, int dbgStrLen)
 		dbgStrLen,  // number of bytes to write
 		&dwBytesWritten, // number of bytes that were written
 		NULL);
-    //NULL);            // no overlapped structure
+	//NULL);            // no overlapped structure
 
 	if (FALSE == bErrorFlag)
 	{
@@ -619,17 +619,17 @@ void DEBUG_slow_time_diff_show(void)
         for (i = 0; i < debugTimeDiffCnt; i++) {
         	if (i > 0) {
         		totalTime += debugTimeDiff[i].timeDiff;
-    }
+        	}
         	TRACE_TIME_DIFF("%s/%d ", debugTimeDiff[i].seqStr, debugTimeDiff[i].timeDiff);
-}
+        }
         TRACE_TIME_DIFF("%d\r\n", totalTime);
     }
     else {
         for (i = 0; i < debugTimeDiffCnt; i++) {
     		totalTime += debugTimeDiff[i].timeDiff;
-    }
+        }
       	s_time_diff_cnt += totalTime;
-}
+    }
 
     debugTimeDiffCnt = 0;
 }

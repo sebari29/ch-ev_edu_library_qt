@@ -8161,7 +8161,7 @@ int BG_clipping_multi_post(int multiLoopCnt)
     //BS_adj_used_lines_tp(touchCntOrg, touchCntMulti, ADJUST_USED_LINE_MULTI); //adjust used line, nsmoon@200331 //BG_clipping_multi_post
     BG_touch_count_multi = touchCntMulti - touchCntOrg;
     if (BG_touch_count_multi > 0) { //nsmoon@220118
-        BS_adj_used_lines_tp(touchCntOrg, touchCntMulti, ADJUST_USED_LINE_MULTI); //adjust used line, nsmoon@200331 //BG_clipping_multi_post
+    BS_adj_used_lines_tp(touchCntOrg, touchCntMulti, ADJUST_USED_LINE_MULTI); //adjust used line, nsmoon@200331 //BG_clipping_multi_post
     }
     BG_touch_count = touchCntMulti;
     return BG_touch_count_multi;

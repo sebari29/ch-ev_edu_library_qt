@@ -38,10 +38,17 @@ extern "C" {
 ///////////////////////////////////////////////////////////////////////
 #if 1 //def FINE_TEST_RULE_1
 #define MAX_FINE_INITIAL_CXP_PER_LINE   MAX_INITIAL_LINE_FINE_Y //max initial cross point number //nsmoon@211028 MAX_TOUCH_LIMIT_FINE=>MAX_INITIAL_LINE_FINE_Y
+#ifdef GN65_TEST //nsmoon@221116 for GN65
+#define FINE_CAL_WIDTH_INIT      1.0f
+#define FINE_GRID_WIDTH_INIT     8 //6 //5*CAL_WIDTH //nsmoon@211014a 6=>8
+#define FINE_CAL_WIDTH_NORM      FINE_CAL_WIDTH_INIT
+#define FINE_GRID_WIDTH_NORM     FINE_GRID_WIDTH_INIT
+#else
 #define FINE_CAL_WIDTH_INIT      0.6f  //0.6f // //0.5f
 #define FINE_GRID_WIDTH_INIT     8 //6 //5*CAL_WIDTH //nsmoon@211014a 6=>8
 #define FINE_CAL_WIDTH_NORM      0.6f
 #define FINE_GRID_WIDTH_NORM     8 //6 //5*CAL_WIDTH //nsmoon@211014a 6=>8
+#endif
 
 #define REMAINED_FINE_INITIAL_RANGE_X   3.6f //10.0f //10.0*2=20.0=1.0*20
 #define REMAINED_FINE_INITIAL_RANGE_Y   3.6f //10.0f
@@ -53,7 +60,11 @@ extern "C" {
 #define FINE_MAX_CNT_INIT        5
 #define FINE_MAX_CNT_INIT_EDGE   3
 
+#ifdef GN65_TEST //nsmoon@221206 for GN65
+#define FINE_MIN_NUM_SLOT        2
+#else
 #define FINE_MIN_NUM_SLOT        3
+#endif
 #define FINE_MIN_NUM_SLOT_EDGE   1
 #define FINA_MAX_DIFF_CNT        2
 #define FINA_MAX_DIFF_EDGE_CNT   5
@@ -74,8 +85,13 @@ extern "C" {
 #define FINE_INITIAL_GRP_DIST_BRUSH     3.0f
 #define FINE_INITIAL_GRP_DIST_X         1.2f //1.3f //1.5f
 #define FINE_INITIAL_GRP_DIST_Y         0.8f //1.0f //1.3f
+#ifdef GN65_TEST //nsmoon@221122
+#define FINE_INITIAL_GRP_DIST_X_OLD     2.3f //1.5f
+#define FINE_INITIAL_GRP_DIST_Y_OLD     1.5f //1.3f
+#else
 #define FINE_INITIAL_GRP_DIST_X_OLD     1.5f
 #define FINE_INITIAL_GRP_DIST_Y_OLD     1.3f
+#endif
 #define FINE_INITIAL_GRP_DIST_X_APRX    3.0f
 #define FINE_INITIAL_GRP_DIST_Y_APRX    2.0f
 #define FINE_INITIAL_GRP_DIST_XX        3.0f
@@ -113,7 +129,11 @@ extern "C" {
 
 #if (MODEL_TOUCH_SIZE==MODEL_TOUCH_SIZE_85)||(MODEL_TOUCH_SIZE==MODEL_TOUCH_SIZE_75)||(MODEL_TOUCH_SIZE==MODEL_TOUCH_SIZE_65)||(MODEL_TOUCH_SIZE==MODEL_TOUCH_SIZE_55) //nsmoon@211116
 #ifdef FINE_CLIPPING_NEW
+#if 0 //def GN65_TEST //nsmoon@221116, not-used
+#define FINE_INITIAL_GRP_MIN_NUM        3
+#else
 #define FINE_INITIAL_GRP_MIN_NUM        5
+#endif
 #define FINE_INITIAL_GRP_MIN_NUM_SHADOW 3 //nsmoon@211027
 #define FINE_INITIAL_GRP_MIN_NUM_EDGE   3 //FIXME
 #define FINE_INITIAL_GRP_MIN_NUM_BRUSH  3

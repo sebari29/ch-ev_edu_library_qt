@@ -753,9 +753,9 @@ static int is_cont_line(axis_t axis, uint8_t pd0, uint8_t led0, uint8_t pd1, uin
         if (slope0 == slope1) {
             pdDiff = pd1 - pd0;
             if (is_cont_sen_same_slope(axis, inlineBuf, pd0, led0, pdDiff)) {
-            return 1; //continuous
+                return 1; //continuous
+            }
         }
-    }
     }
     return 0;
 }
@@ -3157,7 +3157,9 @@ static int fine_make_group5_A(axis_t axis1, initial_line_a_t *initial_line, int 
     int diffSum = 0;
     if (calMode == FINE_CXP_CAL_NORM) {
         maxCnt = diffSum = 0;
-        for (i = gridStart; i < gridEnd; i++) {
+        //for (i = gridStart; i < gridEnd; i++)
+        for (i = gridStart; i <= gridEnd; i++) //nsmoon@221206
+        {
             int diffTmp = GET_ABS(grid_line[i] - grid_line_cur[i]);
             diffSum += diffTmp;
             maxCnt += grid_line_cur[i];
@@ -3474,7 +3476,7 @@ static int fine_make_y_grp_x_line_cxp(initial_line_a_t *initial_line, int initia
     else if (ret == FINE_NO_GROUP) {
         return FINE_NO_GROUP;
     }
-#endif    
+#endif
 
     inst = initial_line[initialLineIdx].inst_a[cxpIdx];
     grp = initial_line[initialLineIdx].grp_a[cxpIdx];
@@ -3760,9 +3762,81 @@ static int fine_minmax_inst_idx(axis_t axis1, int instLen, float orgVal, float o
     return minMaxDiffIdx; //-1:not-found
 }
 
+#ifdef ADJUST_MIN_MAX_FINE_NEW
+static int fine_minmax_inst_idx2(axis_t axis1, int instLen, vec_t *pSav0, vec_t *pSav1, float orgVal, float orgVal2, int modeCnt, int loopCnt)
+{
+    int i;
+    vec_t *instNew = (vec_t *)&BS_minmax_inst_xy[0];
+    float tmpVal2; //tmpVal
+    float minMaxdiffVal = MIN_INITIAL_VAL;
+    int minMaxDiffIdx = -1;
+    float manDist;
+    int right, calFinish;
+
+#if (DEBUG_fine_minmax_inst_idx > 0)
+    IS_DEBUG_FLAG{ TRACE_FCMII("fine_minmax_inst_idx..: (%d-%d/%d), %0.2f, %0.2f", axis1, modeCnt, instLen, orgVal, orgVal2); };
+#endif
+
+    tmpVal2 = 0;
+    for (i = 0; i < instLen; i++) {
+        right = BS_left_of(pSav0, pSav1, &instNew[i]);
+        calFinish = ((modeCnt == 0 && right == -1) || (modeCnt == 1 && right == 1));
+        if (calFinish) {
+            continue;
+        }
+        if (axis1 == ENUM_HOR_X) {
+            //tmpVal = instNew[i].y;
+            tmpVal2 = instNew[i].x;
+        }
+        else {
+            //tmpVal = instNew[i].x;
+            tmpVal2 = instNew[i].y;
+        }
+#if (DEBUG_fine_minmax_inst_idx > 0)
+        if (loopCnt == 1) {
+            IS_DEBUG_FLAG{ TRACE_FCMII("..loopCnt,tmpVal2,orgVal2: %d %0.2f %0.2f", loopCnt, tmpVal2, orgVal2);};
+        }
+#endif
+#if 0
+        if (loopCnt == 1) {
+            //should be less than orgVal at first loop
+            if (modeCnt == 0) {
+                //min
+                if (tmpVal < orgVal) continue;
+            }
+            else {
+                //max
+                if (tmpVal > orgVal) continue;
+            }
+        }
+#endif
+        //find closed intersection of min diff
+        if (axis1 == ENUM_HOR_X) {
+            manDist = GET_ABS(tmpVal2 + EPSILON - orgVal2); //x-pos:0=>max
+        }
+        else {
+            manDist = GET_ABS(orgVal2 + EPSILON - tmpVal2); //y-pos:max=>0
+        }
+
+#if (DEBUG_fine_minmax_inst_idx > 0)
+        IS_DEBUG_FLAG{ TRACE_FCMII("..i,manDist,tmpVal2,orgVal2,minMaxdiffVal: (%d) %0.2f,%0.2f, %0.2f,%0.2f", i, manDist, minMaxdiffVal, tmpVal2, orgVal2);};
+#endif
+        if (manDist < minMaxdiffVal) {
+            minMaxdiffVal = manDist;
+            minMaxDiffIdx = i;
+        }
+    }
+#if (DEBUG_fine_minmax_inst_idx > 0)
+    IS_DEBUG_FLAG{ TRACE_FCMII(".minMaxDiffIdx,minMaxdiffVal: %d %0.2f", minMaxDiffIdx, minMaxdiffVal);};
+#endif
+
+    return minMaxDiffIdx; //-1:not-found
+}
+#endif
+
 ATTR_BACKEND_RAMFUNC
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define fineDEBUG_cal_min_max3     0
+#define fineDEBUG_cal_min_max3     1
 #endif
 #if (fineDEBUG_cal_min_max3 > 0)
 #define TRACE_FCMM3(...)		TRACE(__VA_ARGS__)
@@ -4261,7 +4335,7 @@ static int fine_cal_min_max3(axis_t axis1, int initialLineIdx, int initialGrpIdx
     int debugColor;
 #define DEBUG_COLOR_X_MIN (MY_COLOR - 1) //y-min, lime
 #define DEBUG_COLOR_X_MAX (MY_COLOR - 2) //y-max, cyan
-#define DEBUG_COLOR_Y_MIN (MY_COLOR - 3) //x-min, yellow
+#define DEBUG_COLOR_Y_MIN (MY_COLOR - 4) //x-min, yellow
 #define DEBUG_COLOR_Y_MAX (MY_COLOR - 5) //x-max, light coral
 #endif
     IS_DEBUG_FLAG{
@@ -4596,7 +4670,11 @@ static int fine_cal_min_max3(axis_t axis1, int initialLineIdx, int initialGrpIdx
                 ////////////////////////////////////////////////////////////
                 calFinish = 0;
                 if (loopCnt > 1) {
+#ifdef ADJUST_MIN_MAX_FINE_NEW //nsmoon@220308a
+                    intSectTmpIdx = fine_minmax_inst_idx2(axis1, intSectCnt, &pSav0, &pSav1, intSectPosOrg, intSectPosOrg2, modeCnt, loopCnt); //new instIdx
+#else
                     intSectTmpIdx = fine_minmax_inst_idx(axis1, intSectCnt, intSectPosOrg, intSectPosOrg2, modeCnt, loopCnt); //new instIdx
+#endif
                 }
                 else {
                     float tmpPos, tmpPos2;
@@ -4642,9 +4720,11 @@ static int fine_cal_min_max3(axis_t axis1, int initialLineIdx, int initialGrpIdx
 #endif
 
                     int right = 0; //0:colinear,-1:left,1:right
+#ifndef ADJUST_MIN_MAX_FINE_NEW //nsmoon@220308a
                     if (loopCnt > 1) {
                         right = BS_left_of(&pSav0, &pSav1, &instNew[intSectTmpIdx]);
                     }
+#endif
 #if (fineDEBUG_cal_min_max3 > 1)
                     IS_DEBUG_FLAG{
                         TRACE_FCMM32("..intSectNewPos=(%d-%d)(%d) %0.2f/%0.2f (%d)", modeCnt, loopCnt, intSectTmpIdx, intSectNewPos, intSectPosOrg, right);
@@ -6792,7 +6872,7 @@ static int fine_is_closed_eraser_min_max(axis_t axis, pos_min_max_t mM, float mm
 #define DEBUG_fine_add_touch_data    1
 #endif
 #if (DEBUG_fine_add_touch_data > 0)
-#define TRACE_FATD(...)     //TRACE(__VA_ARGS__)
+#define TRACE_FATD(...)     TRACE(__VA_ARGS__)
 #else
 #define TRACE_FATD(...)
 #endif
@@ -12354,7 +12434,7 @@ static int fine_get_initial_tp(int fineLoop)
         return 0;
     }
     IS_DEBUG_FLAG {
-        TRACE("BS_initial_line_a_x_cnt=%d, %d", BS_initial_line_a_x_cnt, BS_initial_line_a_y_cnt);
+    TRACE("BS_initial_line_a_x_cnt=%d, %d", BS_initial_line_a_x_cnt, BS_initial_line_a_y_cnt);
     };
 
 #ifdef FINE_INITIAL_LINE_NEW //nsmoon@211125
@@ -12381,8 +12461,8 @@ static int fine_get_initial_tp(int fineLoop)
     BS_fine_get_initial_ep5_remained(ENUM_VER_Y, remLineY, &remLineCntY); //nsmoon@220126
 #endif
     IS_DEBUG_FLAG {
-        TRACE("=>BS_initial_line_a_x_cnt=%d, %d", BS_initial_line_a_x_cnt, BS_initial_line_a_y_cnt);
-        }
+    TRACE("=>BS_initial_line_a_x_cnt=%d, %d", BS_initial_line_a_x_cnt, BS_initial_line_a_y_cnt);
+    }
 
     line_idx_x_y = 0;
     for (line_idx_x = 0; line_idx_x < BS_initial_line_a_x_cnt; line_idx_x++)

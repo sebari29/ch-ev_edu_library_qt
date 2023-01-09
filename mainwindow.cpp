@@ -2988,6 +2988,7 @@ void MainWindow::showDebugLabel(touch_point_t *tp)
         labelText[labelTextIdx++].sprintf("touch_count=%d", testOuputBuffer2.touch_count);
         labelText[labelTextIdx++].sprintf("testNextScan.x1=%d %d", (int)testNextScan.x1, (int)testNextScan.y1);
         labelText[labelTextIdx++].sprintf("touch_data_edge.x=%0.1f %0.1f", testOuputBuffer2.touch_data_edge.x, testOuputBuffer2.touch_data_edge.y);
+        labelText[labelTextIdx++].sprintf("test");
 
         //labelText[labelTextIdx++].sprintf("Sz50m/M: X=%0.1f/%0.1f Y=%0.1f/%0.1f", s_debug_sizeXMin, s_debug_sizeXMax, s_debug_sizeYMin, s_debug_sizeYMax);
         //labelText[labelTextIdx++].sprintf("Sz10m/M: X=%0.1f/%0.1f Y=%0.1f/%0.1f", s_debug_th10sizeXMin, s_debug_th10sizeXMax, s_debug_th10sizeYMin, s_debug_th10sizeYMax);
