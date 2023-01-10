@@ -549,6 +549,13 @@ typedef struct {
     DEF_TOUCH_OUT *buf;
 } DEF_DATA_INFO;
 
+typedef struct {
+    float minX;
+    float maxX;
+    float minY;
+    float maxY;
+} DEF_MIN_MAX;
+
 #if 1 //refer to backend_util.h
 typedef struct {
     float x, y;
@@ -619,6 +626,7 @@ int BG_init_backend(
     DEF_DEADCELL_INFO  *InvalidTbl,			//not used yet
     uint16_t  init_flag          // reserved: 0
 );
+void BG_set_debug_func(void (*fuction)(DEF_MIN_MAX *before, DEF_MIN_MAX *after));
 #else
 int BG_init_backend(
     DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout

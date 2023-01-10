@@ -33,6 +33,9 @@ typedef struct {
 extern int _myDrawPolygon(poly_e res, uint8_t flag, uint8_t color);
 }
 
+DEF_MIN_MAX min_max_before;
+DEF_MIN_MAX min_max_after;
+
 ///////////////////////////////////////////////////////
 /// static variables for hidThrdUsb()
 bool MainWindow::bHidConnected;
@@ -84,6 +87,8 @@ uint8_t debug_threshold_y[DEBUG_FRAME_COUNT][DEBUG_MAX_THRESHOLD_Y];
 #endif
 #endif
 ///////////////////////////////////////////////////////
+
+MainWindow *MainWindow::mainWindow = NULL;
 
 #define OFST_DATA_SIZE     4096
 static char ofstData[OFST_DATA_SIZE];
@@ -161,6 +166,14 @@ void _mySaveLog(char const *format, ...)
 
     *logOut << curtime << " : " << dbgStr << "\n";*/
 }
+
+void debug_func(DEF_MIN_MAX *before, DEF_MIN_MAX *after)
+{
+    MainWindow::mainWindow->set_debug_func(before, after);
+}
+
+void BG_set_debug_func(void (*fuction)(void));
+
 #endif //nsmoon@180227
 
 #define LABEL_TP_TOP  30
@@ -233,7 +246,6 @@ MainWindow::MainWindow(QWidget *parent) :
     touchDisplayColor = TOUCH_DISP_COLOR_SIZE;
     lineThresholdValue = LINE_THRESHOLD_VALUE;
     rmFrameCnt = 0; //remained line //nsmoon@210430
-
 #if defined(USE_WIN_USB)
     MyDeviceHandle = INVALID_HANDLE_VALUE;    
 #elif defined(USE_USB_LIB)
@@ -315,6 +327,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pWorkThreak->start(QThread::NormalPriority);
 
     makeLogFile();
+    BG_set_debug_func(debug_func);
 }
 
 void MainWindow::newFileWrite(char const *format, ...)
@@ -2988,7 +3001,7 @@ void MainWindow::showDebugLabel(touch_point_t *tp)
         labelText[labelTextIdx++].sprintf("touch_count=%d", testOuputBuffer2.touch_count);
         labelText[labelTextIdx++].sprintf("testNextScan.x1=%d %d", (int)testNextScan.x1, (int)testNextScan.y1);
         labelText[labelTextIdx++].sprintf("touch_data_edge.x=%0.1f %0.1f", testOuputBuffer2.touch_data_edge.x, testOuputBuffer2.touch_data_edge.y);
-        labelText[labelTextIdx++].sprintf("test");
+        labelText[labelTextIdx++].sprintf("MinX=%0.2f->%0.2f,MaxX=%0.2f->%0.2f,MinY=%0.2f->%0.2f,MaxY=%0.2f->%0.2f", min_max_before.minX, min_max_after.minX, min_max_before.maxX, min_max_after.maxX, min_max_before.minY, min_max_after.minY, min_max_before.maxY, min_max_after.maxY);
 
         //labelText[labelTextIdx++].sprintf("Sz50m/M: X=%0.1f/%0.1f Y=%0.1f/%0.1f", s_debug_sizeXMin, s_debug_sizeXMax, s_debug_sizeYMin, s_debug_sizeYMax);
         //labelText[labelTextIdx++].sprintf("Sz10m/M: X=%0.1f/%0.1f Y=%0.1f/%0.1f", s_debug_th10sizeXMin, s_debug_th10sizeXMax, s_debug_th10sizeYMin, s_debug_th10sizeYMax);
@@ -3640,6 +3653,18 @@ int MainWindow::backend_process_line_data(int nBufNumber)
     }
     return 0; //no-error
 #endif
+}
+
+void MainWindow::set_debug_func(DEF_MIN_MAX *before, DEF_MIN_MAX *after)
+{
+    min_max_before.minX = before->minX;
+    min_max_after.minX = after->minX;
+    min_max_before.maxX = before->maxX;
+    min_max_after.maxX = after->maxX;
+    min_max_before.minY = before->minY;
+    min_max_after.minY = after->minY;
+    min_max_before.maxY = before->maxY;
+    min_max_after.maxY = after->maxY;
 }
 
 #define TRACE_RETRY(...)    //TRACE(__VA_ARGS__)

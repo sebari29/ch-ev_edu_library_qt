@@ -272,6 +272,18 @@ struct disp_param {
 };
 #endif
 
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//void set_debug_func(DEF_MIN_MAX *before, DEF_MIN_MAX *after);
+
+#ifdef __cplusplus
+}
+#endif
+
 typedef enum {
     TOUCH_DISP_COLOR_ID = 0,
     TOUCH_DISP_COLOR_SIZE = 1,
@@ -290,6 +302,13 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    static MainWindow *mainWindow;
+    static MainWindow *instance() {
+        if (mainWindow == NULL)
+            mainWindow = new MainWindow;
+        return mainWindow;
+    }
+
     //////////////////////////////////////////
     void InitLine();
     void InitMarkLines();
@@ -299,6 +318,7 @@ public:
     //static void Process(const void* obj);
     void OpenNewFileName();
     void DataProcess();
+    void set_debug_func(DEF_MIN_MAX *before, DEF_MIN_MAX *after);
 
 public slots:
     bool usb_check_n_open(void);

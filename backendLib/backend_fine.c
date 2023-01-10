@@ -8641,6 +8641,7 @@ static int fine_cal_coordinates3(int fineLoop)
     vec_t centerPoint, touchWidth;
     float touchArea;
     pos_min_max_t minMaxTmp;
+    pos_min_max_t beforeMminMaxTmp;
     pos_minMax2_t min_max;
     vec_t p2, p3;
     axis_t axis1;
@@ -8804,13 +8805,16 @@ static int fine_cal_coordinates3(int fineLoop)
             IS_DEBUG_FLAG{
             int minIdx = grp[grp_max_idx].instIdx[0];
             int maxIdx = grp[grp_max_idx].instIdx[grp[grp_max_idx].len - 1];
+
             DEBUG_SHOW_MIN_MAX_POS((axis_t)axis2, &initial_line[initial_line_cnt].inst[0], minIdx, maxIdx, 1);
+
             TRACE_NOP;
             };
         #endif
             fine_make_grp_min_max(axis1, grp, grp_max_idx, initial_line[initial_line_cnt].inst);
             min_max.min = grp[grp_max_idx].instPos.min;
             min_max.max = grp[grp_max_idx].instPos.max;
+
             if (axis2 == axis_start) {
                 if (axis2 == (int)ENUM_VER_Y) {
                 initial_line[initial_line_cnt].cent.y = (grp[grp_max_idx].instPos.min + grp[grp_max_idx].instPos.max) * 0.5f;
@@ -8843,6 +8847,13 @@ static int fine_cal_coordinates3(int fineLoop)
             {
                 ret = fine_cal_min_max3(axis1, initial_line_cnt, grp_max_idx, (axis_t)axis2, &min_max, &retMinPos, &retMaxPos, 1, fineLoop); //1: check slope always, nsmoon@200313
                 IS_DEBUG_FLAG{ TRACE_FATD(">>min_max=(%d)%d(%0.1f,%0.1f)=>(%0.1f,%0.1f) (%0.1f,%0.1f)(%0.1f,%0.1f)", axis1, ret, grp[grp_max_idx].instPos.min, grp[grp_max_idx].instPos.max, min_max.min, min_max.max, retMinPos.x, retMaxPos.x, retMinPos.y, retMaxPos.y); };
+                if (axis1) {
+                    beforeMminMaxTmp.minX = grp[grp_max_idx].instPos.min;
+                    beforeMminMaxTmp.maxX = grp[grp_max_idx].instPos.max;
+                } else {
+                    beforeMminMaxTmp.minY = grp[grp_max_idx].instPos.min;
+                    beforeMminMaxTmp.maxY = grp[grp_max_idx].instPos.max;
+                }
             //float retWidthX = GET_ABS(retMaxPos.x - retMinPos.x);
             //float retWidthY = GET_ABS(retMaxPos.y - retMinPos.y);
             //TRACE(".retWidthX,retWidthY= %0.1f %0.1f", retWidthX, retWidthY);
@@ -8870,6 +8881,7 @@ static int fine_cal_coordinates3(int fineLoop)
             minMaxTmp.minY = grpOp[grp_max_idx_op].instPos.min;
             minMaxTmp.maxY = grpOp[grp_max_idx_op].instPos.max;
         }
+        mDebug.BG_debug_function_pointer(&minMaxTmp, &beforeMminMaxTmp);
     #if (DEBUG_fine_add_touch_data > 0) //for test
         IS_DEBUG_FLAG {
         DEBUG_SHOW_MIN_MAX(&minMaxTmp, MY_COLOR, 1);
