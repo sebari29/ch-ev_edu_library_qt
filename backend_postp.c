@@ -2145,7 +2145,7 @@ static void smooth_filter_init(touchDataSt_t *pCurDataIn)
 #if (MODEL_SPT == MODEL_CTSK_850_V100)
 	#define TOUCH_DOWN_MIN_MOVEMENT     0.8f	//1.2f	//YJ20200529
 #else
-    #define TOUCH_DOWN_MIN_MOVEMENT     0.0f//1.2f	//2.0f
+    #define TOUCH_DOWN_MIN_MOVEMENT     1.0f//1.2f	//2.0f
 #endif
 //#define TOUCH_DOWN_MIN_MOVEMENT     1.0f //0.7f
 #define TOUCH_DOWN_ADJ_MOVEMENT     0.5f //0.7f
@@ -2778,11 +2778,21 @@ void s_touch_point_tracking(void)
     s_prev_frame_period = s_frame_period; //save
     s_frame_period = s_get_frame_span();
     //TRACE("s_frame_period: %d", s_frame_period);
+
+#if defined(_WIN32) || defined(WIN32)
+    if (s_frame_period < 10) {
+        //TRACE_ERROR("Error! sendPosition...invalid s_frame_period !! %d", s_frame_period);
+        s_frame_period = 10; //restore
+    } else if (s_frame_period > 100) {
+        //TRACE_ERROR("Error! sendPosition...invalid s_frame_period !! %d", s_frame_period);
+        s_frame_period = 100; //restore
+    }
+#endif
+
     if (s_frame_period < 10) {
         TRACE_ERROR("Error! sendPosition...invalid s_frame_period !! %d", s_frame_period);
         s_frame_period = s_prev_frame_period; //restore
-	}
-
+    }
 	/////////////////////////////////////
     if (curInLength > 0) {
 		TRACE_TPT("In-len: %d %d", prevInLength, curInLength);

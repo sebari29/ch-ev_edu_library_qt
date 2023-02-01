@@ -430,7 +430,7 @@ static int fine_remove_closed_touch(int touchCntLocal, vec_t centerPoint0)
 #endif //0
 
 #if defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_RELEASE)
-#define DEBUG_fine_get_initial_ep	0 //0~3
+#define DEBUG_fine_get_initial_ep	3 //0~3
 #endif
 #if (DEBUG_fine_get_initial_ep > 1)
 #define TRACENR_FGIE(...)	TRACENR(__VA_ARGS__)
@@ -2279,7 +2279,7 @@ static int fine_get_inst5(axis_t axis1, initial_line_a_t *initial_line, int init
 #if (defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_RELEASE)) && defined(DRAW_POLYGON_TEST)
                                 int cxLineIdx = initial_line[initialLineIdx].cxLineIdx;
                                 if (calMode == FINE_CXP_CAL_INIT) {
-                                    DEBUG_SHOW_POS(&pR, 0.05f, 0.05f, MY_COLOR - 4); //gray
+                                    DEBUG_SHOW_POS(&pR, 0.05f, 0.05f, MY_COLOR - 7); //gray
                                 }
                                 else {
                                     DEBUG_SHOW_POS(&pR, 0.05f, 0.05f, cxLineIdx);
@@ -2515,7 +2515,7 @@ static int fine_get_inst5(axis_t axis1, initial_line_a_t *initial_line, int init
 }
 
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define DEBUG_fine_make_group       0
+#define DEBUG_fine_make_group       1
 #define DEBUG_test_clipping         0
 #endif
 #if (DEBUG_test_clipping == 1)
@@ -4334,8 +4334,8 @@ static int fine_cal_min_max3(axis_t axis1, int initialLineIdx, int initialGrpIdx
 #if (fineDEBUG_cal_min_max3 > 0)
     int debugColor;
 #define DEBUG_COLOR_X_MIN (MY_COLOR - 1) //y-min, lime
-#define DEBUG_COLOR_X_MAX (MY_COLOR - 2) //y-max, cyan
-#define DEBUG_COLOR_Y_MIN (MY_COLOR - 4) //x-min, yellow
+#define DEBUG_COLOR_X_MAX (MY_COLOR - 10) //y-max, cyan
+#define DEBUG_COLOR_Y_MIN (MY_COLOR - 3) //x-min, yellow
 #define DEBUG_COLOR_Y_MAX (MY_COLOR - 5) //x-max, light coral
 #endif
     IS_DEBUG_FLAG{
@@ -11609,7 +11609,7 @@ int BS_fine_add_remained_touch_edge_y()
 
 #if (BRUSH_MODE_ENABLE == 1)
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define DEBUG_BS_fine_add_remained_touch_brush  1
+#define DEBUG_BS_fine_add_remained_touch_brush  0
 #endif
 #if (DEBUG_BS_fine_add_remained_touch_brush > 0)
 #define TRACE_BFARB(...) TRACE(__VA_ARGS__)
@@ -12355,7 +12355,7 @@ int BS_fine_add_remained_touch_brush2(int fineLoop)
 #endif //1
 
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define DEBUG_BG_clipping_fine5   0
+#define DEBUG_BG_clipping_fine5   1
 #endif
 #if (DEBUG_BG_clipping_fine5 > 0)
 #define TRACE_BCF5(...)     TRACE(__VA_ARGS__)

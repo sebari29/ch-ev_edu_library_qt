@@ -5312,7 +5312,7 @@ static int remaied_multi_initial_merge(pos_min_max_t *initial_mM, int initial_mM
 #endif
 #endif
 
-#define DEBUG_remaied_multi_initial     0
+#define DEBUG_remaied_multi_initial     1
 static int remaied_multi_initial(void)
 {
 	uint16_t *remLineX = &BS_remained_x[0];

@@ -105,7 +105,7 @@ extern int s_debug_size_type, s_debug_edge;
 ///////////////////////////////////////////////
 #define SMOOTHING_FILTER_ENABLE     //filter enable
 //#define CHECK_INITIAL_MOVEMENT //nsmoon@191220
-#define A0_OUT_FINE					1.0f//0.3f //0.35f //0.45f //0.5f
+#define A0_OUT_FINE					0.35f	//1.0f//0.3f	//	//0.3f
 #define A0_OUT_FINE_SIZE			0.5f
 #define A0_OUT_FINE_ERASER			0.5f
 #define A0_OUT_BRUSH_SIZE			0.5f
@@ -194,21 +194,21 @@ extern int s_debug_size_type, s_debug_edge;
 #define START_FRAME_MULTI3			5
 #define START_FRAME_ERASE			5
 
-#define MAX_SIZE_PEN_2          13.0f//15.0f//18.0f	//15.0f //11.0f	//14.0f //1204	//12.5f	//8.0f R0004	//7.5f					//  < w_max  2
-#define MAX_SIZE_MARKER_1      	14.0f//16.0f//20.0f	//16.0f // 12.0f	//15.0f //1204	//13.0f	//8.0f R0004	//7.5f					//  > w_min  4
+#define MAX_SIZE_PEN_2          19.0f	//15.0f //11.0f	//14.0f //1204	//12.5f	//8.0f R0004	//7.5f					//  < w_max  2
+#define MAX_SIZE_MARKER_1      	22.0f	//16.0f // 12.0f	//15.0f //1204	//13.0f	//8.0f R0004	//7.5f					//  > w_min  4
 
-#define MAX_SIZE_PEN_E2         13.0f//15.0f	//7.0f	//12.5f			//  < w_max  2
-#define MAX_SIZE_MARKER_E1      14.0f//16.0f	//7.5f	//13.0f			//  > w_min  4
+#define MAX_SIZE_PEN_E2         13.0f	//7.0f	//12.5f			//  < w_max  2
+#define MAX_SIZE_MARKER_E1      14.0f	//7.5f	//13.0f			//  > w_min  4
 
-#define MAX_SIZE_MARKER_2       16.0f//22.0f	//15.0f			//  > w_max  31
+#define MAX_SIZE_MARKER_2       24.0f	//15.0f			//  > w_max  31
 
-#define MAX_SIZE_PEN_2_EDGE     16.0f	//11.0f R0004
-#define MAX_SIZE_MARKER_1_EDGE  17.0f	//11.0f	R0004
-#define MAX_SIZE_MARKER_2_EDGE  18.0f	//12.0f R0004
+#define MAX_SIZE_PEN_2_EDGE     19.0f	//11.0f R0004
+#define MAX_SIZE_MARKER_1_EDGE  22.0f	//11.0f	R0004
+#define MAX_SIZE_MARKER_2_EDGE  24.0f	//12.0f R0004
 
-#define MAX_SIZE_PEN_2_SIDE     16.0f//13.0f	//8.0f R0004
-#define MAX_SIZE_MARKER_1_SIDE  17.0f//14.0f	//8.0f R0004
-#define MAX_SIZE_MARKER_2_SIDE  18.0f//15.0f	//11.0f	R004
+#define MAX_SIZE_PEN_2_SIDE     19.0f	//8.0f R0004
+#define MAX_SIZE_MARKER_1_SIDE  22.0f	//8.0f R0004
+#define MAX_SIZE_MARKER_2_SIDE  24.0f	//11.0f	R004
 
 #elif (MODEL_SPT == MODEL_CTSK_550_V100)
 #define START_FRAME_LIMIT			7		//YJ@210323	//10 //2105	//4  //750 PV	//3	//4 R0004 YJ200428
