@@ -90,23 +90,23 @@ extern "C" {
 #ifdef DRAW_POLYGON_TEST
 #define DEBUG_COLOR                     (debug_color % (MY_COLOR-3))
 #define DEBUG_COLOR_CHANGE              (debug_color++)
-#define DEBUG_SHOW_POS                  DEBUG_show_pos_
-#define DEBUG_SHOW_LINE_PD_LED          DEBUG_show_line_pd_led_
-#define DEBUG_SHOW_LINE_IDX             DEBUG_show_line_idx_
-#define DEBUG_SHOW_LINE_POS             DEBUG_show_line_pos_
-#define DEBUG_SHOW_LINE_BELONGED        DEBUG_show_line_belonged_
-#define DEBUG_SHOW_LINE_AXIS_POS        DEBUG_show_line_axis_pos_
-#define DEBUG_SHOW_MIN_MAX              DEBUG_show_min_max_
-#define DEBUG_SHOW_MIN_MAX_POS          DEBUG_show_min_max_pos_
-#define DEBUG_SHOW_BS_POLYGON           DEBUG_show_BS_polygon_
-#define DEBUG_SHOW_BS_TOUCH_POLYGON		DEBUG_show_BS_touch_polygon_
-#define DEBUG_SHOW_BS_TOUCH_POLYGON_ONE	DEBUG_show_BS_touch_polygon_one_
-#define DEBUG_SHOW_POLY                 DEBUG_show_poly_
-#define DEBUG_SHOW_START_END            DEBUG_show_start_end_
-#define DEBUG_SHOW_BS_INITIAL_POLYGON	DEBUG_show_BS_initial_polygon_
-#define DEBUG_SHOW_BS_SUBJECT_POLYGON	DEBUG_show_BS_subject_polygon_
-#define DEBUG_SHOW_CENT_GRID            DEBUG_show_cent_grid_
-#define DEBUG_SHOW_TOUCH_POINT          DEBUG_show_touch_point_
+#define DEBUG_SHOW_POS                  //DEBUG_show_pos_
+#define DEBUG_SHOW_LINE_PD_LED          //DEBUG_show_line_pd_led_
+#define DEBUG_SHOW_LINE_IDX             //DEBUG_show_line_idx_
+#define DEBUG_SHOW_LINE_POS             //DEBUG_show_line_pos_
+#define DEBUG_SHOW_LINE_BELONGED        //DEBUG_show_line_belonged_
+#define DEBUG_SHOW_LINE_AXIS_POS        //DEBUG_show_line_axis_pos_
+#define DEBUG_SHOW_MIN_MAX              //DEBUG_show_min_max_
+#define DEBUG_SHOW_MIN_MAX_POS          //DEBUG_show_min_max_pos_
+#define DEBUG_SHOW_BS_POLYGON           //DEBUG_show_BS_polygon_
+#define DEBUG_SHOW_BS_TOUCH_POLYGON		//DEBUG_show_BS_touch_polygon_
+#define DEBUG_SHOW_BS_TOUCH_POLYGON_ONE	//DEBUG_show_BS_touch_polygon_one_
+#define DEBUG_SHOW_POLY                 //DEBUG_show_poly_
+#define DEBUG_SHOW_START_END            //DEBUG_show_start_end_
+#define DEBUG_SHOW_BS_INITIAL_POLYGON	//DEBUG_show_BS_initial_polygon_
+#define DEBUG_SHOW_BS_SUBJECT_POLYGON	//DEBUG_show_BS_subject_polygon_
+#define DEBUG_SHOW_CENT_GRID            //DEBUG_show_cent_grid_
+#define DEBUG_SHOW_TOUCH_POINT          //DEBUG_show_touch_point_
 #else
 #define DEBUG_COLOR(...)
 #define DEBUG_COLOR_CHANGE(...)
@@ -204,10 +204,10 @@ extern int BG_debug_flag, BG_debug_flag2, BS_debug_nop;
 #define TRACE_MALLOC(...) //_myTrace(__VA_ARGS__)
 #define TRACE_SIZE_ADJ(...)
 #endif
-#define START_STOP_POLY_TRACE(a) _myDrawPolygon(0, (a), 0)
-#define SEND_POLY(...) _myDrawPolygon(__VA_ARGS__)
-#define TRACE_POLYGON(...)  _myDrawPolygon(__VA_ARGS__)
-#define TRACE_POLYGON_MULTI(...)     _myDrawPolygon(__VA_ARGS__)
+#define START_STOP_POLY_TRACE(a) //_myDrawPolygon(0, (a), 0)
+#define SEND_POLY(...) //_myDrawPolygon(__VA_ARGS__)
+#define TRACE_POLYGON(...)  //_myDrawPolygon(__VA_ARGS__)
+#define TRACE_POLYGON_MULTI(...)     //_myDrawPolygon(__VA_ARGS__)
 #define TRACE_POLYGON_POLYCLIP(...)  //_myDrawPolygon(__VA_ARGS__)
 #define TRACE_POLYGON_TMP(...)    //_myDrawPolygon //debug unbalance edge pattern
 #define SEND_TOUCH //_myDrawTouch

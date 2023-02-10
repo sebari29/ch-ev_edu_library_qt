@@ -148,7 +148,7 @@ int add_polygon_saved(poly_e s, int flag, unsigned long color)
         //TRACE("flag,len,color= %d %d %d", flag, s->len, color);
 		polygon_saved[polgon_saved_idx].flag = flag;
 		polygon_saved[polgon_saved_idx].len = s->len;
-		polygon_saved[polgon_saved_idx].color = color;
+        polygon_saved[polgon_saved_idx].color = color;
 		if (s->len >= MAX_SLOPE_COUNT) {
 			TRACE_ERROR("ERROR! add_polygon_saved..invalid s->len %d", s->len);
 			s->len = MAX_SLOPE_COUNT;
@@ -210,7 +210,7 @@ int _myDrawPolygon(poly_e res, uint8_t flag, uint8_t color)
 
 #ifdef DRAW_POLY_ONE_BY_ONE
 	if (flag & PS_FLUSH) {
-		//SendMessage(hWndMain, WM_POLY_DATA, 0, 0);
+        SendMessage(hWndMain, WM_POLY_DATA, 0, 0);
 	}
 #endif
 
@@ -643,6 +643,7 @@ void DEBUG_show_poly_(vec_e_t *poly, int len, int color)
     tmpPoly.len = len;
     tmpPoly.ve = poly;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
     TRACE_NOP;
 }
 
@@ -750,7 +751,8 @@ void DEBUG_show_line_pd_led_(axis_t axis, int pd, int led, int color)
     TRACENR("\r\n");
 #endif
 
-    SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    //SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
     TRACE_NOP;
 }
 
@@ -938,6 +940,7 @@ void DEBUG_show_line_pos_(vec p0, vec p1, int color)
     tmpPoly.ve[1].vert.x = p1->x;
     tmpPoly.ve[1].vert.y = p1->y;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
     TRACE_NOP;
 }
 
@@ -954,24 +957,28 @@ void DEBUG_show_min_max_(pos_min_max_t *pos, int color, int mode)
     tmpPoly.ve[1].vert.x = pos->minX;
     tmpPoly.ve[1].vert.y = pos->maxY;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
 
     tmpPoly.ve[0].vert.x = pos->minX;
     tmpPoly.ve[0].vert.y = pos->maxY;
     tmpPoly.ve[1].vert.x = pos->maxX;
     tmpPoly.ve[1].vert.y = pos->maxY;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
 
     tmpPoly.ve[0].vert.x = pos->maxX;
     tmpPoly.ve[0].vert.y = pos->maxY;
     tmpPoly.ve[1].vert.x = pos->maxX;
     tmpPoly.ve[1].vert.y = pos->minY;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
 
     tmpPoly.ve[0].vert.x = pos->maxX;
     tmpPoly.ve[0].vert.y = pos->minY;
     tmpPoly.ve[1].vert.x = pos->minX;
     tmpPoly.ve[1].vert.y = pos->minY;
     SEND_POLY(&tmpPoly, 0x11, (uint8_t)color);
+    _myDrawPolygon(&tmpPoly, 0x11, (uint8_t)color);
     TRACE_NOP;
 }
 

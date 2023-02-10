@@ -82,7 +82,7 @@
 #endif
 #if (_DEBUG == 1) || defined(DEBUG) || (QT_NO_DEBUG == 0)
 #ifndef DEBUG_FRAME_NO
-#define DEBUG_FRAME_NO      33
+#define DEBUG_FRAME_NO      37
 #endif
 #ifndef DEBUG_FRAME_PAUSE
 #define DEBUG_FRAME_PAUSE   1//1 //1:enable

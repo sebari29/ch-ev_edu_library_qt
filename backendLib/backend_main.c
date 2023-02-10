@@ -226,80 +226,80 @@ typeDebug mDebug;
 //------------------------------------------------------------------
 int BS_set_unset2_used_led_pd(axis_t axis, int led, int pd, int mode)
 {
-	//mode:1 used line
-	uint8_t *lineUsed, lineUsedMask;
-	int lineUsedIdx, maxInLineBufLed;
+    //mode:1 used line
+    uint8_t *lineUsed, lineUsedMask;
+    int lineUsedIdx, maxInLineBufLed;
 
-	if (axis == ENUM_HOR_X) {
+    if (axis == ENUM_HOR_X) {
         lineUsed = LINE_USED2_BUF_ADDR_X;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_x; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif
-	}
-	else {
+    }
+    else {
         lineUsed = LINE_USED2_BUF_ADDR_Y;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_y; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-	}
+    }
     lineUsedIdx = GET_LINE_USED_IDX(pd, led);
     lineUsedMask = GET_LED_BIT_MASK(led);
 
-	if (mode) {
-		//used line
+    if (mode) {
+        //used line
         lineUsed[lineUsedIdx] &= ~lineUsedMask;
-	}
-	else {
-		//un-used line
+    }
+    else {
+        //un-used line
         lineUsed[lineUsedIdx] |= lineUsedMask;
-	}
-	TRACE_NOP;
-	return 0; //no error
+    }
+    TRACE_NOP;
+    return 0; //no error
 }
 
 ATTR_BACKEND_RAMFUNC
 int BS_get_remained_line(axis_t axis, int multiLoopCnt)
 {
-	uint16_t *remLine;
-	int cnt, inBufLen, inBufIdx;
-	uint8_t *lineUsed2;
-	uint8_t lineUsedMask;
-	int lineUsedIdx, maxInLineBufLed;
-	int pd, led;
+    uint16_t *remLine;
+    int cnt, inBufLen, inBufIdx;
+    uint8_t *lineUsed2;
+    uint8_t lineUsedMask;
+    int lineUsedIdx, maxInLineBufLed;
+    int pd, led;
 
-	if (axis == ENUM_HOR_X) {
-		//x-axis
-		inBufLen = BS_inBuf->hor_len;
-		remLine = &BS_remained_x[0];
-		BS_remained_x_cnt = 0;
-	}
-	else {
-		//y-axis
-		inBufLen = BS_inBuf->ver_len;
-		remLine = &BS_remained_y[0];
-		BS_remained_y_cnt = 0;
-	}
+    if (axis == ENUM_HOR_X) {
+        //x-axis
+        inBufLen = BS_inBuf->hor_len;
+        remLine = &BS_remained_x[0];
+        BS_remained_x_cnt = 0;
+    }
+    else {
+        //y-axis
+        inBufLen = BS_inBuf->ver_len;
+        remLine = &BS_remained_y[0];
+        BS_remained_y_cnt = 0;
+    }
 
-	if (axis == ENUM_HOR_X) {
-		lineUsed2 = LINE_USED2_BUF_ADDR_X;
+    if (axis == ENUM_HOR_X) {
+        lineUsed2 = LINE_USED2_BUF_ADDR_X;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_x; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif
-	}
-	else {
-		lineUsed2 = LINE_USED2_BUF_ADDR_Y;
+    }
+    else {
+        lineUsed2 = LINE_USED2_BUF_ADDR_Y;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_y; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-	}
+    }
 
 #if (defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_RELEASE)) && defined(DRAW_POLYGON_TEST)
     int color = MY_COLOR - multiLoopCnt;
@@ -322,14 +322,14 @@ int BS_get_remained_line(axis_t axis, int multiLoopCnt)
     }
 #endif
 
-	cnt = 0;
-	for (inBufIdx = 0; inBufIdx < inBufLen; inBufIdx++) {
-		if (BS_getSenInBuf(axis, inBufIdx, &pd, &led)) {
-			continue;
-		}
+    cnt = 0;
+    for (inBufIdx = 0; inBufIdx < inBufLen; inBufIdx++) {
+        if (BS_getSenInBuf(axis, inBufIdx, &pd, &led)) {
+            continue;
+        }
         //TRACE("BS_get_remained_line..axis,pd,led=%d,%d,%d", axis, pd, led);
-		lineUsedIdx = GET_LINE_USED_IDX(pd, led);
-		lineUsedMask = GET_LED_BIT_MASK(led);
+        lineUsedIdx = GET_LINE_USED_IDX(pd, led);
+        lineUsedMask = GET_LED_BIT_MASK(led);
 
 #if (defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_ALL)) && defined(DRAW_POLYGON_TEST) //for test
         if (multiLoopCnt >= REM_LOOP_CNT_FINE5) {
@@ -352,38 +352,38 @@ int BS_get_remained_line(axis_t axis, int multiLoopCnt)
             }
         }
 #endif
-		if ((lineUsed2[lineUsedIdx] & lineUsedMask) == 0x00) {
-			continue;
-		}
+        if ((lineUsed2[lineUsedIdx] & lineUsedMask) == 0x00) {
+            continue;
+        }
 
-		if (cnt < MAX_REMAINED_LINE) {
-			remLine[cnt++] = (uint16_t)inBufIdx;
-		}
-		else {
-			//TRACE_ERROR("ERROR! invalid MAX_REMAINED_LINE: (%d) %d (%d/%d)", axis, MAX_REMAINED_LINE, inBufLen, inBufIdx);
-			TRACE_ERROR("*3:%d", axis);
+        if (cnt < MAX_REMAINED_LINE) {
+            remLine[cnt++] = (uint16_t)inBufIdx;
+        }
+        else {
+            //TRACE_ERROR("ERROR! invalid MAX_REMAINED_LINE: (%d) %d (%d/%d)", axis, MAX_REMAINED_LINE, inBufLen, inBufIdx);
+            TRACE_ERROR("*3:%d", axis);
 #if 1 //(MODEL_SPT == MODEL_CTSK_850_V100) //nsmoon@200910
-                        //break; //nsmoon@200313
-			return -1; //mem-error
+            //break; //nsmoon@200313
+            return -1; //mem-error
 #else
             cnt = MAX_REMAINED_LINE;
             break; //nsmoon@200313
 #endif
-		}
-		TRACE_NOP;
-	} //for (inBufIdx = 0; inBufIdx < inBufLen; inBufIdx++)
+        }
+        TRACE_NOP;
+    } //for (inBufIdx = 0; inBufIdx < inBufLen; inBufIdx++)
 
-	if (axis == ENUM_HOR_X) {
-		BS_remained_x_cnt = cnt;
-	}
-	else {
-		BS_remained_y_cnt = cnt;
-	}
-	IS_DEBUG_FLAG{
-		if (cnt > 0) {
-			TRACE_NOP;
-		}
-	};
+    if (axis == ENUM_HOR_X) {
+        BS_remained_x_cnt = cnt;
+    }
+    else {
+        BS_remained_y_cnt = cnt;
+    }
+    IS_DEBUG_FLAG{
+        if (cnt > 0) {
+            TRACE_NOP;
+        }
+    };
     return cnt; //nsmoon@200401
 }
 
@@ -399,125 +399,125 @@ int BS_get_remained_line(axis_t axis, int multiLoopCnt)
 #endif
 int BS_is_large_pitch(axis_t axis, sen_type_t sen, int senNo)
 {
-	uint8_t *large_pitch_tbl, large_pitch_val;
-	int byteIdx, bitIdx;
-	if (axis == ENUM_HOR_X) {
-		if (sen == ENUM_PD) {
-			large_pitch_tbl = &BS_large_pitch_tbl_x_pd[0];
-		}
-		else {
-			large_pitch_tbl = &BS_large_pitch_tbl_x_led[0];
-		}
-	}
-	else {
-		if (sen == ENUM_PD) {
-			large_pitch_tbl = &BS_large_pitch_tbl_y_pd[0];
-		}
-		else {
-			large_pitch_tbl = &BS_large_pitch_tbl_y_led[0];
-		}
-	}
-	byteIdx = senNo / 8;
-	bitIdx = senNo % 8;
-	//TRACE_BILP("large_pitch_tbl:(%d/%d-%d/%d)%x ", axis, sen, byteIdx, bitIdx, large_pitch_tbl[byteIdx]);
-	large_pitch_val = large_pitch_tbl[byteIdx] & (0x1 << bitIdx);
-	return (int)large_pitch_val;
+    uint8_t *large_pitch_tbl, large_pitch_val;
+    int byteIdx, bitIdx;
+    if (axis == ENUM_HOR_X) {
+        if (sen == ENUM_PD) {
+            large_pitch_tbl = &BS_large_pitch_tbl_x_pd[0];
+        }
+        else {
+            large_pitch_tbl = &BS_large_pitch_tbl_x_led[0];
+        }
+    }
+    else {
+        if (sen == ENUM_PD) {
+            large_pitch_tbl = &BS_large_pitch_tbl_y_pd[0];
+        }
+        else {
+            large_pitch_tbl = &BS_large_pitch_tbl_y_led[0];
+        }
+    }
+    byteIdx = senNo / 8;
+    bitIdx = senNo % 8;
+    //TRACE_BILP("large_pitch_tbl:(%d/%d-%d/%d)%x ", axis, sen, byteIdx, bitIdx, large_pitch_tbl[byteIdx]);
+    large_pitch_val = large_pitch_tbl[byteIdx] & (0x1 << bitIdx);
+    return (int)large_pitch_val;
 }
 
 static int BS_make_large_pitch_tbl(axis_t axis, sen_type_t sen, float *posTbl)
 {
-	uint8_t *large_pitch_tbl;
-	int byteIdx, bitIdx;
-	int senNo, maxPdNum;
-	float diffPos, pitchMin, pitchMax;
-        float minLargePitch;
-	int largePitchCnt, maxLargePitchCnt;
+    uint8_t *large_pitch_tbl;
+    int byteIdx, bitIdx;
+    int senNo, maxPdNum;
+    float diffPos, pitchMin, pitchMax;
+    float minLargePitch;
+    int largePitchCnt, maxLargePitchCnt;
 
-	if (axis == ENUM_HOR_X) {
-		maxPdNum = BS_maxHorPdNum - 1;
+    if (axis == ENUM_HOR_X) {
+        maxPdNum = BS_maxHorPdNum - 1;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxLargePitchCnt = BS_max_large_pitch_tbl_x; //nsmoon@201014
 #else
         maxLargePitchCnt = MAX_LARGE_PITCH_TBL_X;
 #endif
-		minLargePitch = MIN_LARGE_PITCH_X;
-		if (sen == ENUM_PD) {
-			large_pitch_tbl = &BS_large_pitch_tbl_x_pd[0];
-		}
-		else {
-			large_pitch_tbl = &BS_large_pitch_tbl_x_led[0];
-		}
-	}
-	else {
-		maxPdNum = BS_maxVerPdNum - 1;
+        minLargePitch = MIN_LARGE_PITCH_X;
+        if (sen == ENUM_PD) {
+            large_pitch_tbl = &BS_large_pitch_tbl_x_pd[0];
+        }
+        else {
+            large_pitch_tbl = &BS_large_pitch_tbl_x_led[0];
+        }
+    }
+    else {
+        maxPdNum = BS_maxVerPdNum - 1;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxLargePitchCnt = BS_max_large_pitch_tbl_y; //nsmoon@201014
 #else
         maxLargePitchCnt = MAX_LARGE_PITCH_TBL_Y;
 #endif
-		minLargePitch = MIN_LARGE_PITCH_Y;
-		if (sen == ENUM_PD) {
-			large_pitch_tbl = &BS_large_pitch_tbl_y_pd[0];
-		}
-		else {
-			large_pitch_tbl = &BS_large_pitch_tbl_y_led[0];
-		}
-	}
+        minLargePitch = MIN_LARGE_PITCH_Y;
+        if (sen == ENUM_PD) {
+            large_pitch_tbl = &BS_large_pitch_tbl_y_pd[0];
+        }
+        else {
+            large_pitch_tbl = &BS_large_pitch_tbl_y_led[0];
+        }
+    }
 
-	for (byteIdx = 0; byteIdx < maxLargePitchCnt; byteIdx++) {
-		large_pitch_tbl[byteIdx] = 0; //init
-	}
+    for (byteIdx = 0; byteIdx < maxLargePitchCnt; byteIdx++) {
+        large_pitch_tbl[byteIdx] = 0; //init
+    }
 
-	largePitchCnt = 0;
-	pitchMin = MIN_INITIAL_VAL;
-	pitchMax = 0;
-	for (senNo = 0; senNo < maxPdNum; senNo++) {
-		//exclude last sensor
-		diffPos = posTbl[senNo + 1] - posTbl[senNo];
-		pitchMin = GET_MIN(pitchMin, diffPos);
-		pitchMax = GET_MAX(pitchMax, diffPos);
-		if ((diffPos - EPSILON) > minLargePitch) {
-			byteIdx = senNo / 8;
-			bitIdx = senNo % 8;
-			if (byteIdx < maxLargePitchCnt) {
-				large_pitch_tbl[byteIdx] |= (0x1 << bitIdx);
-				largePitchCnt++;
+    largePitchCnt = 0;
+    pitchMin = MIN_INITIAL_VAL;
+    pitchMax = 0;
+    for (senNo = 0; senNo < maxPdNum; senNo++) {
+        //exclude last sensor
+        diffPos = posTbl[senNo + 1] - posTbl[senNo];
+        pitchMin = GET_MIN(pitchMin, diffPos);
+        pitchMax = GET_MAX(pitchMax, diffPos);
+        if ((diffPos - EPSILON) > minLargePitch) {
+            byteIdx = senNo / 8;
+            bitIdx = senNo % 8;
+            if (byteIdx < maxLargePitchCnt) {
+                large_pitch_tbl[byteIdx] |= (0x1 << bitIdx);
+                largePitchCnt++;
 #if (DEBUG_BS_large_pitch > 1)
-				TRACENR_BILP("%0.2f ", diffPos);
+                TRACENR_BILP("%0.2f ", diffPos);
 #endif
-			}
-			else {
-				TRACE_ERROR("ERROR! invalid byteIdx: %d, %d", byteIdx, maxLargePitchCnt);
-			}
-		}
-	}
-	TRACE_BILP("largePitchCnt=(%d-%d)%d %0.2f/%0.2f %x", axis, sen, largePitchCnt, pitchMin, pitchMax, large_pitch_tbl);
-	if (axis == ENUM_HOR_X) {
-		if (sen == ENUM_PD) {
-			BS_large_pitch_tbl_x_pd_cnt = largePitchCnt;
-		}
-		else {
-			BS_large_pitch_tbl_x_led_cnt = largePitchCnt;
-		}
-	}
-	else {
-		if (sen == ENUM_PD) {
-			BS_large_pitch_tbl_y_pd_cnt = largePitchCnt;
-		}
-		else {
-			BS_large_pitch_tbl_y_led_cnt = largePitchCnt;
-		}
-	}
+            }
+            else {
+                TRACE_ERROR("ERROR! invalid byteIdx: %d, %d", byteIdx, maxLargePitchCnt);
+            }
+        }
+    }
+    TRACE_BILP("largePitchCnt=(%d-%d)%d %0.2f/%0.2f %x", axis, sen, largePitchCnt, pitchMin, pitchMax, large_pitch_tbl);
+    if (axis == ENUM_HOR_X) {
+        if (sen == ENUM_PD) {
+            BS_large_pitch_tbl_x_pd_cnt = largePitchCnt;
+        }
+        else {
+            BS_large_pitch_tbl_x_led_cnt = largePitchCnt;
+        }
+    }
+    else {
+        if (sen == ENUM_PD) {
+            BS_large_pitch_tbl_y_pd_cnt = largePitchCnt;
+        }
+        else {
+            BS_large_pitch_tbl_y_led_cnt = largePitchCnt;
+        }
+    }
 
 #if (DEBUG_BS_large_pitch > 1)
-	if (largePitchCnt > 0) {
-		for (byteIdx = 0; byteIdx < maxLargePitchCnt; byteIdx++) {
-			TRACENR_BILP("%x ", large_pitch_tbl[byteIdx]);
-		}
-		TRACE_BILP(".");
-	}
+    if (largePitchCnt > 0) {
+        for (byteIdx = 0; byteIdx < maxLargePitchCnt; byteIdx++) {
+            TRACENR_BILP("%x ", large_pitch_tbl[byteIdx]);
+        }
+        TRACE_BILP(".");
+    }
 #endif
-	return largePitchCnt;
+    return largePitchCnt;
 }
 #endif
 
@@ -671,54 +671,54 @@ int BS_is_epf_used(uint16_t epfNo)
 #ifdef FRONTEND_LINE_THRESHOLD
 int BS_is_set_threshold(axis_t axis, int pd, int ofstIdx)
 {
-	uint8_t *threshold, ret;
-	int idx, byteIdx, bitIdx, ofst_byte;
-	//uint16_t thresholdCnt;
+    uint8_t *threshold, ret;
+    int idx, byteIdx, bitIdx, ofst_byte;
+    //uint16_t thresholdCnt;
 
-	if (axis == ENUM_HOR_X) {
-		threshold = &BS_inBuf->threshold_x[0];
-		//thresholdCnt = BS_inBuf->threshold_x_cnt;
+    if (axis == ENUM_HOR_X) {
+        threshold = &BS_inBuf->threshold_x[0];
+        //thresholdCnt = BS_inBuf->threshold_x_cnt;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         ofst_byte = ((BS_offsetTblLenX + 7) / 8);
 #else
-		ofst_byte = MAX_SLOPE_BYTE_X;
+        ofst_byte = MAX_SLOPE_BYTE_X;
 #endif
-	}
-	else {
-		threshold = &BS_inBuf->threshold_y[0];
-		//thresholdCnt = BS_inBuf->threshold_y_cnt;
+    }
+    else {
+        threshold = &BS_inBuf->threshold_y[0];
+        //thresholdCnt = BS_inBuf->threshold_y_cnt;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         ofst_byte = ((BS_offsetTblLenY + 7) / 8);
 #else
-		ofst_byte = MAX_SLOPE_BYTE_Y;
+        ofst_byte = MAX_SLOPE_BYTE_Y;
 #endif
-	}
-	byteIdx = ofstIdx / 8;
-	bitIdx = ofstIdx % 8;
-	idx = ((pd * ofst_byte) + byteIdx);
-	ret = threshold[idx] & (uint8_t)(0x1 << bitIdx);
+    }
+    byteIdx = ofstIdx / 8;
+    bitIdx = ofstIdx % 8;
+    idx = ((pd * ofst_byte) + byteIdx);
+    ret = threshold[idx] & (uint8_t)(0x1 << bitIdx);
 
 #if 0 //for test
-	int i, j, tmpIdx, found;
-	int pdLen = (axis == ENUM_HOR_X) ? BS_maxHorPdNum : BS_maxVerPdNum;
-	for (i = 0; i < pdLen; i++) {
-		found = 0;
+    int i, j, tmpIdx, found;
+    int pdLen = (axis == ENUM_HOR_X) ? BS_maxHorPdNum : BS_maxVerPdNum;
+    for (i = 0; i < pdLen; i++) {
+        found = 0;
         for (j = 0; j < ofst_byte; j++) {
-        	tmpIdx = (i * ofst_byte) + j;
-        	if (threshold[tmpIdx] != 0) {
-        		TRACE("%02x ", threshold[tmpIdx]);
-        		found++;
-        	}
-        	if (found) {
-        		if (i == pd) {
-        			TRACE("found: %d, %d, %d", pd, tmpIdx, idx);
-        			break;
-        		}
-        	}
+            tmpIdx = (i * ofst_byte) + j;
+            if (threshold[tmpIdx] != 0) {
+                TRACE("%02x ", threshold[tmpIdx]);
+                found++;
+            }
+            if (found) {
+                if (i == pd) {
+                    TRACE("found: %d, %d, %d", pd, tmpIdx, idx);
+                    break;
+                }
+            }
         }
-	}
+    }
 #endif
-	return (int)ret;
+    return (int)ret;
 }
 #endif
 
@@ -728,28 +728,28 @@ int BS_is_set_threshold(axis_t axis, int pd, int ofstIdx)
 #endif
 int BS_is_near_2nd_ofst_led(axis_t axis, int led)
 {
-	int i, senTblLen;
-	uint8_t *senTbl;
+    int i, senTblLen;
+    uint8_t *senTbl;
 
-	if (axis == ENUM_HOR_X) {
-		senTbl = BS_senTblX2;
-		senTblLen = BS_senTblLenX2;
-	}
-	else {
-		senTbl = BS_senTblY2;
-		senTblLen = BS_senTblLenY2;
-	}
+    if (axis == ENUM_HOR_X) {
+        senTbl = BS_senTblX2;
+        senTblLen = BS_senTblLenX2;
+    }
+    else {
+        senTbl = BS_senTblY2;
+        senTblLen = BS_senTblLenY2;
+    }
 
-	for (i = 0; i < senTblLen; i++) {
-		if ((led - 1) == (int)senTbl[i]) {
-			return (int)senTbl[i]; //right
-		}
-		if ((led + 1) == (int)senTbl[i]) {
-			return (int)senTbl[i]; //left
-		}
-	}
+    for (i = 0; i < senTblLen; i++) {
+        if ((led - 1) == (int)senTbl[i]) {
+            return (int)senTbl[i]; //right
+        }
+        if ((led + 1) == (int)senTbl[i]) {
+            return (int)senTbl[i]; //left
+        }
+    }
 
-	return -1; //not-found
+    return -1; //not-found
 }
 #endif
 
@@ -760,37 +760,37 @@ int BS_is_near_dead(axis_t axis, sen_type_t sen, int senNo, int mode)
     uint8_t *deadTbl;
 
     if (axis == ENUM_HOR_X) {
-		if (sen == ENUM_LED) {
-        deadTbl = BS_inValidTblXled;
-        deadTblLen = BS_inValidTblLenXled;
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblXled;
+            deadTblLen = BS_inValidTblLenXled;
+        }
+        else {
+            deadTbl = BS_inValidTblXpd;
+            deadTblLen = BS_inValidTblLenXpd;
+        }
     }
     else {
-			deadTbl = BS_inValidTblXpd;
-			deadTblLen = BS_inValidTblLenXpd;
-		}
-    }
-    else {
-		if (sen == ENUM_LED) {
-        deadTbl = BS_inValidTblYled;
-        deadTblLen = BS_inValidTblLenYled;
-    }
-		else {
-			deadTbl = BS_inValidTblYpd;
-			deadTblLen = BS_inValidTblLenYpd;
-		}
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblYled;
+            deadTblLen = BS_inValidTblLenYled;
+        }
+        else {
+            deadTbl = BS_inValidTblYpd;
+            deadTblLen = BS_inValidTblLenYpd;
+        }
     }
 
     for (i = 0; i < deadTblLen; i++) {
-		deadSen = (int)deadTbl[i];
+        deadSen = (int)deadTbl[i];
         if ((senNo - 1) == deadSen) {
             return deadSen; //right
         }
         if ((senNo + 1) == deadSen) {
             return deadSen; //left
         }
-		//include itself
-		if (mode && (senNo == deadSen)) {
-			return deadSen;
+        //include itself
+        if (mode && (senNo == deadSen)) {
+            return deadSen;
         }
     }
 
@@ -799,82 +799,82 @@ int BS_is_near_dead(axis_t axis, sen_type_t sen, int senNo, int mode)
 
 int BS_is_dead_cell(axis_t axis, sen_type_t sen, int senNo)
 {
-	int i, deadTblLen, deadSen;
-	uint8_t *deadTbl;
+    int i, deadTblLen, deadSen;
+    uint8_t *deadTbl;
 
-	if (axis == ENUM_HOR_X) {
-		if (sen == ENUM_LED) {
-			deadTbl = BS_inValidTblXled;
-			deadTblLen = BS_inValidTblLenXled;
-		}
-		else {
-			deadTbl = BS_inValidTblXpd;
-			deadTblLen = BS_inValidTblLenXpd;
-		}
-	}
-	else {
-		if (sen == ENUM_LED) {
-			deadTbl = BS_inValidTblYled;
-			deadTblLen = BS_inValidTblLenYled;
-		}
-		else {
-			deadTbl = BS_inValidTblYpd;
-			deadTblLen = BS_inValidTblLenYpd;
-		}
-	}
+    if (axis == ENUM_HOR_X) {
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblXled;
+            deadTblLen = BS_inValidTblLenXled;
+        }
+        else {
+            deadTbl = BS_inValidTblXpd;
+            deadTblLen = BS_inValidTblLenXpd;
+        }
+    }
+    else {
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblYled;
+            deadTblLen = BS_inValidTblLenYled;
+        }
+        else {
+            deadTbl = BS_inValidTblYpd;
+            deadTblLen = BS_inValidTblLenYpd;
+        }
+    }
 
-	for (i = 0; i < deadTblLen; i++) {
-		deadSen = (int)deadTbl[i];
-		if (senNo == deadSen) {
-			return 1; //found
-		}
-	}
+    for (i = 0; i < deadTblLen; i++) {
+        deadSen = (int)deadTbl[i];
+        if (senNo == deadSen) {
+            return 1; //found
+        }
+    }
 
-	return 0; //not-found
+    return 0; //not-found
 }
 
 #define TOL_DEAD_CELL_POS	4.0f
 int BS_is_dead_cell_pos(axis_t axis, sen_type_t sen, float *pos)
 {
-	int i, deadTblLen, deadSen;
-	uint8_t *deadTbl;
-	float senPos, *sen_pos;
+    int i, deadTblLen, deadSen;
+    uint8_t *deadTbl;
+    float senPos, *sen_pos;
 
-	if (axis == ENUM_HOR_X) {
-		if (sen == ENUM_LED) {
-			deadTbl = BS_inValidTblXled;
-			deadTblLen = BS_inValidTblLenXled;
-			sen_pos = &BS_led_pos_x[0];
-		}
-		else {
-			deadTbl = BS_inValidTblXpd;
-			deadTblLen = BS_inValidTblLenXpd;
-			sen_pos = &BS_pd_pos_x[0];
-		}
-	}
-	else {
-		if (sen == ENUM_LED) {
-			deadTbl = BS_inValidTblYled;
-			deadTblLen = BS_inValidTblLenYled;
-			sen_pos = &BS_led_pos_y[0];
-		}
-		else {
-			deadTbl = BS_inValidTblYpd;
-			deadTblLen = BS_inValidTblLenYpd;
-			sen_pos = &BS_pd_pos_y[0];
-		}
-	}
+    if (axis == ENUM_HOR_X) {
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblXled;
+            deadTblLen = BS_inValidTblLenXled;
+            sen_pos = &BS_led_pos_x[0];
+        }
+        else {
+            deadTbl = BS_inValidTblXpd;
+            deadTblLen = BS_inValidTblLenXpd;
+            sen_pos = &BS_pd_pos_x[0];
+        }
+    }
+    else {
+        if (sen == ENUM_LED) {
+            deadTbl = BS_inValidTblYled;
+            deadTblLen = BS_inValidTblLenYled;
+            sen_pos = &BS_led_pos_y[0];
+        }
+        else {
+            deadTbl = BS_inValidTblYpd;
+            deadTblLen = BS_inValidTblLenYpd;
+            sen_pos = &BS_pd_pos_y[0];
+        }
+    }
 
-	for (i = 0; i < deadTblLen; i++) {
-		deadSen = (int)deadTbl[i];
-		senPos = sen_pos[deadSen];
-		if (*pos <= senPos + TOL_DEAD_CELL_POS &&
-			*pos >= senPos - TOL_DEAD_CELL_POS) {
-			return 1; //found
-		}
-	}
+    for (i = 0; i < deadTblLen; i++) {
+        deadSen = (int)deadTbl[i];
+        senPos = sen_pos[deadSen];
+        if (*pos <= senPos + TOL_DEAD_CELL_POS &&
+                *pos >= senPos - TOL_DEAD_CELL_POS) {
+            return 1; //found
+        }
+    }
 
-	return 0; //not-found
+    return 0; //not-found
 }
 #endif
 
@@ -882,7 +882,7 @@ int BS_is_dead_cell_pos(axis_t axis, sen_type_t sen, float *pos)
 #define MAX_SLOPE_VAL     ((INT8_MAX - 1) / 2)
 static int init_ofst_table()
 {
-	int i;
+    int i;
     if (BS_slopeValMaxX > MAX_SLOPE_VAL) {
         TRACE_ERROR("ERROR! init_ofst_table..invalid BS_slopeValMaxX %x/%X", BS_slopeValMaxX, MAX_SLOPE_VAL);
         BS_slopeValMaxX = MAX_SLOPE_VAL;
@@ -892,8 +892,8 @@ static int init_ofst_table()
         BS_slopeValMaxY = MAX_SLOPE_VAL;
     }
 
-	BS_offsetTblLenX = (BS_slopeValMaxX * 2) + 1;
-	BS_offsetTblLenY = (BS_slopeValMaxY * 2) + 1;
+    BS_offsetTblLenX = (BS_slopeValMaxX * 2) + 1;
+    BS_offsetTblLenY = (BS_slopeValMaxY * 2) + 1;
 
 #ifdef USE_CUST_MALLOC //nsmoon@201012
     ////////////////////////////////////////////////
@@ -917,29 +917,29 @@ static int init_ofst_table()
     TRACE_MALLOC("BS_offsetTblY=,%x,%x,%x,", BS_offsetTblY, sizeof(int8_t) * BS_offsetTblLenY, BS_end_of_heap);
 #endif
 
-	//1st offset table
-	for (i = 0; i < BS_offsetTblLenX; i++)
-	{
-		BS_offsetTblX[i] = (int8_t)(i - BS_slopeValMaxX);
+    //1st offset table
+    for (i = 0; i < BS_offsetTblLenX; i++)
+    {
+        BS_offsetTblX[i] = (int8_t)(i - BS_slopeValMaxX);
 #if (DEBUG_init_ofst_table > 0)
-		TRACENR("%d ", BS_offsetTblX[i]);
+        TRACENR("%d ", BS_offsetTblX[i]);
 #endif
-	}
+    }
 #if (DEBUG_init_ofst_table > 0)
-	TRACE("=>BS_offsetTblLenX: %d", BS_offsetTblLenX);
+    TRACE("=>BS_offsetTblLenX: %d", BS_offsetTblLenX);
 #endif
-	for (i = 0; i < BS_offsetTblLenY; i++)
-{
-		BS_offsetTblY[i] = (int8_t)(i - BS_slopeValMaxY);
+    for (i = 0; i < BS_offsetTblLenY; i++)
+    {
+        BS_offsetTblY[i] = (int8_t)(i - BS_slopeValMaxY);
 #if (DEBUG_init_ofst_table > 0)
-		TRACENR("%d ", BS_offsetTblY[i]);
+        TRACENR("%d ", BS_offsetTblY[i]);
 #endif
-	}
+    }
 #if (DEBUG_init_ofst_table > 0)
-	TRACE("=>BS_offsetTblLenY: %d", BS_offsetTblLenY);
+    TRACE("=>BS_offsetTblLenY: %d", BS_offsetTblLenY);
 #endif
-	return 0;
-	}
+    return 0;
+}
 
 #ifdef USE_CUST_MALLOC //nsmoon@201012
 //#define ARRY_TEST_2D //nsmoon@201015
@@ -1012,17 +1012,17 @@ static int arry_2d_test()
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
 ATTR_BACKEND_RAMFUNC
 int BG_init_backend(
-    DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
-    DEF_DEADCELL_INFO  *deadCellTbl, //dead cell table
-    uint16_t  init_flag          // reserved: 0
-) {
+        DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
+        DEF_DEADCELL_INFO  *deadCellTbl, //dead cell table
+        uint16_t  init_flag          // reserved: 0
+        ) {
 #else
 ATTR_BACKEND_RAMFUNC
 int BG_init_backend(
-	DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
-	DEF_PD_INFO  *ValidTbl,			//not used yet
-	uint16_t  init_flag          // reserved: 0
-) {
+        DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
+        DEF_PD_INFO  *ValidTbl,			//not used yet
+        uint16_t  init_flag          // reserved: 0
+        ) {
 #endif
 #ifdef USE_CUST_MALLOC //nsmoon@201012
     BS_malloc_init(); //nsmoon@201021
@@ -1031,9 +1031,9 @@ int BG_init_backend(
 #endif
 #endif
 
-	//num of pd(led)
-	BS_maxHorPdNum = tpLayout->hor_pd_num;
-	BS_maxVerPdNum = tpLayout->ver_pd_num;
+    //num of pd(led)
+    BS_maxHorPdNum = tpLayout->hor_pd_num;
+    BS_maxVerPdNum = tpLayout->ver_pd_num;
     if (BS_maxHorPdNum < 10 || BS_maxHorPdNum > UINT8_MAX || BS_maxVerPdNum < 10 || BS_maxVerPdNum > UINT8_MAX) {
         TRACE_ERROR("ERROR! invlaid BS_maxHorPdNum,BS_maxVerPdNum %d %d", BS_maxHorPdNum, BS_maxVerPdNum);
         return NOT_INITIALIZED;
@@ -1049,47 +1049,47 @@ int BG_init_backend(
 #endif
 
     //logical size
-	BS_logical_max_x = tpLayout->logical_x_size;
-	BS_logical_max_y = tpLayout->logical_y_size;
+    BS_logical_max_x = tpLayout->logical_x_size;
+    BS_logical_max_y = tpLayout->logical_y_size;
 
-	//max offset value
-	BS_slopeValMaxX = tpLayout->maxOfstValX;
-	BS_slopeValMaxY = tpLayout->maxOfstValY;
+    //max offset value
+    BS_slopeValMaxX = tpLayout->maxOfstValX;
+    BS_slopeValMaxY = tpLayout->maxOfstValY;
 #if (SECOND_OFST_TBL == 1) //nsmoon@190625
-	BS_slopeValMaxX2 = tpLayout->maxOfstValX2;
-	BS_slopeValMaxY2 = tpLayout->maxOfstValY2;
+    BS_slopeValMaxX2 = tpLayout->maxOfstValX2;
+    BS_slopeValMaxY2 = tpLayout->maxOfstValY2;
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-	if (BS_maxHorPdNum != X_NUM_PD || BS_maxVerPdNum != Y_NUM_PD) {
-		TRACE_ERROR("ERROR! BS_maxHorPdNum,BS_maxVerPdNum= %d %d", BS_maxHorPdNum, BS_maxVerPdNum);
-		return NOT_INITIALIZED;
-	}
+    if (BS_maxHorPdNum != X_NUM_PD || BS_maxVerPdNum != Y_NUM_PD) {
+        TRACE_ERROR("ERROR! BS_maxHorPdNum,BS_maxVerPdNum= %d %d", BS_maxHorPdNum, BS_maxVerPdNum);
+        return NOT_INITIALIZED;
+    }
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-	if (BS_slopeValMaxX != MAX_X_SLOPE_VAL || BS_slopeValMaxY != MAX_Y_SLOPE_VAL) {
+    if (BS_slopeValMaxX != MAX_X_SLOPE_VAL || BS_slopeValMaxY != MAX_Y_SLOPE_VAL) {
         TRACE_ERROR("ERROR! BS_slopeValMaxX,BS_slopeValMaxY= %d(%d) %d(%d)", BS_slopeValMaxX, MAX_X_SLOPE_VAL, BS_slopeValMaxY, MAX_Y_SLOPE_VAL);
-		return NOT_INITIALIZED;
-	}
+        return NOT_INITIALIZED;
+    }
 #endif
 
-	//ofst table
-	if (init_ofst_table()) {
-		TRACE_ERROR("ERROR! init_ofst_table()...");
-		return NOT_INITIALIZED;
-	}
+    //ofst table
+    if (init_ofst_table()) {
+        TRACE_ERROR("ERROR! init_ofst_table()...");
+        return NOT_INITIALIZED;
+    }
 
 #if (SECOND_OFST_TBL == 1) //nsmoon@190625
-	//sensor table for 2nd offset
-	BS_senTblX2 = tpLayout->senTblX2.tbl;
-	BS_senTblY2 = tpLayout->senTblY2.tbl;
-	BS_senTblLenX2 = tpLayout->senTblX2.len;
-	BS_senTblLenY2 = tpLayout->senTblY2.len;
+    //sensor table for 2nd offset
+    BS_senTblX2 = tpLayout->senTblX2.tbl;
+    BS_senTblY2 = tpLayout->senTblY2.tbl;
+    BS_senTblLenX2 = tpLayout->senTblX2.len;
+    BS_senTblLenY2 = tpLayout->senTblY2.len;
 #endif
 
 #if (USE_VALID_OFST_TBL == 1)  //nsmoon@191129
-	//valid offset table
-	BS_valOfstTblX = tpLayout->validOfstX;
-	BS_valOfstTblY = tpLayout->validOfstY;
+    //valid offset table
+    BS_valOfstTblX = tpLayout->validOfstX;
+    BS_valOfstTblY = tpLayout->validOfstY;
 #endif
 
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
@@ -1102,31 +1102,31 @@ int BG_init_backend(
         BS_inValidTblLenXled = deadCellTbl->hor_led_len;
         BS_inValidTblLenYpd = deadCellTbl->ver_pd_len;
         BS_inValidTblLenYled = deadCellTbl->ver_led_len;
-	}
-	else {
-	    BS_inValidTblLenXpd = 0;
-	    BS_inValidTblLenXled = 0;
-	    BS_inValidTblLenYpd = 0;
-	    BS_inValidTblLenYled = 0;
-	}
+    }
+    else {
+        BS_inValidTblLenXpd = 0;
+        BS_inValidTblLenXled = 0;
+        BS_inValidTblLenYpd = 0;
+        BS_inValidTblLenYled = 0;
+    }
 #endif
 
 #if (DEBUG_INIT_BACKEND > 0) // for testing
     int i;
-	TRACE_BIB("BS_maxHorPdNum,BS_maxVePdNum:%d,%d", BS_maxHorPdNum, BS_maxVerPdNum);
-	TRACE_BIB("BS_slopeValMaxX,BS_slopeValMaxY: %d,%d (%d,%d)", BS_slopeValMaxX, BS_slopeValMaxY, BS_slopeValMaxX2, BS_slopeValMaxY2);
-	TRACE_BIB("BS_offsetTblLenX,BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
-	//TRACE("BS_offsetTblX(len,tbl):(%d,%x)", BS_offsetTblLenX, BS_offsetTblX);
-	//TRACE("BS_offsetTblY(len,tbl):(%d,%x)", BS_offsetTblLenY, BS_offsetTblY);
+    TRACE_BIB("BS_maxHorPdNum,BS_maxVePdNum:%d,%d", BS_maxHorPdNum, BS_maxVerPdNum);
+    TRACE_BIB("BS_slopeValMaxX,BS_slopeValMaxY: %d,%d (%d,%d)", BS_slopeValMaxX, BS_slopeValMaxY, BS_slopeValMaxX2, BS_slopeValMaxY2);
+    TRACE_BIB("BS_offsetTblLenX,BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
+    //TRACE("BS_offsetTblX(len,tbl):(%d,%x)", BS_offsetTblLenX, BS_offsetTblX);
+    //TRACE("BS_offsetTblY(len,tbl):(%d,%x)", BS_offsetTblLenY, BS_offsetTblY);
 #if (SECOND_OFST_TBL == 1) //nsmoon@190625
-	for (i = 0; i < BS_senTblLenX2; i++) {
-		TRACENR("%d ", BS_senTblX2[i]);
+    for (i = 0; i < BS_senTblLenX2; i++) {
+        TRACENR("%d ", BS_senTblX2[i]);
     }
-	TRACE_BIB("=>BS_senTblLenX2: %d", BS_senTblLenX2);
-	for (i = 0; i < BS_senTblLenY2; i++) {
-		TRACENR("%d ", BS_senTblY2[i]);
+    TRACE_BIB("=>BS_senTblLenX2: %d", BS_senTblLenX2);
+    for (i = 0; i < BS_senTblLenY2; i++) {
+        TRACENR("%d ", BS_senTblY2[i]);
     }
-	TRACE_BIB("=>BS_senTblLenY2: %d", BS_senTblLenY2);
+    TRACE_BIB("=>BS_senTblLenY2: %d", BS_senTblLenY2);
 #endif
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
     TRACE("BS_inValidTblLenXpd,BS_inValidTblLenXled: %d %d", BS_inValidTblLenXpd, BS_inValidTblLenXled);
@@ -1150,63 +1150,63 @@ int BG_init_backend(
 #endif
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-	if (BS_offsetTblLenX > MAX_NUM_X_SLOPES || BS_offsetTblLenY > MAX_NUM_Y_SLOPES) {
-		TRACE_ERROR("ERROR! invalid BS_offsetTblLenX or BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
-		return NOT_INITIALIZED;
+    if (BS_offsetTblLenX > MAX_NUM_X_SLOPES || BS_offsetTblLenY > MAX_NUM_Y_SLOPES) {
+        TRACE_ERROR("ERROR! invalid BS_offsetTblLenX or BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
+        return NOT_INITIALIZED;
     }
 #endif
 
-	//sensor position
-	BS_sensor_zero_x = tpLayout->sensor_zero_x;
-	BS_sensor_end_x = tpLayout->sensor_end_x;
-	BS_sensor_zero_y = tpLayout->sensor_zero_y;
-	BS_sensor_end_y = tpLayout->sensor_end_y;
-	BS_aarea_zero_x = tpLayout->aarea_zero_x;
-	BS_aarea_end_x = tpLayout->aarea_end_x;
-	BS_aarea_zero_y = tpLayout->aarea_zero_y;
-	BS_aarea_end_y = tpLayout->aarea_end_y;
-	BS_pd_pos_x = tpLayout->pd_pos_x;
-	BS_pd_pos_y = tpLayout->pd_pos_y;
-	BS_led_pos_x = tpLayout->led_pos_x;
-	BS_led_pos_y = tpLayout->led_pos_y;
-	BS_half_end_x = BS_sensor_end_x * 0.5f;
-	BS_half_end_y = BS_sensor_end_y * 0.5f;
+    //sensor position
+    BS_sensor_zero_x = tpLayout->sensor_zero_x;
+    BS_sensor_end_x = tpLayout->sensor_end_x;
+    BS_sensor_zero_y = tpLayout->sensor_zero_y;
+    BS_sensor_end_y = tpLayout->sensor_end_y;
+    BS_aarea_zero_x = tpLayout->aarea_zero_x;
+    BS_aarea_end_x = tpLayout->aarea_end_x;
+    BS_aarea_zero_y = tpLayout->aarea_zero_y;
+    BS_aarea_end_y = tpLayout->aarea_end_y;
+    BS_pd_pos_x = tpLayout->pd_pos_x;
+    BS_pd_pos_y = tpLayout->pd_pos_y;
+    BS_led_pos_x = tpLayout->led_pos_x;
+    BS_led_pos_y = tpLayout->led_pos_y;
+    BS_half_end_x = BS_sensor_end_x * 0.5f;
+    BS_half_end_y = BS_sensor_end_y * 0.5f;
 #if (LARGE_PITCH_TBL == 1) //nsmoon@200108
-	float tmp_width_x = (BS_aarea_end_x - BS_aarea_zero_x) * 0.25f;
-	float tmp_width_y = (BS_aarea_end_y - BS_aarea_zero_y) * 0.25f;
-	BS_large_pitch_zero_x = BS_aarea_zero_x + tmp_width_x;
-	BS_large_pitch_end_x = BS_aarea_end_x - tmp_width_x;
-	BS_large_pitch_zero_y = BS_aarea_zero_y + tmp_width_y;
-	BS_large_pitch_end_y = BS_aarea_end_y - tmp_width_y;
+    float tmp_width_x = (BS_aarea_end_x - BS_aarea_zero_x) * 0.25f;
+    float tmp_width_y = (BS_aarea_end_y - BS_aarea_zero_y) * 0.25f;
+    BS_large_pitch_zero_x = BS_aarea_zero_x + tmp_width_x;
+    BS_large_pitch_end_x = BS_aarea_end_x - tmp_width_x;
+    BS_large_pitch_zero_y = BS_aarea_zero_y + tmp_width_y;
+    BS_large_pitch_end_y = BS_aarea_end_y - tmp_width_y;
 #endif
 #if 0 //for test
-	for (i = 0; i < BS_maxHorPdNum; i++) {
-		TRACE("%d,%f ", i, BS_pd_pos_x[i]);
-		//if ((i + 1) % 10 == 0) TRACENR("\r\n");
-	}
-	TRACE("=>BS_pd_pos_x=%d", BS_maxHorPdNum);
-	for (i = 0; i < BS_maxHorPdNum; i++) {
-		TRACE("%d,%f ", i, BS_led_pos_x[i]);
-		//if ((i + 1) % 10 == 0) TRACENR("\r\n");
-	}
-	TRACE("=>BS_led_pos_x=%d", BS_maxHorPdNum);
+    for (i = 0; i < BS_maxHorPdNum; i++) {
+        TRACE("%d,%f ", i, BS_pd_pos_x[i]);
+        //if ((i + 1) % 10 == 0) TRACENR("\r\n");
+    }
+    TRACE("=>BS_pd_pos_x=%d", BS_maxHorPdNum);
+    for (i = 0; i < BS_maxHorPdNum; i++) {
+        TRACE("%d,%f ", i, BS_led_pos_x[i]);
+        //if ((i + 1) % 10 == 0) TRACENR("\r\n");
+    }
+    TRACE("=>BS_led_pos_x=%d", BS_maxHorPdNum);
 
-	for (i = 0; i < BS_maxVerPdNum; i++) {
-		TRACE("%d,%f ", i, BS_pd_pos_y[i]);
-		//if ((i + 1) % 10 == 0) TRACENR("\r\n");
-	}
-	TRACE("=>BS_pd_pos_y=%d", BS_maxVerPdNum);
-	for (i = 0; i < BS_maxVerPdNum; i++) {
-		TRACE("%d,%f ", i, BS_led_pos_y[i]);
-		//if ((i + 1) % 10 == 0) TRACENR("\r\n");
-	}
-	TRACE("=>BS_led_pos_y=%d", BS_maxVerPdNum);
+    for (i = 0; i < BS_maxVerPdNum; i++) {
+        TRACE("%d,%f ", i, BS_pd_pos_y[i]);
+        //if ((i + 1) % 10 == 0) TRACENR("\r\n");
+    }
+    TRACE("=>BS_pd_pos_y=%d", BS_maxVerPdNum);
+    for (i = 0; i < BS_maxVerPdNum; i++) {
+        TRACE("%d,%f ", i, BS_led_pos_y[i]);
+        //if ((i + 1) % 10 == 0) TRACENR("\r\n");
+    }
+    TRACE("=>BS_led_pos_y=%d", BS_maxVerPdNum);
 #endif
 
 #if (DEBUG_INIT_BACKEND > 0) // for testing
-	TRACE_BIB("BS_large_pitch_zero_x,BS_large_pitch_end_x,BS_large_pitch_zero_y,BS_large_pitch_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_large_pitch_zero_x, BS_large_pitch_end_x, BS_large_pitch_zero_y, BS_large_pitch_end_y);
-	TRACE_BIB("BS_sensor_zero_x,BS_sensor_end_x,BS_sensor_zero_y,BS_sensor_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_sensor_zero_x, BS_sensor_end_x, BS_sensor_zero_y, BS_sensor_end_y);
-	TRACE_BIB("BS_aarea_zero_x,BS_aarea_end_x,BS_aarea_zero_y,BS_aarea_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_aarea_zero_x, BS_aarea_end_x, BS_aarea_zero_y, BS_aarea_end_y);
+    TRACE_BIB("BS_large_pitch_zero_x,BS_large_pitch_end_x,BS_large_pitch_zero_y,BS_large_pitch_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_large_pitch_zero_x, BS_large_pitch_end_x, BS_large_pitch_zero_y, BS_large_pitch_end_y);
+    TRACE_BIB("BS_sensor_zero_x,BS_sensor_end_x,BS_sensor_zero_y,BS_sensor_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_sensor_zero_x, BS_sensor_end_x, BS_sensor_zero_y, BS_sensor_end_y);
+    TRACE_BIB("BS_aarea_zero_x,BS_aarea_end_x,BS_aarea_zero_y,BS_aarea_end_y: (%0.1f, %0.1f) (%0.1f, %0.1f)", BS_aarea_zero_x, BS_aarea_end_x, BS_aarea_zero_y, BS_aarea_end_y);
 #endif
 
 #ifdef USE_CUST_MALLOC //nsmoon@201012
@@ -1236,31 +1236,31 @@ int BG_init_backend(
 #endif
 
 #if (LARGE_PITCH_TBL == 1) //nsmoon@200108
-	BS_make_large_pitch_tbl(ENUM_HOR_X, ENUM_PD, BS_pd_pos_x);
-	BS_make_large_pitch_tbl(ENUM_HOR_X, ENUM_LED, BS_led_pos_x);
-	BS_make_large_pitch_tbl(ENUM_VER_Y, ENUM_PD, BS_pd_pos_y);
-	BS_make_large_pitch_tbl(ENUM_VER_Y, ENUM_LED, BS_led_pos_y);
+    BS_make_large_pitch_tbl(ENUM_HOR_X, ENUM_PD, BS_pd_pos_x);
+    BS_make_large_pitch_tbl(ENUM_HOR_X, ENUM_LED, BS_led_pos_x);
+    BS_make_large_pitch_tbl(ENUM_VER_Y, ENUM_PD, BS_pd_pos_y);
+    BS_make_large_pitch_tbl(ENUM_VER_Y, ENUM_LED, BS_led_pos_y);
 #endif
 
 #ifdef CHECK_SLOPE_TBL  //nsmoon@170803a, for testing
-	int i, err = 0;
-	if (fineScanTbl.len != MAX_fineScanTbl2__) {
-		TRACE("ERROR! invalid slope table length %d %d", roughScanTbl.len, MAX_fineScanTbl2__);
-		return 14;
-}
-	for (i = 0; i < fineScanTbl.len; i++) {
-		TRACENR("%d:%d(%d) ", i, fineScanTbl.tbl[i], fineScanTbl2__[i]);
-		if (fineScanTbl.tbl[i] != fineScanTbl2__[i]) {
-			err++;
+    int i, err = 0;
+    if (fineScanTbl.len != MAX_fineScanTbl2__) {
+        TRACE("ERROR! invalid slope table length %d %d", roughScanTbl.len, MAX_fineScanTbl2__);
+        return 14;
     }
-	}
-	if (err > 0) {
-		TRACE("=>ERROR! invalid slope table %d", err);
-		return 15;
-	}
-	else {
-		TRACE("=>slope table is good !!!");
- }
+    for (i = 0; i < fineScanTbl.len; i++) {
+        TRACENR("%d:%d(%d) ", i, fineScanTbl.tbl[i], fineScanTbl2__[i]);
+        if (fineScanTbl.tbl[i] != fineScanTbl2__[i]) {
+            err++;
+        }
+    }
+    if (err > 0) {
+        TRACE("=>ERROR! invalid slope table %d", err);
+        return 15;
+    }
+    else {
+        TRACE("=>slope table is good !!!");
+    }
 #endif
 #if 0 //def CHK_POS_TBL
     int i;
@@ -1275,21 +1275,21 @@ int BG_init_backend(
     TRACE("{");
     for (i = 0; i < BS_maxVerPdNum; i++) {
         TRACE("%0.2ff,", BS_pd_pos_y[i]);
-	}
+    }
     TRACE("};\r\n");
 
     TRACE("const float sensor_XLED_Pos__[HORIZONTAL_PCB_CELL_NUMBER] =");
     TRACE("{");
     for (i = 0; i < BS_maxHorPdNum; i++) {
         TRACE("%0.2ff,", BS_led_pos_x[i]);
-}
+    }
     TRACE("};\r\n");
 
     TRACE("const float sensor_YLED_Pos__[VERTICAL_PCB_CELL_NUMBER] =");
     TRACE("{");
     for (i = 0; i < BS_maxVerPdNum; i++) {
         TRACE("%0.2ff,", BS_led_pos_y[i]);
-}
+    }
     TRACE("};\r\n");
 #endif
 
@@ -1298,13 +1298,13 @@ int BG_init_backend(
 #endif
 
     BG_frame_no = 0; //for debugging
-	backend_initialized = TRUE; // initialized
+    backend_initialized = TRUE; // initialized
 
 #if 1 //show debug control
     BG_show_ep = 0;
     BG_show_line_x = 0;
     BG_show_line_y = 0;
-    BG_show_line_init = 0;
+    BG_show_line_init = 1;
 #if defined(DEBUG_FUNCTION_ENABLE_ALL)
     BG_show_line_all = 0;
     BG_show_line_th10 = 0;
@@ -1320,7 +1320,7 @@ int BG_init_backend(
 #else
     BG_show_line_all = 0;
     BG_show_line_th10 = 0;
-	BG_show_line_rem = 0;
+    BG_show_line_rem = 0;
 #endif
     //BG_show_debug = 0;
     //BG_show_debug_max = 0;
@@ -1343,7 +1343,7 @@ int BG_init_backend(
 #endif
 
 #ifdef HOVERING_TEST //for testing
-//zero_touch_cnt = 0;
+    //zero_touch_cnt = 0;
     diffXmean = 0;
     diffYmean = 0;
 #endif //HOVERING_TEST
@@ -1362,80 +1362,80 @@ int BG_init_backend(
     maxVertex = 0; //for test
     maxProcessCnt = 0;
     maxSubjCnt = 0;
-	maxClipIdx = 0;
+    maxClipIdx = 0;
 #endif
 
     DEBUG_GET_TIME_DIFF_INIT();
 
-	//backend_utils_init(); //for test
-	TRACE_BIB("done...init_backend");
+    //backend_utils_init(); //for test
+    TRACE_BIB("done...init_backend");
     return (int)NO_BACKEND_ERROR; //no error
 }
 #else
 ATTR_BACKEND_RAMFUNC
 int BG_init_backend(
-	uint16_t  hor_pd_num,	//number of sensor on X axis
-	uint16_t  ver_pd_num,	//number of sensor on Y axis
-	ofs_tbl_t *ofsTblX,		//offset table of X axis
-	ofs_tbl_t *ofsTblY,		//offset table of Y axis
-	DEF_PD_INFO  *ValidTbl,			//not used yet
-	DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
-    uint16_t  init_flag,          // reserved: 0
-    uint16_t  logical_x_size,	//logical horizontal size
-    uint16_t  logical_y_size	//logical vertical size
-) {
-	//num of pd(led)
-	BS_maxHorPdNum = hor_pd_num;
-	BS_maxVerPdNum = ver_pd_num;
+        uint16_t  hor_pd_num,	//number of sensor on X axis
+        uint16_t  ver_pd_num,	//number of sensor on Y axis
+        ofs_tbl_t *ofsTblX,		//offset table of X axis
+        ofs_tbl_t *ofsTblY,		//offset table of Y axis
+        DEF_PD_INFO  *ValidTbl,			//not used yet
+        DEF_TP_LAYOUT_INFO *tpLayout, 	//sensor laypout
+        uint16_t  init_flag,          // reserved: 0
+        uint16_t  logical_x_size,	//logical horizontal size
+        uint16_t  logical_y_size	//logical vertical size
+        ) {
+    //num of pd(led)
+    BS_maxHorPdNum = hor_pd_num;
+    BS_maxVerPdNum = ver_pd_num;
 
     //logical size
     BS_logical_max_x = logical_x_size;
     BS_logical_max_y = logical_y_size;
 
-	//offset table
-	BS_offsetTblX = ofsTblX->tbl;
-	BS_offsetTblLenX = ofsTblX->len;
-	BS_offsetTblY = ofsTblY->tbl;
-	BS_offsetTblLenY = ofsTblY->len;
-	BS_slopeValMaxX = GET_ABS(BS_offsetTblX[0]);
-	BS_slopeValMaxY = GET_ABS(BS_offsetTblY[0]);
+    //offset table
+    BS_offsetTblX = ofsTblX->tbl;
+    BS_offsetTblLenX = ofsTblX->len;
+    BS_offsetTblY = ofsTblY->tbl;
+    BS_offsetTblLenY = ofsTblY->len;
+    BS_slopeValMaxX = GET_ABS(BS_offsetTblX[0]);
+    BS_slopeValMaxY = GET_ABS(BS_offsetTblY[0]);
 #ifdef DRAW_POLYGON_TEST
-	if (BS_offsetTblLenX != MAX_NUM_X_SLOPES) {
-		TRACE_ERROR("ERROR! invalid BS_offsetTblLenX,MAX_NUM_X_SLOPES: %d %d [%d]", BS_offsetTblLenX, MAX_NUM_X_SLOPES, BG_frame_no);
-	}
-	if (BS_offsetTblLenY != MAX_NUM_Y_SLOPES) {
-		TRACE_ERROR("ERROR! invalid BS_offsetTblLenY,MAX_NUM_Y_SLOPES: %d %d [%d]", BS_offsetTblLenY, MAX_NUM_Y_SLOPES, BG_frame_no);
-	}
+    if (BS_offsetTblLenX != MAX_NUM_X_SLOPES) {
+        TRACE_ERROR("ERROR! invalid BS_offsetTblLenX,MAX_NUM_X_SLOPES: %d %d [%d]", BS_offsetTblLenX, MAX_NUM_X_SLOPES, BG_frame_no);
+    }
+    if (BS_offsetTblLenY != MAX_NUM_Y_SLOPES) {
+        TRACE_ERROR("ERROR! invalid BS_offsetTblLenY,MAX_NUM_Y_SLOPES: %d %d [%d]", BS_offsetTblLenY, MAX_NUM_Y_SLOPES, BG_frame_no);
+    }
 #endif
 #if (DEBUG_INIT_BACKEND > 0) // for testing
-	TRACE("BS_offsetTblLenX,BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
+    TRACE("BS_offsetTblLenX,BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
 #endif
-	if (BS_offsetTblLenX > MAX_NUM_X_SLOPES || BS_offsetTblLenY > MAX_NUM_Y_SLOPES) {
-		TRACE_ERROR("ERROR! invalid BS_offsetTblLenX or BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
-		return NOT_INITIALIZED;
-	}
+    if (BS_offsetTblLenX > MAX_NUM_X_SLOPES || BS_offsetTblLenY > MAX_NUM_Y_SLOPES) {
+        TRACE_ERROR("ERROR! invalid BS_offsetTblLenX or BS_offsetTblLenY: %d %d", BS_offsetTblLenX, BS_offsetTblLenY);
+        return NOT_INITIALIZED;
+    }
 
 #if (DEBUG_INIT_BACKEND > 0) // for testing
-	TRACE("BS_maxHorPdNum,BS_maxVePdNum:%d,%d", BS_maxHorPdNum, BS_maxVerPdNum);
-	TRACE("BS_offsetTblX(len,tbl):(%d,%x)", BS_offsetTblLenX, BS_offsetTblX);
-	TRACE("BS_offsetTblY(len,tbl):(%d,%x)", BS_offsetTblLenY, BS_offsetTblY);
+    TRACE("BS_maxHorPdNum,BS_maxVePdNum:%d,%d", BS_maxHorPdNum, BS_maxVerPdNum);
+    TRACE("BS_offsetTblX(len,tbl):(%d,%x)", BS_offsetTblLenX, BS_offsetTblX);
+    TRACE("BS_offsetTblY(len,tbl):(%d,%x)", BS_offsetTblLenY, BS_offsetTblY);
 #endif
     
-	//sensor position
-	BS_sensor_zero_x = tpLayout->sensor_zero_x;
-	BS_sensor_end_x = tpLayout->sensor_end_x;
-	BS_sensor_zero_y = tpLayout->sensor_zero_y;
-	BS_sensor_end_y = tpLayout->sensor_end_y;
-	BS_aarea_zero_x = tpLayout->aarea_zero_x;
-	BS_aarea_end_x = tpLayout->aarea_end_x;
-	BS_aarea_zero_y = tpLayout->aarea_zero_y;
-	BS_aarea_end_y = tpLayout->aarea_end_y;
-	BS_pd_pos_x = tpLayout->pd_pos_x;
-	BS_pd_pos_y = tpLayout->pd_pos_y;
-	BS_led_pos_x = tpLayout->led_pos_x;
-	BS_led_pos_y = tpLayout->led_pos_y;
-	BS_half_end_x = BS_sensor_end_x * 0.5f;
-	BS_half_end_y = BS_sensor_end_y * 0.5f;
+    //sensor position
+    BS_sensor_zero_x = tpLayout->sensor_zero_x;
+    BS_sensor_end_x = tpLayout->sensor_end_x;
+    BS_sensor_zero_y = tpLayout->sensor_zero_y;
+    BS_sensor_end_y = tpLayout->sensor_end_y;
+    BS_aarea_zero_x = tpLayout->aarea_zero_x;
+    BS_aarea_end_x = tpLayout->aarea_end_x;
+    BS_aarea_zero_y = tpLayout->aarea_zero_y;
+    BS_aarea_end_y = tpLayout->aarea_end_y;
+    BS_pd_pos_x = tpLayout->pd_pos_x;
+    BS_pd_pos_y = tpLayout->pd_pos_y;
+    BS_led_pos_x = tpLayout->led_pos_x;
+    BS_led_pos_y = tpLayout->led_pos_y;
+    BS_half_end_x = BS_sensor_end_x * 0.5f;
+    BS_half_end_y = BS_sensor_end_y * 0.5f;
 
 #if (DEBUG_INIT_BACKEND > 0) // for testing
     TRACE("BS_sensor_zero_x,BS_sensor_end_x,BS_sensor_zero_y,BS_sensor_end_y: %0.1f %0.1f %0.1f %0.1f", BS_sensor_zero_x,BS_sensor_end_x,BS_sensor_zero_y,BS_sensor_end_y);
@@ -1443,24 +1443,24 @@ int BG_init_backend(
 #endif
 
 #ifdef CHECK_SLOPE_TBL  //nsmoon@170803a, for testing
-	int i, err = 0;
-	if (fineScanTbl.len != MAX_fineScanTbl2__) {
-		TRACE("ERROR! invalid slope table length %d %d", roughScanTbl.len, MAX_fineScanTbl2__);
-		return 14;
+    int i, err = 0;
+    if (fineScanTbl.len != MAX_fineScanTbl2__) {
+        TRACE("ERROR! invalid slope table length %d %d", roughScanTbl.len, MAX_fineScanTbl2__);
+        return 14;
     }
-	for (i = 0; i < fineScanTbl.len; i++) {
-		TRACENR("%d:%d(%d) ", i, fineScanTbl.tbl[i], fineScanTbl2__[i]);
-		if (fineScanTbl.tbl[i] != fineScanTbl2__[i]) {
-			err++;
-		}
-	}
-	if (err > 0) {
-		TRACE("=>ERROR! invalid slope table %d", err);
-		return 15;
-	}
-	else {
-		TRACE("=>slope table is good !!!");
-	}
+    for (i = 0; i < fineScanTbl.len; i++) {
+        TRACENR("%d:%d(%d) ", i, fineScanTbl.tbl[i], fineScanTbl2__[i]);
+        if (fineScanTbl.tbl[i] != fineScanTbl2__[i]) {
+            err++;
+        }
+    }
+    if (err > 0) {
+        TRACE("=>ERROR! invalid slope table %d", err);
+        return 15;
+    }
+    else {
+        TRACE("=>slope table is good !!!");
+    }
 #endif
 #if 0 //def CHK_POS_TBL
     int i;
@@ -1493,84 +1493,84 @@ int BG_init_backend(
     TRACE("};\r\n");
 #endif
 
-	BG_init_post_processing(); //FIXME
+    BG_init_post_processing(); //FIXME
 
     BG_frame_no = 0; //for debugging
-	backend_initialized = TRUE; // initialized
+    backend_initialized = TRUE; // initialized
 
 #ifdef ENABLE_CHECK_INVALID_PD //nsmoon@170121
 #if 1 //def ENABLE_NEW_PD_FORMAT
-	int i;
-	if (ValidTbl->hor_len < BS_maxHorPdNum) {
-		invalidPdTable.hor_len = ValidTbl->hor_len;
-	}
-	else {
-		TRACE_ERROR("Error! init_backend().. invalid ValidTbl->hor_len %d \n", ValidTbl->hor_len);
-		invalidPdTable.hor_len = BS_maxHorPdNum - 1;
-	}
+    int i;
+    if (ValidTbl->hor_len < BS_maxHorPdNum) {
+        invalidPdTable.hor_len = ValidTbl->hor_len;
+    }
+    else {
+        TRACE_ERROR("Error! init_backend().. invalid ValidTbl->hor_len %d \n", ValidTbl->hor_len);
+        invalidPdTable.hor_len = BS_maxHorPdNum - 1;
+    }
 
-	if (ValidTbl->ver_len < maxVerPdNum) {
-		invalidPdTable.ver_len = ValidTbl->ver_len;
-	}
-	else {
-		TRACE_ERROR("Error! init_backend().. invalid ValidTbl->ver_len %d \n", ValidTbl->ver_len);
-		invalidPdTable.ver_len = maxVerPdNum - 1;
-	}
+    if (ValidTbl->ver_len < maxVerPdNum) {
+        invalidPdTable.ver_len = ValidTbl->ver_len;
+    }
+    else {
+        TRACE_ERROR("Error! init_backend().. invalid ValidTbl->ver_len %d \n", ValidTbl->ver_len);
+        invalidPdTable.ver_len = maxVerPdNum - 1;
+    }
 
-	for (i = 0; i < ValidTbl->hor_len; i++) {
-		invalidPdTable.hor_touch_pd[i] = ValidTbl->hor_touch_pd[i];
-	}
+    for (i = 0; i < ValidTbl->hor_len; i++) {
+        invalidPdTable.hor_touch_pd[i] = ValidTbl->hor_touch_pd[i];
+    }
 
-	for (i = 0; i < ValidTbl->ver_len; i++) {
-		invalidPdTable.ver_touch_pd[i] = ValidTbl->ver_touch_pd[i];
-	}
+    for (i = 0; i < ValidTbl->ver_len; i++) {
+        invalidPdTable.ver_touch_pd[i] = ValidTbl->ver_touch_pd[i];
+    }
 #else
-	int i;
-	uint32_t  *inValidTbl = ValidTbl;
-	for (i = 0; i < MAX_INVALID_PD_TBL - 1; i++) {
-		if (*inValidTbl == 0) break;
-		invalidPdTable[i] = *inValidTbl++;
-	}
-	invalidPdTable[i] = 0;  //end of table
+    int i;
+    uint32_t  *inValidTbl = ValidTbl;
+    for (i = 0; i < MAX_INVALID_PD_TBL - 1; i++) {
+        if (*inValidTbl == 0) break;
+        invalidPdTable[i] = *inValidTbl++;
+    }
+    invalidPdTable[i] = 0;  //end of table
 #endif
 #if 0 //def ENABLE_NEW_PD_FORMAT
     int i;
-	for (i = 0; i < BS_maxHorPdNum; i++) {
-		invalidPdHorTable[i] = 0;
-	}
-	for (i = 0; i < maxVerPdNum; i++) {
-		invalidPdVerTable[i] = 0;
-	}
+    for (i = 0; i < BS_maxHorPdNum; i++) {
+        invalidPdHorTable[i] = 0;
+    }
+    for (i = 0; i < maxVerPdNum; i++) {
+        invalidPdVerTable[i] = 0;
+    }
 
-	for (i = 0; i < ValidTbl->hor_len; i++) {
-		if (i >= BS_maxHorPdNum) {
-			TRACE_ERROR("Error! invalid invalidPdTable.hor_len %d \n", ValidTbl->hor_len);
-			break;
-		}
+    for (i = 0; i < ValidTbl->hor_len; i++) {
+        if (i >= BS_maxHorPdNum) {
+            TRACE_ERROR("Error! invalid invalidPdTable.hor_len %d \n", ValidTbl->hor_len);
+            break;
+        }
 
-		int bmIdx = GET_SLOPE_INDEX__(ValidTbl->hor_touch_pd[i].pd, ValidTbl->hor_touch_pd[i].led);
-		if (bmIdx < 0 || bmIdx >= BIT_OFFSET_MASK_SIZE) {
-			TRACE_ERROR("Error! invalid pd %d led %d\n", ValidTbl->hor_touch_pd[i].pd, ValidTbl->hor_touch_pd[i].led);
-			break;
-		}
+        int bmIdx = GET_SLOPE_INDEX__(ValidTbl->hor_touch_pd[i].pd, ValidTbl->hor_touch_pd[i].led);
+        if (bmIdx < 0 || bmIdx >= BIT_OFFSET_MASK_SIZE) {
+            TRACE_ERROR("Error! invalid pd %d led %d\n", ValidTbl->hor_touch_pd[i].pd, ValidTbl->hor_touch_pd[i].led);
+            break;
+        }
 
-		//invalidPdTable.hor_touch_pd[i] = ValidTbl->hor_touch_pd[i];
-		invalidPdHorTable[ValidTbl->hor_touch_pd[i].pd] |= bit_offset_mask[bmIdx];
-	}
+        //invalidPdTable.hor_touch_pd[i] = ValidTbl->hor_touch_pd[i];
+        invalidPdHorTable[ValidTbl->hor_touch_pd[i].pd] |= bit_offset_mask[bmIdx];
+    }
 
-	for(i = 0; i < ValidTbl->ver_len; i++) {
+    for(i = 0; i < ValidTbl->ver_len; i++) {
         if(i >= maxVerPdNum) {
             TRACE_ERROR("Error! invalid hor invalidPdTable.ver_len %d \n", ValidTbl->ver_len);
             break;
         }
 
-		int bmIdx = GET_SLOPE_INDEX__(ValidTbl->ver_touch_pd[i].pd, ValidTbl->ver_touch_pd[i].led);
-		if (bmIdx < 0 || bmIdx >= BIT_OFFSET_MASK_SIZE) {
-			TRACE_ERROR("Error! invalid ver pd %d led %d\n", ValidTbl->ver_touch_pd[i].pd, ValidTbl->ver_touch_pd[i].led);
-			break;
-		}
-		//invalidPdTable.ver_touch_pd[i] = ValidTbl->ver_touch_pd[i];
-		invalidPdVerTable[ValidTbl->ver_touch_pd[i].pd] |= bit_offset_mask[bmIdx];
+        int bmIdx = GET_SLOPE_INDEX__(ValidTbl->ver_touch_pd[i].pd, ValidTbl->ver_touch_pd[i].led);
+        if (bmIdx < 0 || bmIdx >= BIT_OFFSET_MASK_SIZE) {
+            TRACE_ERROR("Error! invalid ver pd %d led %d\n", ValidTbl->ver_touch_pd[i].pd, ValidTbl->ver_touch_pd[i].led);
+            break;
+        }
+        //invalidPdTable.ver_touch_pd[i] = ValidTbl->ver_touch_pd[i];
+        invalidPdVerTable[ValidTbl->ver_touch_pd[i].pd] |= bit_offset_mask[bmIdx];
     }
 #endif
 #endif //ENABLE_CHECK_INVALID_PD
@@ -1604,7 +1604,7 @@ int BG_init_backend(
     BG_debug_cnt_false = 0;
 #endif
 #ifdef HOVERING_TEST //for testing
-//zero_touch_cnt = 0;
+    //zero_touch_cnt = 0;
     diffXmean = 0;
     diffYmean = 0;
 #endif //HOVERING_TEST
@@ -1618,7 +1618,7 @@ int BG_init_backend(
     maxSubjCnt = 0;
 #endif
 
-	TRACE("done...init_backend");
+    TRACE("done...init_backend");
     return 0; //no error
 }
 #endif
@@ -1639,456 +1639,456 @@ int BG_init_backend(
 ATTR_BACKEND_RAMFUNC
 static int epaAddInitial(axis_t axis, int lineNo, int epaIdx, int slopePdVal, int end, int start, int left, int right)
 {
-	ep_buf_t *epa;
-	//ep_no_t epTmp;
-	int i; //slopePdValTmp; //j, 
-	//int16_t tmpNo;
-	int s1, s2, e1, e2;
-	//int diffS1 = 0, diffE1 = 0;
-	int replace = 0;
+    ep_buf_t *epa;
+    //ep_no_t epTmp;
+    int i; //slopePdValTmp; //j,
+    //int16_t tmpNo;
+    int s1, s2, e1, e2;
+    //int diffS1 = 0, diffE1 = 0;
+    int replace = 0;
 
-	if (axis == ENUM_HOR_X) {
-		epa = &BS_edge_pattern_x[epaIdx];
-	}
-	else {
-		epa = &BS_edge_pattern_y[epaIdx];
-	}
+    if (axis == ENUM_HOR_X) {
+        epa = &BS_edge_pattern_x[epaIdx];
+    }
+    else {
+        epa = &BS_edge_pattern_y[epaIdx];
+    }
 
-	if (epa->len == 0)
-	{
-		if (epa->len < MAX_INIT_EP_COUNT) {
-		epa->ep[epa->len].s1 = start;
-		epa->ep[epa->len].e1 = end;
-		epa->ep[epa->len].s2 = start;
-		epa->ep[epa->len].e2 = end;
-		epa->len++;
+    if (epa->len == 0)
+    {
+        if (epa->len < MAX_INIT_EP_COUNT) {
+            epa->ep[epa->len].s1 = start;
+            epa->ep[epa->len].e1 = end;
+            epa->ep[epa->len].s2 = start;
+            epa->ep[epa->len].e2 = end;
+            epa->len++;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-			IS_DEBUG_FLAG{
-		i = 0;
-			TRACE("@N0,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
-				epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
-			};
+            IS_DEBUG_FLAG{
+                i = 0;
+                TRACE("@N0,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
+                      epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
+            };
 #endif
-		}
-		else {
+        }
+        else {
             TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.1.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
             return -1; //mem-error
-		}
+        }
 #if (DEBUG_BG_pack_edge_pattern == 2)
-		IS_DEBUG_FLAG{
-		if (epaIdx == 1) {
-			TRACE("@N0,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, 0, \
-				epa->ep[0].s1, epa->ep[0].e1, epa->ep[0].s2, epa->ep[0].e2, &epa->ep[epa->len - 1]);
-			TRACE_NOP;
-		}
-		};
+        IS_DEBUG_FLAG{
+            if (epaIdx == 1) {
+                TRACE("@N0,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, 0, \
+                      epa->ep[0].s1, epa->ep[0].e1, epa->ep[0].s2, epa->ep[0].e2, &epa->ep[epa->len - 1]);
+                TRACE_NOP;
+            }
+        };
 #endif
-		return 1; //new ep
-	} //if (epa->len == 0)
+        return 1; //new ep
+    } //if (epa->len == 0)
 
-	for (i = 0; i < epa->len; i++)
-	{
-		s1 = epa->ep[i].s1;
-		s2 = epa->ep[i].s2;
-		e1 = epa->ep[i].e1;
-		e2 = epa->ep[i].e2;
+    for (i = 0; i < epa->len; i++)
+    {
+        s1 = epa->ep[i].s1;
+        s2 = epa->ep[i].s2;
+        e1 = epa->ep[i].e1;
+        e2 = epa->ep[i].e2;
 
 #if 1 //nsmoon@190703
-		if (epaIdx == EPA_IDX_0) {
-			if (slopePdVal == 0) {
-				if ((s1 - 1) == start && (e1 - 1) == end) {
-					//replace s1, e1
-					epa->ep[i].s1 = start;
-					epa->ep[i].e1 = end;
-					replace++;
-				}
-				if ((s2 + 1) == start && (e2 + 1) == end) {
-					//replace s2, e2
-					epa->ep[i].s2 = start;
-					epa->ep[i].e2 = end;
-					replace++;
-				}
-				else if (s1 == start && (e1 - 1) == end) {
-					//replace e1
-					epa->ep[i].e1 = end;
-					replace++;
-				}
-				else if ((s1 - 1) == start && e1 == end) {
-				//replace s1
-				epa->ep[i].s1 = start;
-				replace++;
-			}
-				else if (s2 == start && (e2 + 1) == end) {
-					//replace e2
-					epa->ep[i].e2 = end;
-					replace++;
-				}
-				else if ((s2 + 1) == start && e2 == end) {
-					//replace s2
-					epa->ep[i].s2 = start;
-					replace++;
-				}
-			}
-			else if (slopePdVal == 1) {
-				if (s1 == start && ((e1 - 1) == end || (e1 - 2) == end)) {
-				//replace e1
-				epa->ep[i].e1 = end;
-				replace++;
-			}
-				else if ((s1 - 1) == start && (e1 - 1) == end) {
-					//replace s1, e1
-					epa->ep[i].s1 = start;
-					epa->ep[i].e1 = end;
-					replace++;
-				}
-				if (e2 == end && ((s2 + 1) == start || (s2 + 2) == start)) {
-				//replace s2
-				epa->ep[i].s2 = start;
-				replace++;
-			}
-				else if ((e2 + 1) == end && (s2 + 1) == start) {
-					//replace s2, e2
-					epa->ep[i].s2 = start;
-					epa->ep[i].e2 = end;
-					replace++;
-				}
-				if ((s1 - 1) == start && (e1 + 1) == end) {
-					//replace s1, e2
-					epa->ep[i].s1 = start;
-					replace++;
-				}
-				if ((s2 + 1) == start && (e2 - 1) == end) {
-					//replace s2, e1
-					epa->ep[i].s2 = start;
-					if ((e1 - 1) == end) {
-						epa->ep[i].e1 = end;
-					}
-					replace++;
-				}
-			}
-			else if (slopePdVal == -1) {
-				if (e1 == end && ((s1 - 1) == start || (s1 - 2) == start)) {
-					//replace s1
-					epa->ep[i].s1 = start;
-					replace++;
-				}
-				else if ((e1 - 1) == end && (s1 - 1) == start) {
-					//replace s1, e1
-					epa->ep[i].s1 = start;
-					epa->ep[i].e1 = end;
-					replace++;
-				}
-				if (s2 == start && ((e2 + 1) == end || (e2 + 2) == end)) {
-					//replace e2
-					epa->ep[i].e2 = end;
-					replace++;
-				}
-				else if ((s2 + 1) == start && (e2 + 1) == end) {
-					//replace s2, e2
-					epa->ep[i].s2 = start;
-					epa->ep[i].e2 = end;
-					replace++;
-				}
-				if ((s1 - 1) == start && (e1 + 1) == end) {
-					//replace s1, e2
-					epa->ep[i].s1 = start;
-			if ((e2 + 1) == end) {
-				epa->ep[i].e2 = end;
-					}
-				replace++;
-			}
-			}
+        if (epaIdx == EPA_IDX_0) {
+            if (slopePdVal == 0) {
+                if ((s1 - 1) == start && (e1 - 1) == end) {
+                    //replace s1, e1
+                    epa->ep[i].s1 = start;
+                    epa->ep[i].e1 = end;
+                    replace++;
+                }
+                if ((s2 + 1) == start && (e2 + 1) == end) {
+                    //replace s2, e2
+                    epa->ep[i].s2 = start;
+                    epa->ep[i].e2 = end;
+                    replace++;
+                }
+                else if (s1 == start && (e1 - 1) == end) {
+                    //replace e1
+                    epa->ep[i].e1 = end;
+                    replace++;
+                }
+                else if ((s1 - 1) == start && e1 == end) {
+                    //replace s1
+                    epa->ep[i].s1 = start;
+                    replace++;
+                }
+                else if (s2 == start && (e2 + 1) == end) {
+                    //replace e2
+                    epa->ep[i].e2 = end;
+                    replace++;
+                }
+                else if ((s2 + 1) == start && e2 == end) {
+                    //replace s2
+                    epa->ep[i].s2 = start;
+                    replace++;
+                }
+            }
+            else if (slopePdVal == 1) {
+                if (s1 == start && ((e1 - 1) == end || (e1 - 2) == end)) {
+                    //replace e1
+                    epa->ep[i].e1 = end;
+                    replace++;
+                }
+                else if ((s1 - 1) == start && (e1 - 1) == end) {
+                    //replace s1, e1
+                    epa->ep[i].s1 = start;
+                    epa->ep[i].e1 = end;
+                    replace++;
+                }
+                if (e2 == end && ((s2 + 1) == start || (s2 + 2) == start)) {
+                    //replace s2
+                    epa->ep[i].s2 = start;
+                    replace++;
+                }
+                else if ((e2 + 1) == end && (s2 + 1) == start) {
+                    //replace s2, e2
+                    epa->ep[i].s2 = start;
+                    epa->ep[i].e2 = end;
+                    replace++;
+                }
+                if ((s1 - 1) == start && (e1 + 1) == end) {
+                    //replace s1, e2
+                    epa->ep[i].s1 = start;
+                    replace++;
+                }
+                if ((s2 + 1) == start && (e2 - 1) == end) {
+                    //replace s2, e1
+                    epa->ep[i].s2 = start;
+                    if ((e1 - 1) == end) {
+                        epa->ep[i].e1 = end;
+                    }
+                    replace++;
+                }
+            }
+            else if (slopePdVal == -1) {
+                if (e1 == end && ((s1 - 1) == start || (s1 - 2) == start)) {
+                    //replace s1
+                    epa->ep[i].s1 = start;
+                    replace++;
+                }
+                else if ((e1 - 1) == end && (s1 - 1) == start) {
+                    //replace s1, e1
+                    epa->ep[i].s1 = start;
+                    epa->ep[i].e1 = end;
+                    replace++;
+                }
+                if (s2 == start && ((e2 + 1) == end || (e2 + 2) == end)) {
+                    //replace e2
+                    epa->ep[i].e2 = end;
+                    replace++;
+                }
+                else if ((s2 + 1) == start && (e2 + 1) == end) {
+                    //replace s2, e2
+                    epa->ep[i].s2 = start;
+                    epa->ep[i].e2 = end;
+                    replace++;
+                }
+                if ((s1 - 1) == start && (e1 + 1) == end) {
+                    //replace s1, e2
+                    epa->ep[i].s1 = start;
+                    if ((e2 + 1) == end) {
+                        epa->ep[i].e2 = end;
+                    }
+                    replace++;
+                }
+            }
 
-			if (s1 <= start && s2 >= start) {
-				replace++; //no-change
-			}
-			if (e1 <= end && e2 >= end) {
-				replace++; //no-change
-			}
+            if (s1 <= start && s2 >= start) {
+                replace++; //no-change
+            }
+            if (e1 <= end && e2 >= end) {
+                replace++; //no-change
+            }
 
-			if (replace) {
-  #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-				TRACE("@C11+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-					s1, e1, s2, e2, start, end, \
-					epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
-  #endif
-			    return 0; //replace
-		    }
-		}
+            if (replace) {
+#if (DEBUG_BG_pack_edge_pattern == 1)
+                IS_DEBUG_FLAG{
+                    TRACE("@C11+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
+#endif
+                return 0; //replace
+            }
+        }
 #else
-		if (slopePdVal == 0) {
-			if ((e1 - 1) == end && (s1 - 1) <= start) {
-				//replace s1
-				epa->ep[i].s1 = start;
-				epa->ep[i].e1 = end;
+        if (slopePdVal == 0) {
+            if ((e1 - 1) == end && (s1 - 1) <= start) {
+                //replace s1
+                epa->ep[i].s1 = start;
+                epa->ep[i].e1 = end;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@C11+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@C11+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
+                return 0;
+            }
 
-			if ((e2 + 1) == end && (s2 + 1) >= start) { //nsmoon@181030
-				//replace s2
-				epa->ep[i].s2 = start;
-				epa->ep[i].e2 = end;
+            if ((e2 + 1) == end && (s2 + 1) >= start) { //nsmoon@181030
+                //replace s2
+                epa->ep[i].s2 = start;
+                epa->ep[i].e2 = end;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@C12+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@C12+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
+                return 0;
+            }
 
-			if ((e1 <= end && e2 >= end) || (s1 <= start && s2 >= start))
-			{
-				//no-change, ignore
+            if ((e1 <= end && e2 >= end) || (s1 <= start && s2 >= start))
+            {
+                //no-change, ignore
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@nochange,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@nochange,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
-		}
-		else if (slopePdVal == 1 || slopePdVal == -1) {
-			if ((e1 - 2) == end && s1 == start) {
-				epa->ep[i].e1 = end;
+                return 0;
+            }
+        }
+        else if (slopePdVal == 1 || slopePdVal == -1) {
+            if ((e1 - 2) == end && s1 == start) {
+                epa->ep[i].e1 = end;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@C21+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@C21+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
+                return 0;
+            }
 
-			if ((e1 - 1) == end && (s1 - 1) <= start) { //nsmoon@181030
-				epa->ep[i].e1 = end;
-				epa->ep[i].s1 = GET_MIN(s1, start);
+            if ((e1 - 1) == end && (s1 - 1) <= start) { //nsmoon@181030
+                epa->ep[i].e1 = end;
+                epa->ep[i].s1 = GET_MIN(s1, start);
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@C22+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@C22+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
+                return 0;
+            }
 
-			if ((e1 <= end && e2 >= end) || (s1 <= start && s2 >= start)) {
-				if (e1 == end) {
-					epa->ep[i].s1 = GET_MIN(s1, start);
+            if ((e1 <= end && e2 >= end) || (s1 <= start && s2 >= start)) {
+                if (e1 == end) {
+                    epa->ep[i].s1 = GET_MIN(s1, start);
 #if (DEBUG_BG_pack_edge_pattern == 1)
-					IS_DEBUG_FLAG{
-                    TRACE("@C23+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                        s1, e1, s2, e2, start, end, \
-                        epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-					};
+                    IS_DEBUG_FLAG{
+                        TRACE("@C23+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                              s1, e1, s2, e2, start, end, \
+                              epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                    };
 #endif
-				}
-				if (e2 == end) {
-					epa->ep[i].s2 = GET_MAX(s2, start);
+                }
+                if (e2 == end) {
+                    epa->ep[i].s2 = GET_MAX(s2, start);
 #if (DEBUG_BG_pack_edge_pattern == 1)
-					IS_DEBUG_FLAG{
-                    TRACE("@C24+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                        s1, e1, s2, e2, start, end, \
-                        epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-					};
+                    IS_DEBUG_FLAG{
+                        TRACE("@C24+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                              s1, e1, s2, e2, start, end, \
+                              epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                    };
 #endif
-				}
-				return 0;
-			}
+                }
+                return 0;
+            }
 
-			if ((e2 + 1) == end && (s2 + 1) >= start) {
-				epa->ep[i].e2 = end;
-				epa->ep[i].s2 = GET_MAX(s2, start);
+            if ((e2 + 1) == end && (s2 + 1) >= start) {
+                epa->ep[i].e2 = end;
+                epa->ep[i].s2 = GET_MAX(s2, start);
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-                TRACE("@C25+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
-                    s1, e1, s2, e2, start, end, \
-                    epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@C25+,%d,%d,%d,:,%d,%d,%d,%d,:%d,%d:,%d,%d,%d,%d,", epaIdx, axis, i, \
+                          s1, e1, s2, e2, start, end, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2);
+                };
 #endif
-				return 0;
-			}
+                return 0;
+            }
 
-			if ((e2 + 2) == end && s2 == start) {
-				epa->ep[i].e2 = end;
+            if ((e2 + 2) == end && s2 == start) {
+                epa->ep[i].e2 = end;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-				TRACE("@C26+,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
-					epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
-				}
+                IS_DEBUG_FLAG{
+                    TRACE("@C26+,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
+                }
 #endif
-				return 0;
-			}
-		}
+                return 0;
+            }
+        }
 #endif //1
 #if 0 //for test, nsmoon@200115, nsmoon@200326 disable
-		else if (epaIdx == EPA_IDX_1 || epaIdx == EPA_IDX_2 || epaIdx == EPA_IDX_3) {
+        else if (epaIdx == EPA_IDX_1 || epaIdx == EPA_IDX_2 || epaIdx == EPA_IDX_3) {
 #if 0 //nsmoon@190701, nsmoon@200107 for test
-			if (axis == ENUM_VER_Y && !left) {
-				diffS1 = 0;
-			}
-			else {
-			diffS1 = GET_ABS(s1 - start);
-			}
+            if (axis == ENUM_VER_Y && !left) {
+                diffS1 = 0;
+            }
+            else {
+                diffS1 = GET_ABS(s1 - start);
+            }
 
-			if (axis == ENUM_VER_Y && !right) {
-				diffS1 = 0;
-			}
-			else {
-			    diffE1 = GET_ABS(e1 - end);
-			}
+            if (axis == ENUM_VER_Y && !right) {
+                diffS1 = 0;
+            }
+            else {
+                diffE1 = GET_ABS(e1 - end);
+            }
 #else
-			diffS1 = GET_ABS(s1 - start);
-			diffE1 = GET_ABS(e1 - end);
+            diffS1 = GET_ABS(s1 - start);
+            diffE1 = GET_ABS(e1 - end);
 #endif
-			int chgEpaIdx = 0;
-			if (diffS1 == 1) {
-				if (s1 > start && end > s1 && start > e1) {
+            int chgEpaIdx = 0;
+            if (diffS1 == 1) {
+                if (s1 > start && end > s1 && start > e1) {
 #if (DEBUG_BG_pack_edge_pattern == 2)
-					IS_DEBUG_FLAG{
-					if (epaIdx == 1) {
-						TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
-						TRACE_NOP;
-					}
-					};
+                    IS_DEBUG_FLAG{
+                        if (epaIdx == 1) {
+                            TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
+                            TRACE_NOP;
+                        }
+                    };
 #endif
-					//replace
-					epa->ep[i].s1 = start;
-					epa->ep[i].s2 = s1;
-					epa->ep[i].e1 = start;
-					epa->ep[i].e2 = s1;
-					chgEpaIdx++;
-				}
-				else if (s1 < start && end < s1 && start < e1) {
+                    //replace
+                    epa->ep[i].s1 = start;
+                    epa->ep[i].s2 = s1;
+                    epa->ep[i].e1 = start;
+                    epa->ep[i].e2 = s1;
+                    chgEpaIdx++;
+                }
+                else if (s1 < start && end < s1 && start < e1) {
 #if (DEBUG_BG_pack_edge_pattern == 2)
-					IS_DEBUG_FLAG{
-					if (epaIdx == 1) {
-						TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
-						TRACE_NOP;
-					}
-					};
+                    IS_DEBUG_FLAG{
+                        if (epaIdx == 1) {
+                            TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
+                            TRACE_NOP;
+                        }
+                    };
 #endif
-					//replace
-					epa->ep[i].s1 = s1;
-					epa->ep[i].s2 = start;
-					epa->ep[i].e1 = s1;
-					epa->ep[i].e2 = start;
-					chgEpaIdx++;
-				}
-			}
-			if (chgEpaIdx == 0 && diffE1 == 1) {
-				if (e1 > end && start > e1 && end > s1) {
+                    //replace
+                    epa->ep[i].s1 = s1;
+                    epa->ep[i].s2 = start;
+                    epa->ep[i].e1 = s1;
+                    epa->ep[i].e2 = start;
+                    chgEpaIdx++;
+                }
+            }
+            if (chgEpaIdx == 0 && diffE1 == 1) {
+                if (e1 > end && start > e1 && end > s1) {
 #if (DEBUG_BG_pack_edge_pattern == 2)
-					IS_DEBUG_FLAG{
-					if (epaIdx == 1) {
-						TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
-						TRACE_NOP;
-					}
-					}:
+                    IS_DEBUG_FLAG{
+                        if (epaIdx == 1) {
+                            TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
+                            TRACE_NOP;
+                        }
+                    }:
 #endif
-					//replace
-					epa->ep[i].e1 = end;
-					epa->ep[i].e2 = e1;
-					epa->ep[i].s1 = end;
-					epa->ep[i].s2 = e1;
-					chgEpaIdx++;
-				}
-				else if (e1 < end && start < e1 && end < s1) {
+                    //replace
+                    epa->ep[i].e1 = end;
+                    epa->ep[i].e2 = e1;
+                    epa->ep[i].s1 = end;
+                    epa->ep[i].s2 = e1;
+                    chgEpaIdx++;
+                }
+                else if (e1 < end && start < e1 && end < s1) {
 #if (DEBUG_BG_pack_edge_pattern == 2)
-					IS_DEBUG_FLAG{
-					if (epaIdx == 1) {
-						TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
-						TRACE_NOP;
-					}
-					};
+                    IS_DEBUG_FLAG{
+                        if (epaIdx == 1) {
+                            TRACE("@fou--,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, s1, e1, s2, e2, start, end);
+                            TRACE_NOP;
+                        }
+                    };
 #endif
-					//replace
-					epa->ep[i].e1 = e1;
-					epa->ep[i].e2 = end;
-					epa->ep[i].s1 = e1;
-					epa->ep[i].s2 = end;
-					chgEpaIdx++;
-				}
-			}
-			if (chgEpaIdx) {
+                    //replace
+                    epa->ep[i].e1 = e1;
+                    epa->ep[i].e2 = end;
+                    epa->ep[i].s1 = e1;
+                    epa->ep[i].s2 = end;
+                    chgEpaIdx++;
+                }
+            }
+            if (chgEpaIdx) {
 #if (DEBUG_BG_pack_edge_pattern == 1)
-				IS_DEBUG_FLAG{
-				TRACE("@found,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
-					epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("@found,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
+                };
 #endif	
 #if (DEBUG_BG_pack_edge_pattern == 2)
-				IS_DEBUG_FLAG{
-				if (epaIdx == 1) {
-					TRACE("@found,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
-						epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
-					TRACE_NOP;
-				}
-				};
+                IS_DEBUG_FLAG{
+                    if (epaIdx == 1) {
+                        TRACE("@found,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d", epaIdx, axis, i, \
+                              epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, start, end);
+                        TRACE_NOP;
+                    }
+                };
 #endif
-				return 0;
-			}
-		}
-		else {
-			TRACE_ERROR("ERROR! invalid slopePdVal %d [%d]", slopePdVal, BG_frame_no);
-			return -1; //error
-		}
+                return 0;
+            }
+        }
+        else {
+            TRACE_ERROR("ERROR! invalid slopePdVal %d [%d]", slopePdVal, BG_frame_no);
+            return -1; //error
+        }
 #endif //1
-	} //for (i = 0; i < epa[slopeIdx].len; i++)
+    } //for (i = 0; i < epa[slopeIdx].len; i++)
 
-	if (epa->len < MAX_INIT_EP_COUNT) {
-	  //empty, new0
-	epa->ep[epa->len].s1 = start;
-	epa->ep[epa->len].e1 = end;
-	epa->ep[epa->len].s2 = start;
-	epa->ep[epa->len].e2 = end;
-	epa->len++;
+    if (epa->len < MAX_INIT_EP_COUNT) {
+        //empty, new0
+        epa->ep[epa->len].s1 = start;
+        epa->ep[epa->len].e1 = end;
+        epa->ep[epa->len].s2 = start;
+        epa->ep[epa->len].e2 = end;
+        epa->len++;
 #if (DEBUG_BG_pack_edge_pattern == 1)
-		IS_DEBUG_FLAG{
-		TRACE("@N1,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
-			epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
-		};
+        IS_DEBUG_FLAG{
+            TRACE("@N1,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
+                  epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
+        };
 #endif
 #if 0 // ascending sorting
-	for (i = 0; i < (epa->len - 1); i++) {
-		for (j = (i + 1); j < epa->len; j++) {
-			if (epa->ep[i].s1 > epa->ep[j].s1) {
-				epTmp = epa->ep[i];
-				epa->ep[i] = epa->ep[j];
-				epa->ep[j] = epTmp;
-			}
-		}
-	}
+        for (i = 0; i < (epa->len - 1); i++) {
+            for (j = (i + 1); j < epa->len; j++) {
+                if (epa->ep[i].s1 > epa->ep[j].s1) {
+                    epTmp = epa->ep[i];
+                    epa->ep[i] = epa->ep[j];
+                    epa->ep[j] = epTmp;
+                }
+            }
+        }
 #endif //0
-	}
-	else {
+    }
+    else {
         TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.2.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
         return -1; //mem-error
-	}
+    }
 #if (DEBUG_BG_pack_edge_pattern == 2)
-	IS_DEBUG_FLAG{
-	if (epaIdx == 1) {
-		TRACE("@N1,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
-			epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
-		TRACE_NOP;
-	}
+    IS_DEBUG_FLAG{
+        if (epaIdx == 1) {
+            TRACE("@N1,%d,%d,%d,:,%d,%d,%d,%d,(%x)", epaIdx, axis, i, \
+                  epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, &epa->ep[epa->len - 1]);
+            TRACE_NOP;
+        }
     };
 #endif
-	return 1; //new
+    return 1; //new
 }
 
 void BS_epaInit_fine(void)
@@ -2160,7 +2160,7 @@ static int chkInEpa0(axis_t axis, ep_no_t *ep)
     //epa0->len is uint8_t, 256
     for (i = 0; i < epa0->len; i++)
     {
-		if (epa0->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
+        if (epa0->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
         s1 = epa0->ep[i].s1;
         s2 = epa0->ep[i].s2;
         e1 = epa0->ep[i].e1;
@@ -2209,55 +2209,55 @@ static int chkInEpa0(axis_t axis, ep_no_t *ep)
 ATTR_BACKEND_RAMFUNC
 static int isInEpa0(axis_t axis, int st1, int st2)
 {
-	ep_buf_t *epa0;
-	int i, s1, s2, e1, e2;
+    ep_buf_t *epa0;
+    int i, s1, s2, e1, e2;
 
-	if (axis == ENUM_HOR_X) {
-		epa0 = &BS_edge_pattern_x[EPA_IDX_0];
-	}
-	else {
-		epa0 = &BS_edge_pattern_y[EPA_IDX_0];
-	}
+    if (axis == ENUM_HOR_X) {
+        epa0 = &BS_edge_pattern_x[EPA_IDX_0];
+    }
+    else {
+        epa0 = &BS_edge_pattern_y[EPA_IDX_0];
+    }
 
 #if (DEBUG_BG_pack_edge_pattern == 1)
-	IS_DEBUG_FLAG{
-		TRACE("epa0->ep: (%d) %x %d (%d)", axis, &epa0->ep[0], epa0->len, axis);
-	};
+    IS_DEBUG_FLAG{
+        TRACE("epa0->ep: (%d) %x %d (%d)", axis, &epa0->ep[0], epa0->len, axis);
+    };
 #endif
 
     //epa0->len is uint8_t, 256
-	for (i = 0; i < epa0->len; i++)
-	{
-		s1 = epa0->ep[i].s1;
-		s2 = epa0->ep[i].s2;
-		e1 = epa0->ep[i].e1;
-		e2 = epa0->ep[i].e2;
-		s1 = GET_MIN(s1, e1);
-		s2 = GET_MAX(s2, e2);
-		e1 = s1; 
-		e2 = s2;
+    for (i = 0; i < epa0->len; i++)
+    {
+        s1 = epa0->ep[i].s1;
+        s2 = epa0->ep[i].s2;
+        e1 = epa0->ep[i].e1;
+        e2 = epa0->ep[i].e2;
+        s1 = GET_MIN(s1, e1);
+        s2 = GET_MAX(s2, e2);
+        e1 = s1;
+        e2 = s2;
 #if  0 //(DEBUG_BG_pack_edge_pattern == 1)
-		IS_DEBUG_FLAG{
-		TRACE("epa0->ep[]: (%d) %x", i, &epa0->ep[i]);
-		TRACE("s1,s2,e1,e2,st1,st2: %d %d %d %d, %d %d", s1, s2, e1, e2, st1, st2);
-	    };
+        IS_DEBUG_FLAG{
+            TRACE("epa0->ep[]: (%d) %x", i, &epa0->ep[i]);
+            TRACE("s1,s2,e1,e2,st1,st2: %d %d %d %d, %d %d", s1, s2, e1, e2, st1, st2);
+        };
 #endif
-		if (st1 >= s1 && st1 <= s2) {
-			return 1; //found
-		}
-		if (st2 >= s1 && st2 <= s2) {
-			return 1; //found
-		}
+        if (st1 >= s1 && st1 <= s2) {
+            return 1; //found
+        }
+        if (st2 >= s1 && st2 <= s2) {
+            return 1; //found
+        }
 #if 0
-		if (st1 >= e1 && st1 <= e2) {
-			return 1; //found
-		}
-		if (st2 >= e1 && st2 <= e2) {
-			return 1; //found
-		}
+        if (st1 >= e1 && st1 <= e2) {
+            return 1; //found
+        }
+        if (st2 >= e1 && st2 <= e2) {
+            return 1; //found
+        }
 #endif
-	}
-	return 0;
+    }
+    return 0;
 }
 #endif
 
@@ -2268,136 +2268,136 @@ ATTR_BACKEND_RAMFUNC
 static void epaPosInitial(axis_t axis)
 {
     ep_buf_t *epa0;
-	float *ledPos, *pdPos;
-	float padLedRht, padLedLft, padPdRht, padPdLft;
-	int i, j, k, s1, s2, e1, e2, needPad1, needPad2;
+    float *ledPos, *pdPos;
+    float padLedRht, padLedLft, padPdRht, padPdLft;
+    int i, j, k, s1, s2, e1, e2, needPad1, needPad2;
     int maxPdNum;
 
-	if (axis == ENUM_HOR_X) {
-		epa0 = &BS_edge_pattern_x[EPA_IDX_0];
-		//epa1 = &BS_edge_pattern_x[EPA_IDX_1];
-		ledPos = &BS_led_pos_x[0];
-		pdPos = &BS_pd_pos_x[0];
+    if (axis == ENUM_HOR_X) {
+        epa0 = &BS_edge_pattern_x[EPA_IDX_0];
+        //epa1 = &BS_edge_pattern_x[EPA_IDX_1];
+        ledPos = &BS_led_pos_x[0];
+        pdPos = &BS_pd_pos_x[0];
         maxPdNum = BS_maxHorPdNum - 1;
-	}
-	else {
-		epa0 = &BS_edge_pattern_y[EPA_IDX_0];
-		//epa1 = &BS_edge_pattern_y[EPA_IDX_1];
-		ledPos = &BS_led_pos_y[0];
-		pdPos = &BS_pd_pos_y[0];
+    }
+    else {
+        epa0 = &BS_edge_pattern_y[EPA_IDX_0];
+        //epa1 = &BS_edge_pattern_y[EPA_IDX_1];
+        ledPos = &BS_led_pos_y[0];
+        pdPos = &BS_pd_pos_y[0];
         maxPdNum = BS_maxVerPdNum - 1;
-	}
+    }
 
 #ifdef MULTI_INITIAL_MERGE //nsmoon@190321
     for (i = 0; i < epa0->len; i++) {
-		s1 = epa0->ep[i].s1;
-		s2 = epa0->ep[i].s2;
-		e1 = epa0->ep[i].e1;
-		e2 = epa0->ep[i].e2;
+        s1 = epa0->ep[i].s1;
+        s2 = epa0->ep[i].s2;
+        e1 = epa0->ep[i].e1;
+        e2 = epa0->ep[i].e2;
         epa0->ep[i].s1 = GET_MIN(s1, e1);
         epa0->ep[i].e1 = epa0->ep[i].s1;
         epa0->ep[i].s2 = GET_MAX(s2, e2);
         epa0->ep[i].e2 = epa0->ep[i].s2;
-		}
+    }
 #endif
 #ifdef MULTI_OTHER_EPA_IDX_ENABLE //nsmoon@200129, FIXME
     ep_buf_t *epa1;
-	for (k = EPA_IDX_1; k < EPA_IDX_LEN; k++)
-	{
-		if (axis == ENUM_HOR_X) {
-			epa1 = &BS_edge_pattern_x[k];
-		}
-		else {
-			epa1 = &BS_edge_pattern_y[k];
-		}
+    for (k = EPA_IDX_1; k < EPA_IDX_LEN; k++)
+    {
+        if (axis == ENUM_HOR_X) {
+            epa1 = &BS_edge_pattern_x[k];
+        }
+        else {
+            epa1 = &BS_edge_pattern_y[k];
+        }
 
-		//TRACE("epa1->len=(%d-%d) %d", axis, k, epa1->len);
-		for (i = 0; i < epa1->len; i++)
-		{
+        //TRACE("epa1->len=(%d-%d) %d", axis, k, epa1->len);
+        for (i = 0; i < epa1->len; i++)
+        {
 #if  0 //(DEBUG_packEdgePatternInitial > 1)
-			TRACE("epa1->ep[]: (%d) %x", k, &epa1->ep[k]);
+            TRACE("epa1->ep[]: (%d) %x", k, &epa1->ep[k]);
 #endif
 #ifdef MULTI_INITIAL_MERGE //nsmoon@190321
             if (chkInEpa0(axis, &epa1->ep[i])) {
                 continue;
             }
 
-			s1 = epa1->ep[i].s1;
-			s2 = epa1->ep[i].s2;
-			if (s1 == s2) {
-				continue; //single line
-			}
+            s1 = epa1->ep[i].s1;
+            s2 = epa1->ep[i].s2;
+            if (s1 == s2) {
+                continue; //single line
+            }
 
-			e1 = epa1->ep[i].e1;
-			e2 = epa1->ep[i].e2;
+            e1 = epa1->ep[i].e1;
+            e2 = epa1->ep[i].e2;
 #else
-			s1 = epa1->ep[i].s1;
-			s2 = epa1->ep[i].s2;
-			if (s1 == s2) {
-				continue; //single line
-			}
+            s1 = epa1->ep[i].s1;
+            s2 = epa1->ep[i].s2;
+            if (s1 == s2) {
+                continue; //single line
+            }
 
-			e1 = epa1->ep[i].e1;
-			e2 = epa1->ep[i].e2;
+            e1 = epa1->ep[i].e1;
+            e2 = epa1->ep[i].e2;
 
-			int diffLed = GET_ABS(s2 - s1);
-			int diffPd = GET_ABS(e2 - e1);
-			if (diffLed == 1) {
-				e1 = s1;
-				e2 = s2;
-			}
-			else if (diffPd == 1) {
-				s1 = e1;
-				s2 = e2;
-			}
+            int diffLed = GET_ABS(s2 - s1);
+            int diffPd = GET_ABS(e2 - e1);
+            if (diffLed == 1) {
+                e1 = s1;
+                e2 = s2;
+            }
+            else if (diffPd == 1) {
+                s1 = e1;
+                s2 = e2;
+            }
 
-			if (isInEpa0(axis, s1, s2)) {
-				continue;
-			}
+            if (isInEpa0(axis, s1, s2)) {
+                continue;
+            }
 #endif
-			/////////////////////////////////////////////////////////////////////
-			//FIXME, Is necessary merge EPA_IDX_0, EPA_IDX_1, and EPA_IDX_2... ?
-			/////////////////////////////////////////////////////////////////////
-			j = epa0->len;
-			epa0->ep[j].s1 = s1;
-			epa0->ep[j].e1 = e1;
-			epa0->ep[j].s2 = s2;
-			epa0->ep[j].e2 = e2;
+            /////////////////////////////////////////////////////////////////////
+            //FIXME, Is necessary merge EPA_IDX_0, EPA_IDX_1, and EPA_IDX_2... ?
+            /////////////////////////////////////////////////////////////////////
+            j = epa0->len;
+            epa0->ep[j].s1 = s1;
+            epa0->ep[j].e1 = e1;
+            epa0->ep[j].s2 = s2;
+            epa0->ep[j].e2 = e2;
 
-			if (axis == ENUM_HOR_X) {
-				epa0->poly[j][0].vert.x = ledPos[s1]; //bot-rht
-				epa0->poly[j][1].vert.x = pdPos[e1];  //top-rht
-				epa0->poly[j][2].vert.x = pdPos[e2];  //top-lft
-				epa0->poly[j][3].vert.x = ledPos[s2]; //bot-lft
-				epa0->poly[j][0].vert.y = BS_sensor_zero_y; //bot-rht
-				epa0->poly[j][1].vert.y = BS_sensor_end_y;  //top-rht
-				epa0->poly[j][2].vert.y = BS_sensor_end_y;  //top-lft
-				epa0->poly[j][3].vert.y = BS_sensor_zero_y; //bot-lft
-			}
-			else {
-				epa0->poly[j][0].vert.x = BS_sensor_end_x; //bot-rht
-				epa0->poly[j][1].vert.x = BS_sensor_zero_x;  //top-rht
-				epa0->poly[j][2].vert.x = BS_sensor_zero_x;  //top-lft
-				epa0->poly[j][3].vert.x = BS_sensor_end_x; //bot-lft
-				epa0->poly[j][0].vert.y = ledPos[s1]; //bot-rht
-				epa0->poly[j][1].vert.y = pdPos[e1];  //top-rht
-				epa0->poly[j][2].vert.y = pdPos[e2];  //top-lft
-				epa0->poly[j][3].vert.y = ledPos[s2]; //bot-lft
-			}
-			epa0->len++;
+            if (axis == ENUM_HOR_X) {
+                epa0->poly[j][0].vert.x = ledPos[s1]; //bot-rht
+                epa0->poly[j][1].vert.x = pdPos[e1];  //top-rht
+                epa0->poly[j][2].vert.x = pdPos[e2];  //top-lft
+                epa0->poly[j][3].vert.x = ledPos[s2]; //bot-lft
+                epa0->poly[j][0].vert.y = BS_sensor_zero_y; //bot-rht
+                epa0->poly[j][1].vert.y = BS_sensor_end_y;  //top-rht
+                epa0->poly[j][2].vert.y = BS_sensor_end_y;  //top-lft
+                epa0->poly[j][3].vert.y = BS_sensor_zero_y; //bot-lft
+            }
+            else {
+                epa0->poly[j][0].vert.x = BS_sensor_end_x; //bot-rht
+                epa0->poly[j][1].vert.x = BS_sensor_zero_x;  //top-rht
+                epa0->poly[j][2].vert.x = BS_sensor_zero_x;  //top-lft
+                epa0->poly[j][3].vert.x = BS_sensor_end_x; //bot-lft
+                epa0->poly[j][0].vert.y = ledPos[s1]; //bot-rht
+                epa0->poly[j][1].vert.y = pdPos[e1];  //top-rht
+                epa0->poly[j][2].vert.y = pdPos[e2];  //top-lft
+                epa0->poly[j][3].vert.y = ledPos[s2]; //bot-lft
+            }
+            epa0->len++;
 #if (DEBUG_packEdgePatternInitial > 1)
-			IS_DEBUG_FLAG{
-				if (BG_show_line_init)
-				//if (k == 1)
-				{
-					DEBUG_SHOW_POLY(&epa0->poly[j][0], 4, MY_COLOR - 1);
-			        TRACE_NOP;
-				}
+            IS_DEBUG_FLAG{
+                if (BG_show_line_init)
+                    //if (k == 1)
+                {
+                    DEBUG_SHOW_POLY(&epa0->poly[j][0], 4, MY_COLOR - 1);
+                    TRACE_NOP;
+                }
                 //TRACE("found,s1,e1,s2,e2: (%d) %d %d %d %d", j, s1, e1, s2, e2);
-			};
+            };
 #endif
-		} //for (i = 0; i < epa1->len; i++)
-	} //for (k = EPA_IDX_1; k < EPA_IDX_LEN; k++)
+        } //for (i = 0; i < epa1->len; i++)
+    } //for (k = EPA_IDX_1; k < EPA_IDX_LEN; k++)
 #endif //0
 
 #ifdef MULTI_INITIAL_MERGE //nsmoon@190321
@@ -2421,19 +2421,19 @@ static void epaPosInitial(axis_t axis)
             if (epa0->ep[i].s2 >= (s1 - 1) && epa0->ep[i].s2 <= s2) {
                 epa0->ep[i].s2 = s2;
                 merged++;
-	}
+            }
             if (epa0->ep[i].e2 >= (e1 - 1) && epa0->ep[i].e2 <= e2) {
                 epa0->ep[i].e2 = e2;
                 merged++;
-}
+            }
             if (epa0->ep[i].s1 <= (s2 + 1) && epa0->ep[i].s1 >= s1) {
                 epa0->ep[i].s1 = s1;
                 merged++;
-		}
+            }
             if (epa0->ep[i].e1 <= (e2 + 1) && epa0->ep[i].e1 >= e1) {
                 epa0->ep[i].e1 = e1;
                 merged++;
-		}
+            }
             if (merged) {
 #if 0 //(DEBUG_packEdgePatternInitial > 1)
                 IS_DEBUG_FLAG{
@@ -2442,23 +2442,23 @@ static void epaPosInitial(axis_t axis)
                 }
 #endif
 #if 0 //for testing, FIXME ERROR!!!
-				epa0->ep[j].s1 = EPA0_INITIAL_INVALID;
+                epa0->ep[j].s1 = EPA0_INITIAL_INVALID;
 #else
                 for (k = (j + 1); k < epa0->len; k++) {
                     epa0->ep[k - 1] = epa0->ep[k];
-		}
+                }
                 epa0->len--;
 #endif
                 i--;
-		}
-		}
-		}
+            }
+        }
+    }
 #endif //MULTI_INITIAL_MERGE
 
     needPad1 = 1; needPad2 = 1; //nsmoon@190320, SPT750
     for (i = 0; i < epa0->len; i++)
     {
-		if (epa0->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
+        if (epa0->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
         s1 = epa0->ep[i].s1;
         s2 = epa0->ep[i].s2;
         e1 = epa0->ep[i].e1;
@@ -2483,22 +2483,22 @@ static void epaPosInitial(axis_t axis)
             if ((s1 - 1) >= 0) {
                 //padLedRht = (ledPos[s1] - ledPos[s1 - 1]) * MULTI_INITIAL_POLY_PAD_RATIO;
                 padLedRht = (ledPos[s1] - ledPos[s1 - 1]) - MULTI_INITIAL_POLY_PAD_DIST;
-        }
+            }
             if ((e1 - 1) >= 0) {
                 //padPdRht = (pdPos[e1] - pdPos[e1 - 1]) * MULTI_INITIAL_POLY_PAD_RATIO;
                 padPdRht = (pdPos[e1] - pdPos[e1 - 1]) - MULTI_INITIAL_POLY_PAD_DIST;
-    }
-		}
+            }
+        }
         if (needPad2) {
             if ((s2 + 1) < maxPdNum) {
                 //padLedLft = (ledPos[s2 + 1] - ledPos[s2]) * MULTI_INITIAL_POLY_PAD_RATIO;
                 padLedLft = (ledPos[s2 + 1] - ledPos[s2]) - MULTI_INITIAL_POLY_PAD_DIST;
-        }
+            }
             if ((e2 + 1) < maxPdNum) {
                 //padPdLft = (pdPos[e2 + 1] - pdPos[e2]) * MULTI_INITIAL_POLY_PAD_RATIO;
                 padPdLft = (pdPos[e2 + 1] - pdPos[e2]) - MULTI_INITIAL_POLY_PAD_DIST;
+            }
         }
-		}
 
         if (axis == ENUM_HOR_X) {
             epa0->poly[i][0].vert.x = ledPos[s1] - padLedRht; //bot-rht
@@ -2513,7 +2513,7 @@ static void epaPosInitial(axis_t axis)
             epa0->poly[i][1].vert.y = BS_sensor_end_y;  //top-rht
             epa0->poly[i][2].vert.y = BS_sensor_end_y;  //top-lft
             epa0->poly[i][3].vert.y = BS_sensor_zero_y; //bot-lft
-		}
+        }
         else {
             epa0->poly[i][0].vert.x = BS_sensor_end_x; //bot-rht
             epa0->poly[i][1].vert.x = BS_sensor_zero_x;  //top-rht
@@ -2527,21 +2527,21 @@ static void epaPosInitial(axis_t axis)
             epa0->poly[i][2].edgeId = i; //epa idx, FIXME
             epa0->poly[i][3].vert.y = ledPos[s2] + padLedLft; //bot-lft
             epa0->poly[i][3].edgeId = NO_CLIPPING_EDGEID;
-		}
+        }
 #if (DEBUG_packEdgePatternInitial > 1)
         IS_DEBUG_FLAG{
-            if (BG_show_line_init) 
-		    {
-			    DEBUG_SHOW_POLY(&epa0->poly[i][0], 4, MY_COLOR - 2);
-			TRACE_NOP;
-		}
-		};
+            if (BG_show_line_init)
+            {
+                DEBUG_SHOW_POLY(&epa0->poly[i][0], 4, MY_COLOR - 2);
+                TRACE_NOP;
+            }
+        };
 #endif
-	}
+    }
 
     IS_DEBUG_FLAG{
-	TRACE_NOP;
-	};
+        TRACE_NOP;
+    };
 }
 
 #define EPA_CENT_SEN_NO_X		(BS_maxHorPdNum / 2)
@@ -2556,12 +2556,12 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
     int8_t *offsetTbl;
     axis_t axis;
 #if  1 //nsmoon@190701
-	int epaLeftX = 0, epaRightX = 0;
+    int epaLeftX = 0, epaRightX = 0;
 #endif
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
-	int deadSen;
+    int deadSen;
 #endif
-	int ret;
+    int ret;
 
     //TRACE("DEBUG_packEdgePatternInitial...");
 
@@ -2576,7 +2576,7 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
             offsetTbl = BS_offsetTblX;
             maxPdNum = BS_maxHorPdNum;
 #if (DEBUG_packEdgePatternInitial > 0)
-			showLine = 1; // BG_show_line_x;
+            showLine = 1; // BG_show_line_x;
 #endif
         }
         else {
@@ -2587,7 +2587,7 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
             offsetTbl = BS_offsetTblY;
             maxPdNum = BS_maxVerPdNum;
 #if (DEBUG_packEdgePatternInitial > 0)
-			showLine = 1; // BG_show_line_y;
+            showLine = 1; // BG_show_line_y;
 #endif
         }
 
@@ -2608,13 +2608,13 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
             if (slopePdVal == 0 || slopePdVal == 1 || slopePdVal == -1) {
                 epaIdx = EPA_IDX_0;
 #if (DEBUG_packEdgePatternInitial > 0)
-				color = 0; // MY_COLOR - 2;
+                color = 0; // MY_COLOR - 2;
 #endif
             }
 #ifdef MULTI_OTHER_EPA_IDX_ENABLE //nsmoon@200129, FIXME
             else {
 #if  1 //nsmoon@190701
-				epaIdx = chkOtherEpaIdx(axis, pd, led, epaLeftX, epaRightX); //nsmoon@190701
+                epaIdx = chkOtherEpaIdx(axis, pd, led, epaLeftX, epaRightX); //nsmoon@190701
 #else
                 epaIdx = chkOtherEpaIdx(axis, pd, led);
 #endif
@@ -2633,122 +2633,122 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
 #endif
 
             if (epaIdx > EPA_IDX_UNKNOWN) {
-				if (axis == ENUM_HOR_X) {
-					TRACE_NOP;
-				}
+                if (axis == ENUM_HOR_X) {
+                    TRACE_NOP;
+                }
 #if (DEBUG_packEdgePatternInitial > 0)
-				if (showLine) 
-				{
+                if (showLine)
+                {
                     if (epaIdx == EPA_IDX_0) {
                         DEBUG_SHOW_LINE_PD_LED(axis, pd, led, color);
                     }
-					TRACE_NOP;
-				}
+                    TRACE_NOP;
+                }
 #endif
 #if  1 //nsmoon@190701
-				if (axis == ENUM_HOR_X) {
-					if (pd <= EPA_CENT_SEN_NO_X) {
-						epaRightX++;
-					}
-					else if (pd > EPA_CENT_SEN_NO_X) {
-						epaLeftX++;
-					}
-				}
-				ret = epaAddInitial(axis, i, epaIdx, slopePdVal, pd, led, epaLeftX, epaRightX);
-				if (ret < 0) {
-					continue; //mem-error
-				}
-  #if (DEAD_CELL_TBL == 1) //nsmoon@190829
-				deadSen = BS_is_near_dead(axis, ENUM_LED, led, 1); //include itself
-				if (deadSen >= 0) {
-					epaIdx = EPA_IDX_0;
-    #if (DEBUG_packEdgePatternInitial > 0)
-					color = MY_COLOR; // MY_COLOR - 2;
-					if (showLine) {
-						DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-						TRACE_NOP;
-					}
-    #endif
-					ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
-					if (ret < 0) {
-						continue; //mem-error
-					}
-				}
-				else {
-					deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 1); //include itself
-					if (deadSen >= 0) {
-						epaIdx = EPA_IDX_0;
-    #if (DEBUG_packEdgePatternInitial > 0)
-						color = MY_COLOR; // MY_COLOR - 2;
-						if (showLine) {
-							DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-							TRACE_NOP;
-						}
-    #endif
-						ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
-						if (ret < 0) {
-							continue; //mem-error
-						}
-					}
-				}
-  #endif //(DEAD_CELL_TBL == 1)
+                if (axis == ENUM_HOR_X) {
+                    if (pd <= EPA_CENT_SEN_NO_X) {
+                        epaRightX++;
+                    }
+                    else if (pd > EPA_CENT_SEN_NO_X) {
+                        epaLeftX++;
+                    }
+                }
+                ret = epaAddInitial(axis, i, epaIdx, slopePdVal, pd, led, epaLeftX, epaRightX);
+                if (ret < 0) {
+                    continue; //mem-error
+                }
+#if (DEAD_CELL_TBL == 1) //nsmoon@190829
+                deadSen = BS_is_near_dead(axis, ENUM_LED, led, 1); //include itself
+                if (deadSen >= 0) {
+                    epaIdx = EPA_IDX_0;
+#if (DEBUG_packEdgePatternInitial > 0)
+                    color = MY_COLOR; // MY_COLOR - 2;
+                    if (showLine) {
+                        DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                        TRACE_NOP;
+                    }
+#endif
+                    ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
+                    if (ret < 0) {
+                        continue; //mem-error
+                    }
+                }
+                else {
+                    deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 1); //include itself
+                    if (deadSen >= 0) {
+                        epaIdx = EPA_IDX_0;
+#if (DEBUG_packEdgePatternInitial > 0)
+                        color = MY_COLOR; // MY_COLOR - 2;
+                        if (showLine) {
+                            DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                            TRACE_NOP;
+                        }
+#endif
+                        ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
+                        if (ret < 0) {
+                            continue; //mem-error
+                        }
+                    }
+                }
+#endif //(DEAD_CELL_TBL == 1)
 #else
                 ret = epaAddInitial(axis, i, epaIdx, slopePdVal, pd, led);
-				if (ret < 0) {
-					continue; //mem-error
-				}
+                if (ret < 0) {
+                    continue; //mem-error
+                }
 #endif
-				IS_DEBUG_FLAG{
-                TRACE_NOP;
-				};
+                IS_DEBUG_FLAG{
+                    TRACE_NOP;
+                };
             }
 #if 0 //for test //nsmoon@191202
-			else {
-				//not-found initial line
-  #if (DEAD_CELL_TBL == 1) //nsmoon@190829
-				if (GET_ABS(slopePdVal) >= 25) 
-				{
-					deadSen = BS_is_near_dead(axis, ENUM_LED, led, 0); //not include itself
-					if (deadSen >= 0) {
-						epaIdx = EPA_IDX_0;
-    #if (DEBUG_packEdgePatternInitial > 0)
-						color = 0; // MY_COLOR - 2;
-						if (showLine) {
-							DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-							TRACE_NOP;
-						}
-    #endif
-						ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
-						if (ret < 0) {
-							continue; //mem-error
-						}
-					}
-					else {
-						deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 0); //not include itself
-						if (deadSen >= 0) {
-							epaIdx = EPA_IDX_0;
-    #if (DEBUG_packEdgePatternInitial > 0)
-							color = 0; // MY_COLOR - 2;
-							if (showLine) {
-								DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-								TRACE_NOP;
-							}
-    #endif
-							ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
-							if (ret < 0) {
-								continue; //mem-error
-							}
-						}
-					}
-				}
-  #endif //(DEAD_CELL_TBL == 1)
-			}
+            else {
+                //not-found initial line
+#if (DEAD_CELL_TBL == 1) //nsmoon@190829
+                if (GET_ABS(slopePdVal) >= 25)
+                {
+                    deadSen = BS_is_near_dead(axis, ENUM_LED, led, 0); //not include itself
+                    if (deadSen >= 0) {
+                        epaIdx = EPA_IDX_0;
+#if (DEBUG_packEdgePatternInitial > 0)
+                        color = 0; // MY_COLOR - 2;
+                        if (showLine) {
+                            DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                            TRACE_NOP;
+                        }
+#endif
+                        ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
+                        if (ret < 0) {
+                            continue; //mem-error
+                        }
+                    }
+                    else {
+                        deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 0); //not include itself
+                        if (deadSen >= 0) {
+                            epaIdx = EPA_IDX_0;
+#if (DEBUG_packEdgePatternInitial > 0)
+                            color = 0; // MY_COLOR - 2;
+                            if (showLine) {
+                                DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                                TRACE_NOP;
+                            }
+#endif
+                            ret = epaAddInitial(axis, i, epaIdx, slopePdVal, deadSen, deadSen, epaLeftX, epaRightX);
+                            if (ret < 0) {
+                                continue; //mem-error
+                            }
+                        }
+                    }
+                }
+#endif //(DEAD_CELL_TBL == 1)
+            }
 #endif //0
         } //for (i = 0; i < inBufLen; i++)
         epaPosInitial(axis);
         IS_DEBUG_FLAG{
-        TRACE_NOP;
-		};
+            TRACE_NOP;
+        };
     } //for (axis = 0; axis < ENUM_AXIS_END; axis++)
 
     return 0; //no-error
@@ -2760,43 +2760,43 @@ static int packEdgePatternInitial3(DEF_PD_INFO *InBuf)
 #ifdef MULTI_PACK_EP4_ENABLE //for testing
 void BS_epaInit_fine(void)
 {
-	int i;
-	ep_buf_t *epaX = &BS_edge_pattern_x[0];
-	ep_buf_t *epaY = &BS_edge_pattern_y[0];
+    int i;
+    ep_buf_t *epaX = &BS_edge_pattern_x[0];
+    ep_buf_t *epaY = &BS_edge_pattern_y[0];
 
-	//TRACE("BG_epaInit_fine...");
-	if (BS_edge_pattern_ep_cnt == 0) {
-		BG_epaInit();
-		return;
-	}
+    //TRACE("BG_epaInit_fine...");
+    if (BS_edge_pattern_ep_cnt == 0) {
+        BG_epaInit();
+        return;
+    }
 
-	//x-axis
+    //x-axis
 #ifdef USE_CUST_MALLOC //nsmoon@201012
     for (i = 0; i < BS_max_ini_epa_size; i++) { //nsmoon@201013
 #else
     for (i = 0; i < MAX_INIT_EPA_SIZE; i++) {
 #endif
-		epaX[i].len = 0;
-	}
-	//y-axis
+        epaX[i].len = 0;
+    }
+    //y-axis
 #ifdef USE_CUST_MALLOC //nsmoon@201012
     for (i = 0; i < BS_max_ini_epa_size; i++) { //nsmoon@201013
 #else
     for (i = 0; i < MAX_INIT_EPA_SIZE; i++) {
 #endif
-		epaY[i].len = 0;
-	}
+        epaY[i].len = 0;
+    }
 }
 
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define DEBUG_BG_pack_edge_pattern  0 //1:enable
+#define DEBUG_BG_pack_edge_pattern  1 //1:enable
 #endif
 ATTR_BACKEND_RAMFUNC
 static int epaAddInitial4(axis_t axis, int epaIdx, int slopePdVal, int end, int start)
 {
     ep_buf_t *epa, *epa0, *epa1;
-	int s1, s2, e1, e2;
-	int replace;
+    int s1, s2, e1, e2;
+    int replace;
     int i; //, j, k;
 
 #ifdef USE_CUST_MALLOC //nsmoon@201012
@@ -2811,104 +2811,104 @@ static int epaAddInitial4(axis_t axis, int epaIdx, int slopePdVal, int end, int 
     }
 #endif
 
-	if (axis == ENUM_HOR_X) {
-		epa = &BS_edge_pattern_x[epaIdx];
+    if (axis == ENUM_HOR_X) {
+        epa = &BS_edge_pattern_x[epaIdx];
         epa0 = &BS_edge_pattern_x[EPA_IDX_0];
         epa1 = &BS_edge_pattern_x[EPA_IDX_1];
-	}
-	else {
-		epa = &BS_edge_pattern_y[epaIdx];
+    }
+    else {
+        epa = &BS_edge_pattern_y[epaIdx];
         epa0 = &BS_edge_pattern_y[EPA_IDX_0];
         epa1 = &BS_edge_pattern_y[EPA_IDX_1];
-	}
+    }
 
-	if (epa->len == 0 || epaIdx == EPA_IDX_1)
-	{
-		if (epaIdx == EPA_IDX_1) {
-			//check EPA_IDX_0
-			for (i = 0; i < epa0->len; i++)
-			{
-				s1 = epa0->ep[i].s1;
-				s2 = epa0->ep[i].s2;
-				e1 = epa0->ep[i].e1;
-				e2 = epa0->ep[i].e2;
-				if ((start >= s1 && start <= s2) || (end >= e1 && end <= e2)) {
+    if (epa->len == 0 || epaIdx == EPA_IDX_1)
+    {
+        if (epaIdx == EPA_IDX_1) {
+            //check EPA_IDX_0
+            for (i = 0; i < epa0->len; i++)
+            {
+                s1 = epa0->ep[i].s1;
+                s2 = epa0->ep[i].s2;
+                e1 = epa0->ep[i].e1;
+                e2 = epa0->ep[i].e2;
+                if ((start >= s1 && start <= s2) || (end >= e1 && end <= e2)) {
 #if (DEBUG_BG_pack_edge_pattern > 0)
-		IS_DEBUG_FLAG{
+                    IS_DEBUG_FLAG{
                         TRACE("@D10+,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%d", axis, epaIdx, start, end, \
-							epa0->ep[i].s1, epa0->ep[i].e1, epa0->ep[i].s2, epa0->ep[i].e2, i);
-				TRACE_NOP;
-		};
+                              epa0->ep[i].s1, epa0->ep[i].e1, epa0->ep[i].s2, epa0->ep[i].e2, i);
+                        TRACE_NOP;
+                    };
 #endif
-					return 0; //duplicated
-				}
-			} //for (i = 0; i < epa0->len; i++)
+                    return 0; //duplicated
+                }
+            } //for (i = 0; i < epa0->len; i++)
 
-			//check EPA_IDX_1
+            //check EPA_IDX_1
             for (i = 0; i < epa1->len; i++)
-	{
+            {
                 if (epa1->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
-				//s1 and s2 must be same
+                //s1 and s2 must be same
                 s1 = epa1->ep[i].s1;
                 s2 = epa1->ep[i].s2;
                 e1 = epa1->ep[i].e1;
                 e2 = epa1->ep[i].e2;
-				if ((s1 - start) == -(e1 - end)) {
+                if ((s1 - start) == -(e1 - end)) {
 #if (DEBUG_BG_pack_edge_pattern > 0)
-					IS_DEBUG_FLAG{
+                    IS_DEBUG_FLAG{
                         TRACE("@D11+,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%d", axis, epaIdx, start, end, \
                               epa1->ep[i].s1, epa1->ep[i].e1, epa1->ep[i].s2, epa1->ep[i].e2, i);
-					TRACE_NOP;
-					};
+                        TRACE_NOP;
+                    };
 #endif
-					return 0; //duplicated
-				}
+                    return 0; //duplicated
+                }
             } //for (i = 0; i < epa1->len; i++)
-				}
+        }
         else { //EPA_IDX_0
             //check EPA_IDX_1
             for (i = 0; i < epa1->len; i++)
-			{
+            {
                 if (epa1->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
                 s1 = epa1->ep[i].s1;
                 e1 = epa1->ep[i].e1;
-				if (start == s1 || start == e1 || end == s1 || end == e1) {
-					//merging
+                if (start == s1 || start == e1 || end == s1 || end == e1) {
+                    //merging
                     epa1->ep[i].s1 = EPA0_INITIAL_INVALID;
-					//delete_initial_epa(epa0, i);
+                    //delete_initial_epa(epa0, i);
 #if (DEBUG_BG_pack_edge_pattern > 0)
-					IS_DEBUG_FLAG{
+                    IS_DEBUG_FLAG{
                         TRACE("@M10+,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%d", axis, epaIdx, start, end, \
                               epa1->ep[i].s1, epa1->ep[i].e1, epa1->ep[i].s2, epa1->ep[i].e2, i);
-					TRACE_NOP;
-					};
+                        TRACE_NOP;
+                    };
 #endif
-				}
+                }
             } //for (i = 0; i < epa1->len; i++)
-				}
+        }
 
-		if (epa->len < MAX_INIT_EP_COUNT) {
-			epa->ep[epa->len].s1 = (uint8_t)start;
-			epa->ep[epa->len].e1 = (uint8_t)end;
-			epa->ep[epa->len].s2 = (uint8_t)start;
-			epa->ep[epa->len].e2 = (uint8_t)end;
+        if (epa->len < MAX_INIT_EP_COUNT) {
+            epa->ep[epa->len].s1 = (uint8_t)start;
+            epa->ep[epa->len].e1 = (uint8_t)end;
+            epa->ep[epa->len].s2 = (uint8_t)start;
+            epa->ep[epa->len].e2 = (uint8_t)end;
 #if (DEBUG_BG_pack_edge_pattern> 0)
-			IS_DEBUG_FLAG{
+            IS_DEBUG_FLAG{
                 TRACE("@N0,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%x", axis, epaIdx, start, end, \
-				epa->ep[epa->len].s1, epa->ep[epa->len].e1, epa->ep[epa->len].s2, epa->ep[epa->len].e2, &epa->ep[epa->len]);
-			};
+                      epa->ep[epa->len].s1, epa->ep[epa->len].e1, epa->ep[epa->len].s2, epa->ep[epa->len].e2, &epa->ep[epa->len]);
+            };
 #endif
-			epa->len++;
-				}
-		else {
-			TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.1.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
-			return -1; //mem-error
-				}
-		return 1; //new ep
-	} //if (epa->len == 0 || epaIdx == EPA_IDX_1)
+            epa->len++;
+        }
+        else {
+            TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.1.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
+            return -1; //mem-error
+        }
+        return 1; //new ep
+    } //if (epa->len == 0 || epaIdx == EPA_IDX_1)
 
-	//check for replace
-	if (epaIdx == EPA_IDX_0) {
+    //check for replace
+    if (epaIdx == EPA_IDX_0) {
         //check EPA_IDX_1
         for (i = 0; i < epa1->len; i++)
         {
@@ -2917,6 +2917,7 @@ static int epaAddInitial4(axis_t axis, int epaIdx, int slopePdVal, int end, int 
             e1 = epa1->ep[i].e1;
             s2 = epa1->ep[i].s2;
             e2 = epa1->ep[i].e2;
+
             if (start == s1 || start == e1 || end == s2 || end == e2) {
                 //merging
                 epa1->ep[i].s1 = EPA0_INITIAL_INVALID;
@@ -2931,73 +2932,73 @@ static int epaAddInitial4(axis_t axis, int epaIdx, int slopePdVal, int end, int 
             }
         } //for (i = 0; i < epa1->len; i++)
 
-		//check for replacement
-		replace = 0;
-		for (i = 0; i < epa->len; i++)
-		{
-			s1 = epa->ep[i].s1;
-			s2 = epa->ep[i].s2;
-			if ((s1 - 1) == start) {
-					//replace s1, e1
-					epa->ep[i].s1 = (uint8_t)start;
-					epa->ep[i].e1 = (uint8_t)end;
-					replace++;
-				}
-			else if ((s2 + 1) == start) {
-					//replace s2, e2
-					epa->ep[i].s2 = (uint8_t)start;
-					epa->ep[i].e2 = (uint8_t)end;
-					replace++;
-				}
-			else if (s1 <= start && s2 >= start) {
-				replace++; //no-change
-			}
-			if (replace) {
+        //check for replacement
+        replace = 0;
+        for (i = 0; i < epa->len; i++)
+        {
+            s1 = epa->ep[i].s1;
+            s2 = epa->ep[i].s2;
+            if ((s1 - 1) == start) {
+                //replace s1, e1
+                epa->ep[i].s1 = (uint8_t)start;
+                epa->ep[i].e1 = (uint8_t)end;
+                replace++;
+            }
+            else if ((s2 + 1) == start) {
+                //replace s2, e2
+                epa->ep[i].s2 = (uint8_t)start;
+                epa->ep[i].e2 = (uint8_t)end;
+                replace++;
+            }
+            else if (s1 <= start && s2 >= start) {
+                replace++; //no-change
+            }
+            if (replace) {
 #if (DEBUG_BG_pack_edge_pattern > 0)
-				IS_DEBUG_FLAG{
+                IS_DEBUG_FLAG{
                     TRACE("@C11+,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%d,%d,:,%d", axis, epaIdx, start, end, \
-					       epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, s1, s2, i);
-				TRACE_NOP;
-				};
+                          epa->ep[i].s1, epa->ep[i].e1, epa->ep[i].s2, epa->ep[i].e2, s1, s2, i);
+                    TRACE_NOP;
+                };
 #endif
-				return 0; //replace
+                return 0; //replace
             } //if (replace)
-		} //for (i = 0; i < epa[slopeIdx].len; i++)
+        } //for (i = 0; i < epa[slopeIdx].len; i++)
 
-	if (epa->len < MAX_INIT_EP_COUNT) {
-		//empty, new0
-		epa->ep[epa->len].s1 = (uint8_t)start;
-		epa->ep[epa->len].e1 = (uint8_t)end;
-		epa->ep[epa->len].s2 = (uint8_t)start;
-		epa->ep[epa->len].e2 = (uint8_t)end;
+        if (epa->len < MAX_INIT_EP_COUNT) {
+            //empty, new0
+            epa->ep[epa->len].s1 = (uint8_t)start;
+            epa->ep[epa->len].e1 = (uint8_t)end;
+            epa->ep[epa->len].s2 = (uint8_t)start;
+            epa->ep[epa->len].e2 = (uint8_t)end;
 #if (DEBUG_BG_pack_edge_pattern > 0)
-		IS_DEBUG_FLAG{
+            IS_DEBUG_FLAG{
                 TRACE("@N1,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%x,:,%d", epaIdx, axis, start, end, \
-				epa->ep[epa->len].s1, epa->ep[epa->len].e1, epa->ep[epa->len].s2, epa->ep[epa->len].e2, &epa->ep[epa->len], epa->len);
-		};
+                      epa->ep[epa->len].s1, epa->ep[epa->len].e1, epa->ep[epa->len].s2, epa->ep[epa->len].e2, &epa->ep[epa->len], epa->len);
+            };
 #endif
-			epa->len++;
+            epa->len++;
 #if 0 // ascending sorting
-		for (i = 0; i < (epa->len - 1); i++) {
-			for (j = (i + 1); j < epa->len; j++) {
-				if (epa->ep[i].s1 > epa->ep[j].s1) {
-					epTmp = epa->ep[i];
-					epa->ep[i] = epa->ep[j];
-					epa->ep[j] = epTmp;
-				}
-			}
-		}
+            for (i = 0; i < (epa->len - 1); i++) {
+                for (j = (i + 1); j < epa->len; j++) {
+                    if (epa->ep[i].s1 > epa->ep[j].s1) {
+                        epTmp = epa->ep[i];
+                        epa->ep[i] = epa->ep[j];
+                        epa->ep[j] = epTmp;
+                    }
+                }
+            }
 #endif //0
-	}
-	else {
-		TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.2.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
-		return -1; //mem-error
-	}
-	return 1; //new
-	} //if (epaIdx == EPA_IDX_0)
+        }
+        else {
+            TRACE_ERROR_MEM("ERROR_MEM! epaAddInitial.2.invalid epa->len: %d (%d) [%d]", epaIdx, axis, BG_frame_no);
+            return -1; //mem-error
+        }
+        return 1; //new
+    } //if (epaIdx == EPA_IDX_0)
 
     TRACE_ERROR("ERROR! unknown epa %d-%d %d %d %d", axis, epaIdx, slopePdVal, end, start);
-	return 0; //unknown
+    return 0; //unknown
 }
 
 static int epaAddInitial4_epa1(axis_t axis)
@@ -3029,7 +3030,7 @@ static int epaAddInitial4_epa1(axis_t axis)
 #if (DEBUG_BG_pack_edge_pattern> 0)
             IS_DEBUG_FLAG{
                 TRACE("@N2,%d,%d,%d,%d,:,%d,%d,%d,%d,:,%x", axis, i, epa1->ep[i].s1, epa1->ep[i].e1, \
-                epa0->ep[epa0->len].s1, epa0->ep[epa0->len].e1, epa0->ep[epa0->len].s2, epa0->ep[epa0->len].e2, &epa0->ep[epa0->len]);
+                      epa0->ep[epa0->len].s1, epa0->ep[epa0->len].e1, epa0->ep[epa0->len].s2, epa0->ep[epa0->len].e2, &epa0->ep[epa0->len]);
             };
 #endif
             epa0->len++;
@@ -3046,124 +3047,124 @@ static int epaAddInitial4_epa1(axis_t axis)
 ATTR_BACKEND_RAMFUNC
 static void epaPosInitial4(axis_t axis)
 {
-	ep_buf_t *epa;
-	float *ledPos, *pdPos;
-	float posBotRht, posBotLft, posTopRht, posTopLft;
+    ep_buf_t *epa;
+    float *ledPos, *pdPos;
+    float posBotRht, posBotLft, posTopRht, posTopLft;
     int i, s1, s2, e1, e2;
-	int maxPdNum;
+    int maxPdNum;
 
-	if (axis == ENUM_HOR_X) {
-		maxPdNum = BS_maxHorPdNum - 1;
-	}
-	else {
-		maxPdNum = BS_maxVerPdNum - 1;
-	}
+    if (axis == ENUM_HOR_X) {
+        maxPdNum = BS_maxHorPdNum - 1;
+    }
+    else {
+        maxPdNum = BS_maxVerPdNum - 1;
+    }
 
-		if (axis == ENUM_HOR_X) {
+    if (axis == ENUM_HOR_X) {
         epa = &BS_edge_pattern_x[EPA_IDX_0];
-			ledPos = &BS_led_pos_x[0];
-			pdPos = &BS_pd_pos_x[0];
-		}
-		else {
+        ledPos = &BS_led_pos_x[0];
+        pdPos = &BS_pd_pos_x[0];
+    }
+    else {
         epa = &BS_edge_pattern_y[EPA_IDX_0];
-			ledPos = &BS_led_pos_y[0];
-			pdPos = &BS_pd_pos_y[0];
-		}
-		for (i = 0; i < epa->len; i++)
-		{
-            //if (epa->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
-			s1 = epa->ep[i].s1;
-			s2 = epa->ep[i].s2;
-			e1 = epa->ep[i].e1;
-			e2 = epa->ep[i].e2;
+        ledPos = &BS_led_pos_y[0];
+        pdPos = &BS_pd_pos_y[0];
+    }
+    for (i = 0; i < epa->len; i++)
+    {
+        //if (epa->ep[i].s1 == EPA0_INITIAL_INVALID) continue;
+        s1 = epa->ep[i].s1;
+        s2 = epa->ep[i].s2;
+        e1 = epa->ep[i].e1;
+        e2 = epa->ep[i].e2;
         IS_DEBUG_FLAG{
             TRACE_NOP;
         };
-            //if (k == EPA_IDX_0)
-            if (s1 == e1 && s2 == e2) //EPA_IDX_0
-            {
-				if (s1 == 0) {
-					posBotRht = ledPos[s1] - MULTI_INITIAL_POLY_PAD_0;
-			}
-				else {
-					posBotRht = ledPos[s1 - 1] + MULTI_INITIAL_POLY_PAD_DIST;
-			}
-				if (e1 == 0) {
-					posTopRht = pdPos[e1] - MULTI_INITIAL_POLY_PAD_0;
-			}
-				else {
-					posTopRht = pdPos[e1 - 1] + MULTI_INITIAL_POLY_PAD_DIST;
-			}
-				if (s2 == maxPdNum) {
-					posBotLft = ledPos[s2] + MULTI_INITIAL_POLY_PAD_0;
-			}
-			else {
-					posBotLft = ledPos[s2 + 1] - MULTI_INITIAL_POLY_PAD_DIST;
-			}
-				if (e2 == maxPdNum) {
-					posTopLft = pdPos[e2] + MULTI_INITIAL_POLY_PAD_0;
-				}
-				else {
-					posTopLft = pdPos[e2 + 1] - MULTI_INITIAL_POLY_PAD_DIST;
-				}
-			}
-			else {
-                if (e1 < s1) {
-					posTopRht = pdPos[e1] + MULTI_INITIAL_POLY_PAD_DIST;
-                    posBotRht = ledPos[e1] + MULTI_INITIAL_POLY_PAD_DIST;;
-                    posBotLft = ledPos[s1] - MULTI_INITIAL_POLY_PAD_DIST;
-                    posTopLft = pdPos[s1] - MULTI_INITIAL_POLY_PAD_DIST;
-			}
-				else {
-					//(s1 < e1)
-					posBotRht = ledPos[s1] + MULTI_INITIAL_POLY_PAD_DIST;
-                    posTopRht = pdPos[s1] + MULTI_INITIAL_POLY_PAD_DIST;
-					posTopLft = pdPos[e1] - MULTI_INITIAL_POLY_PAD_DIST;
-                    posBotLft = ledPos[e1] - MULTI_INITIAL_POLY_PAD_DIST;
-			}
-		}
+        //if (k == EPA_IDX_0)
+        if (s1 == e1 && s2 == e2) //EPA_IDX_0
+        {
+            if (s1 == 0) {
+                posBotRht = ledPos[s1] - MULTI_INITIAL_POLY_PAD_0;
+            }
+            else {
+                posBotRht = ledPos[s1 - 1] + MULTI_INITIAL_POLY_PAD_DIST;
+            }
+            if (e1 == 0) {
+                posTopRht = pdPos[e1] - MULTI_INITIAL_POLY_PAD_0;
+            }
+            else {
+                posTopRht = pdPos[e1 - 1] + MULTI_INITIAL_POLY_PAD_DIST;
+            }
+            if (s2 == maxPdNum) {
+                posBotLft = ledPos[s2] + MULTI_INITIAL_POLY_PAD_0;
+            }
+            else {
+                posBotLft = ledPos[s2 + 1] - MULTI_INITIAL_POLY_PAD_DIST;
+            }
+            if (e2 == maxPdNum) {
+                posTopLft = pdPos[e2] + MULTI_INITIAL_POLY_PAD_0;
+            }
+            else {
+                posTopLft = pdPos[e2 + 1] - MULTI_INITIAL_POLY_PAD_DIST;
+            }
+        }
+        else {
+            if (e1 < s1) {
+                posTopRht = pdPos[e1] + MULTI_INITIAL_POLY_PAD_DIST;
+                posBotRht = ledPos[e1] + MULTI_INITIAL_POLY_PAD_DIST;;
+                posBotLft = ledPos[s1] - MULTI_INITIAL_POLY_PAD_DIST;
+                posTopLft = pdPos[s1] - MULTI_INITIAL_POLY_PAD_DIST;
+            }
+            else {
+                //(s1 < e1)
+                posBotRht = ledPos[s1] + MULTI_INITIAL_POLY_PAD_DIST;
+                posTopRht = pdPos[s1] + MULTI_INITIAL_POLY_PAD_DIST;
+                posTopLft = pdPos[e1] - MULTI_INITIAL_POLY_PAD_DIST;
+                posBotLft = ledPos[e1] - MULTI_INITIAL_POLY_PAD_DIST;
+            }
+        }
 
-		if (axis == ENUM_HOR_X) {
-				epa->poly[i][0].vert.x = posBotRht; //bot-rht
-				epa->poly[i][0].vert.y = BS_sensor_zero_y;
-				epa->poly[i][0].edgeId = (uint16_t)i; //epa idx, FIXME
-				epa->poly[i][1].vert.x = posTopRht;  //top-rht
-				epa->poly[i][1].vert.y = BS_sensor_end_y;
-				epa->poly[i][1].edgeId = NO_CLIPPING_EDGEID;
-				epa->poly[i][2].vert.x = posTopLft;  //top-lft
-				epa->poly[i][2].vert.y = BS_sensor_end_y;
-				epa->poly[i][2].edgeId = (uint16_t)i; //epa idx, FIXME
-				epa->poly[i][3].vert.x = posBotLft; //bot-lft
-				epa->poly[i][3].vert.y = BS_sensor_zero_y;
-				epa->poly[i][3].edgeId = NO_CLIPPING_EDGEID;
-		}
-		else {
-				epa->poly[i][0].vert.y = posBotRht; //bot-rht
-				epa->poly[i][0].vert.x = BS_sensor_end_x;
-				epa->poly[i][0].edgeId = (uint16_t)i; //epa idx, FIXME
-				epa->poly[i][1].vert.y = posTopRht;  //top-rht
-				epa->poly[i][1].vert.x = BS_sensor_zero_x;
-				epa->poly[i][1].edgeId = NO_CLIPPING_EDGEID;
-				epa->poly[i][2].vert.y = posTopLft;  //top-lft
-				epa->poly[i][2].vert.x = BS_sensor_zero_x;
-				epa->poly[i][2].edgeId = (uint16_t)i; //epa idx, FIXME
-				epa->poly[i][3].vert.y = posBotLft; //bot-lft
-				epa->poly[i][3].vert.x = BS_sensor_end_x;
-				epa->poly[i][3].edgeId = NO_CLIPPING_EDGEID;
-		}
+        if (axis == ENUM_HOR_X) {
+            epa->poly[i][0].vert.x = posBotRht; //bot-rht
+            epa->poly[i][0].vert.y = BS_sensor_zero_y;
+            epa->poly[i][0].edgeId = (uint16_t)i; //epa idx, FIXME
+            epa->poly[i][1].vert.x = posTopRht;  //top-rht
+            epa->poly[i][1].vert.y = BS_sensor_end_y;
+            epa->poly[i][1].edgeId = NO_CLIPPING_EDGEID;
+            epa->poly[i][2].vert.x = posTopLft;  //top-lft
+            epa->poly[i][2].vert.y = BS_sensor_end_y;
+            epa->poly[i][2].edgeId = (uint16_t)i; //epa idx, FIXME
+            epa->poly[i][3].vert.x = posBotLft; //bot-lft
+            epa->poly[i][3].vert.y = BS_sensor_zero_y;
+            epa->poly[i][3].edgeId = NO_CLIPPING_EDGEID;
+        }
+        else {
+            epa->poly[i][0].vert.y = posBotRht; //bot-rht
+            epa->poly[i][0].vert.x = BS_sensor_end_x;
+            epa->poly[i][0].edgeId = (uint16_t)i; //epa idx, FIXME
+            epa->poly[i][1].vert.y = posTopRht;  //top-rht
+            epa->poly[i][1].vert.x = BS_sensor_zero_x;
+            epa->poly[i][1].edgeId = NO_CLIPPING_EDGEID;
+            epa->poly[i][2].vert.y = posTopLft;  //top-lft
+            epa->poly[i][2].vert.x = BS_sensor_zero_x;
+            epa->poly[i][2].edgeId = (uint16_t)i; //epa idx, FIXME
+            epa->poly[i][3].vert.y = posBotLft; //bot-lft
+            epa->poly[i][3].vert.x = BS_sensor_end_x;
+            epa->poly[i][3].edgeId = NO_CLIPPING_EDGEID;
+        }
 #if (DEBUG_packEdgePatternInitial > 0)
-		IS_DEBUG_FLAG{
-				//if (BG_show_line_init)
-			{
-                    DEBUG_SHOW_POLY(&epa->poly[i][0], 4, MY_COLOR-4);
-				TRACE_NOP;
-			}
-		};
+        IS_DEBUG_FLAG{
+            //if (BG_show_line_init)
+            {
+                DEBUG_SHOW_POLY(&epa->poly[i][0], 4, MY_COLOR-4);
+                TRACE_NOP;
+            }
+        };
 #endif
-		} //for (i = 0; i < epa->len; i++)
-	IS_DEBUG_FLAG{
-		TRACE_NOP;
-	};
+    } //for (i = 0; i < epa->len; i++)
+    IS_DEBUG_FLAG{
+        TRACE_NOP;
+    };
 }
 #endif
 
@@ -3171,31 +3172,31 @@ static void epaPosInitial4(axis_t axis)
 static int packEdgePatternInitial4(void)
 {
     int led, pd, slopePdVal, epaIdx;
-	axis_t axis;
+    axis_t axis;
     int maxPdNum;
     uint8_t *inBuf;
     int inBufIdx, ledMask;
     int maxInLineBufLed;
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
-	int deadSen;
+    int deadSen;
 #endif
-	int ret;
+    int ret;
 #if (DEBUG_packEdgePatternInitial > 0) && defined(DRAW_POLYGON_TEST)
     int showLine = 1, color = MY_COLOR;
     if (BG_show_line_init != 1) {
         showLine = 0;
     }
 #endif
-	//TRACE("DEBUG_packEdgePatternInitial...");
-	IS_DEBUG_FLAG{
-		TRACE_NOP;
-	};
+    //TRACE("DEBUG_packEdgePatternInitial...");
+    IS_DEBUG_FLAG{
+        TRACE_NOP;
+    };
 
-	BG_epaInit();
+    BG_epaInit();
 
     for (axis = (axis_t)0; axis < ENUM_AXIS_END; axis++) {
-		if (axis == ENUM_HOR_X) {
-			//x-axis
+        if (axis == ENUM_HOR_X) {
+            //x-axis
             maxPdNum = BS_maxHorPdNum - 1; //nsmoon@201015-bugfix
             inBuf = IN_LINE_BUF_ADDR_X_PD;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
@@ -3203,9 +3204,9 @@ static int packEdgePatternInitial4(void)
 #else
             maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif
-		}
-		else {
-			//y-axis
+        }
+        else {
+            //y-axis
             maxPdNum = BS_maxVerPdNum - 1; //nsmoon@201015-bugfix
             inBuf = IN_LINE_BUF_ADDR_Y_PD;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
@@ -3213,7 +3214,7 @@ static int packEdgePatternInitial4(void)
 #else
             maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-		}
+        }
 
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
         uint8_t *senList;
@@ -3221,11 +3222,11 @@ static int packEdgePatternInitial4(void)
         if (axis == ENUM_HOR_X) {
             senList = &BS_pd_x[0];
             senCnt = BS_pd_x_cnt;
-		}
-		else {
+        }
+        else {
             senList = &BS_pd_y[0];
             senCnt = BS_pd_y_cnt;
-		}
+        }
 #endif
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
         for (senIdx = 0; senIdx < senCnt; senIdx++) {
@@ -3248,29 +3249,29 @@ static int packEdgePatternInitial4(void)
                 for (bitIdx = 0; bitIdx < 8; bitIdx++) {
                     ledMask = (uint8_t)0x1 << bitIdx;
                     if ((tmp8 & (uint8_t)ledMask) == 0) {
-				continue;
-			}
+                        continue;
+                    }
                     led = byteIdx * 8 + bitIdx;
                     slopePdVal = led - pd;
                     if (slopePdVal == 0) {
                         epaIdx = EPA_IDX_0;
-			}
+                    }
                     else if (slopePdVal == 1 || slopePdVal == -1) {
                         epaIdx = EPA_IDX_1;
-			}
-			else {
+                    }
+                    else {
                         epaIdx = EPA_IDX_UNKNOWN;
-			}
+                    }
 #if (DEBUG_packEdgePatternInitial > 0) && defined(DRAW_POLYGON_TEST)
                     if (epaIdx == EPA_IDX_0) {
-                        color = 0;
-			}
+                        color = 30;
+                    }
                     else if (epaIdx == EPA_IDX_1) {
-                        color = 1;
-			}
-			else {
+                        color = 30;
+                    }
+                    else {
                         color = 2;
-			}
+                    }
 #endif
 #ifdef USE_CUST_MALLOC //nsmoon@201012
                     if (epaIdx > EPA_IDX_UNKNOWN && epaIdx < BS_max_ini_epa_size) {
@@ -3278,66 +3279,70 @@ static int packEdgePatternInitial4(void)
                     if (epaIdx > EPA_IDX_UNKNOWN && epaIdx < MAX_INIT_EPA_SIZE) {
 #endif
 #if (DEBUG_packEdgePatternInitial > 0) && defined(DRAW_POLYGON_TEST)
-				if (showLine)
-				{
-					//if (epaIdx == EPA_IDX_0) 
-					{
-						DEBUG_SHOW_LINE_PD_LED(axis, pd, led, color);
-					}
-					TRACE_NOP;
-				}
+                        if (showLine)
+                        {
+                            //if (epaIdx == EPA_IDX_0)
+                            {
+                                DEBUG_SHOW_LINE_PD_LED(axis, pd, led, color);
+                                TRACE("color : %d", color);
+                                DEBUG_show_line_pd_led_(axis, pd, led, color);
+                            }
+                            TRACE_NOP;
+                        }
 #endif
                         //TRACE("--pd,led,lineBufIdx,ledMask:, (%d) %d, %d, %d, %x, (%x)", axis, pd, led, inBufIdx, ledMask, tmp8);
                         ret = epaAddInitial4(axis, epaIdx, slopePdVal, pd, led);
-				if (ret < 0) {
+                        if (ret < 0) {
                             TRACE_ERROR("ERROR! epaAddInitial4..1");
-					continue; //mem-error
-				}
+                            continue; //mem-error
+                        }
 
 #if (DEAD_CELL_TBL == 1) //nsmoon@190829
-				deadSen = BS_is_near_dead(axis, ENUM_LED, led, 1); //include itself
-				if (deadSen >= 0) {
-					epaIdx = EPA_IDX_0;
+                        deadSen = BS_is_near_dead(axis, ENUM_LED, led, 1); //include itself
+                        if (deadSen >= 0) {
+                            epaIdx = EPA_IDX_0;
 #if (DEBUG_packEdgePatternInitial > 0) && defined(DRAW_POLYGON_TEST)
                             IS_DEBUG_FLAG{
-					color = MY_COLOR; // MY_COLOR - 2;
-					if (showLine) {
-						DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-						TRACE_NOP;
-					}
+                                color = MY_COLOR; // MY_COLOR - 2;
+                                if (showLine) {
+                                    DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                                    DEBUG_show_line_pd_led_(axis, deadSen, deadSen, color);
+                                    TRACE_NOP;
+                                }
                             };
 #endif
                             ret = epaAddInitial4(axis, epaIdx, slopePdVal, deadSen, deadSen);
-					if (ret < 0) {
+                            if (ret < 0) {
                                 TRACE_ERROR("ERROR! epaAddInitial4..2");
-						continue; //mem-error
-					}
-				}
-				else {
-					deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 1); //include itself
-					if (deadSen >= 0) {
-						epaIdx = EPA_IDX_0;
+                                continue; //mem-error
+                            }
+                        }
+                        else {
+                            deadSen = BS_is_near_dead(axis, ENUM_PD, pd, 1); //include itself
+                            if (deadSen >= 0) {
+                                epaIdx = EPA_IDX_0;
 #if (DEBUG_packEdgePatternInitial > 0) && defined(DRAW_POLYGON_TEST)
                                 IS_DEBUG_FLAG{
-						color = MY_COLOR; // MY_COLOR - 2;
-						if (showLine) {
-							DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
-							TRACE_NOP;
-						}
+                                    color = MY_COLOR; // MY_COLOR - 2;
+                                    if (showLine) {
+                                        DEBUG_SHOW_LINE_PD_LED(axis, deadSen, deadSen, color);
+                                        DEBUG_show_line_pd_led_(axis, deadSen, deadSen, color);
+                                        TRACE_NOP;
+                                    }
                                 };
 #endif
                                 ret = epaAddInitial4(axis, epaIdx, slopePdVal, deadSen, deadSen);
-						if (ret < 0) {
+                                if (ret < 0) {
                                     TRACE_ERROR("ERROR! epaAddInitial4..3");
-							continue; //mem-error
-						}
-					}
-				}
+                                    continue; //mem-error
+                                }
+                            }
+                        }
 #endif //(DEAD_CELL_TBL == 1)
-				IS_DEBUG_FLAG{
-					TRACE_NOP;
-				};
-			} //if (epaIdx > EPA_IDX_UNKNOWN)
+                        IS_DEBUG_FLAG{
+                            TRACE_NOP;
+                        };
+                    } //if (epaIdx > EPA_IDX_UNKNOWN)
                 } //for (bitIdx = 0; bitIdx < 8; bitIdx++)
             } //for (byteIdx = byteIdxSt; byteIdx <= byteIdxEd; byteIdx++)
             IS_DEBUG_FLAG{
@@ -3349,12 +3354,12 @@ static int packEdgePatternInitial4(void)
 #ifndef USE_CUST_MALLOC //nsmoon@201012
         epaPosInitial4(axis); //nsmoon@201008
 #endif
-		IS_DEBUG_FLAG{
-			TRACE_NOP;
-		};
-	} //for (axis = 0; axis < ENUM_AXIS_END; axis++)
+        IS_DEBUG_FLAG{
+            TRACE_NOP;
+        };
+    } //for (axis = 0; axis < ENUM_AXIS_END; axis++)
 
-	return 0; //no-error
+    return 0; //no-error
 }
 #endif
 /****************************************************/
@@ -3369,210 +3374,210 @@ static int packEdgePatternInitial4(void)
 ATTR_BACKEND_RAMFUNC
 static void add_pos_edge_pattern(bd_type_t bdType, vec_e_t *poly, ep_no_t *epNo, ep_dz_t deadZone, uint16_t edgeId)
 {
-	float *top_pd = 0, *bot_led = 0;
-	//pad_width_t padWidth;
+    float *top_pd = 0, *bot_led = 0;
+    //pad_width_t padWidth;
     int maxPdNum; //maxPosSlopeVal;
-	//float diffPos;
-	//vec_t p0, p1, p2, p3, res;
+    //float diffPos;
+    //vec_t p0, p1, p2, p3, res;
     //int ovDz = 0;
-	//int slopeVal1, slopeVal2, right_dz = 0, left_dz = 0;
-	axis_t axis;
-	//sen_type_t sensor;
-	int s1 = epNo->s1, s2 = epNo->s2, e1 = epNo->e1, e2 = epNo->e2;
+    //int slopeVal1, slopeVal2, right_dz = 0, left_dz = 0;
+    axis_t axis;
+    //sen_type_t sensor;
+    int s1 = epNo->s1, s2 = epNo->s2, e1 = epNo->e1, e2 = epNo->e2;
 
-	if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
-		//x-axis
-		axis = ENUM_HOR_X;
-		maxPdNum = BS_maxHorPdNum - 1;
+    if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
+        //x-axis
+        axis = ENUM_HOR_X;
+        maxPdNum = BS_maxHorPdNum - 1;
         //maxPosSlopeVal = BS_slopeValMaxX;
-		top_pd = &BS_pd_pos_x[0];
-		bot_led = &BS_led_pos_x[0];
+        top_pd = &BS_pd_pos_x[0];
+        bot_led = &BS_led_pos_x[0];
 #if (USE_HALF_EP_PAD ==1)
-		//y center line
-		p0.x = BS_sensor_zero_y;
-		p0.y = (BS_sensor_end_y - BS_sensor_zero_y) * 0.5f;
-		p1.x = BS_sensor_end_y;
-		p1.y = p0.y;
+        //y center line
+        p0.x = BS_sensor_zero_y;
+        p0.y = (BS_sensor_end_y - BS_sensor_zero_y) * 0.5f;
+        p1.x = BS_sensor_end_y;
+        p1.y = p0.y;
 #endif
-	}
-	else if (bdType == ENUM_RHT_BD || bdType == ENUM_LFT_BD) {
-		//y-axis
-		axis = ENUM_VER_Y;
-		maxPdNum = BS_maxVerPdNum - 1;
+    }
+    else if (bdType == ENUM_RHT_BD || bdType == ENUM_LFT_BD) {
+        //y-axis
+        axis = ENUM_VER_Y;
+        maxPdNum = BS_maxVerPdNum - 1;
         //maxPosSlopeVal = BS_slopeValMaxY;
-		top_pd = &BS_pd_pos_y[0];
-		bot_led = &BS_led_pos_y[0];
+        top_pd = &BS_pd_pos_y[0];
+        bot_led = &BS_led_pos_y[0];
 #if (USE_HALF_EP_PAD ==1)
-		//x center line
-		p0.x = (BS_sensor_end_x - BS_sensor_zero_x) * 0.5f;
-		p0.y = BS_sensor_zero_y;
-		p1.x = p0.x;
-		p1.y = BS_sensor_end_y;
+        //x center line
+        p0.x = (BS_sensor_end_x - BS_sensor_zero_x) * 0.5f;
+        p0.y = BS_sensor_zero_y;
+        p1.x = p0.x;
+        p1.y = BS_sensor_end_y;
 #endif
-	}
-	else {
-		TRACE_ERROR("ERROR! add_pos_edge_pattern..invalid side %d [%d]", bdType, BG_frame_no);
-		return;
-	}
+    }
+    else {
+        TRACE_ERROR("ERROR! add_pos_edge_pattern..invalid side %d [%d]", bdType, BG_frame_no);
+        return;
+    }
 
-	//-----------------------------------
-	//bottom right
-	//-----------------------------------
-	if (deadZone == ENUM_EP_DZ_RIGHT) {
-		if (axis == ENUM_HOR_X) {
-			poly[0].vert.x = bot_led[0];
-			poly[0].vert.y = BS_sensor_zero_y;
-		}
-		else {
-			poly[0].vert.x = BS_sensor_end_x;
-			poly[0].vert.y = bot_led[0];
-		}
-		poly[0].edgeId = NO_CLIPPING_EDGEID;
-	}
-	else {
-		if (axis == ENUM_HOR_X) {
-			poly[0].vert.x = bot_led[s1];
-			poly[0].vert.y = BS_sensor_zero_y;
-		}
-		else {
-			poly[0].vert.x = BS_sensor_end_x;
-			poly[0].vert.y = bot_led[s1];
-		}
-		poly[0].edgeId = edgeId;
-	}
+    //-----------------------------------
+    //bottom right
+    //-----------------------------------
+    if (deadZone == ENUM_EP_DZ_RIGHT) {
+        if (axis == ENUM_HOR_X) {
+            poly[0].vert.x = bot_led[0];
+            poly[0].vert.y = BS_sensor_zero_y;
+        }
+        else {
+            poly[0].vert.x = BS_sensor_end_x;
+            poly[0].vert.y = bot_led[0];
+        }
+        poly[0].edgeId = NO_CLIPPING_EDGEID;
+    }
+    else {
+        if (axis == ENUM_HOR_X) {
+            poly[0].vert.x = bot_led[s1];
+            poly[0].vert.y = BS_sensor_zero_y;
+        }
+        else {
+            poly[0].vert.x = BS_sensor_end_x;
+            poly[0].vert.y = bot_led[s1];
+        }
+        poly[0].edgeId = edgeId;
+    }
 
-	//-----------------------------------
-	//top right
-	//-----------------------------------
-	if (deadZone == ENUM_EP_DZ_RIGHT) {
-		if (axis == ENUM_HOR_X) {
-			poly[1].vert.x = top_pd[0];
-			poly[1].vert.y = BS_sensor_end_y;
-		}
-		else {
-			poly[1].vert.x = BS_sensor_zero_x;
-			poly[1].vert.y = top_pd[0];
-		}
-	}
-	else {
-		if (axis == ENUM_HOR_X) {
-			poly[1].vert.x = top_pd[e1];
-			poly[1].vert.y = BS_sensor_end_y;
-		}
-		else {
-			poly[1].vert.x = BS_sensor_zero_x;
-			poly[1].vert.y = top_pd[e1];
-		}
-	}
-	poly[1].edgeId = NO_CLIPPING_EDGEID;
+    //-----------------------------------
+    //top right
+    //-----------------------------------
+    if (deadZone == ENUM_EP_DZ_RIGHT) {
+        if (axis == ENUM_HOR_X) {
+            poly[1].vert.x = top_pd[0];
+            poly[1].vert.y = BS_sensor_end_y;
+        }
+        else {
+            poly[1].vert.x = BS_sensor_zero_x;
+            poly[1].vert.y = top_pd[0];
+        }
+    }
+    else {
+        if (axis == ENUM_HOR_X) {
+            poly[1].vert.x = top_pd[e1];
+            poly[1].vert.y = BS_sensor_end_y;
+        }
+        else {
+            poly[1].vert.x = BS_sensor_zero_x;
+            poly[1].vert.y = top_pd[e1];
+        }
+    }
+    poly[1].edgeId = NO_CLIPPING_EDGEID;
 
 #if (USE_HALF_EP_PAD == 1) 
-	{
-		p2.x = poly[0].vert.x;
-		p2.y = poly[0].vert.y;
-		p3.x = poly[1].vert.x;
-		p3.y = poly[1].vert.y;
+    {
+        p2.x = poly[0].vert.x;
+        p2.y = poly[0].vert.y;
+        p3.x = poly[1].vert.x;
+        p3.y = poly[1].vert.y;
 
-		if (line_sect(&p0, &p1, &p2, &p3, &res) != 0) {
-			if (sensor == ENUM_PD)
-			{
-				poly[0].vert.x = res.x;
-				poly[0].vert.y = res.y;
-			}
-			else {
-				poly[1].vert.x = res.x;
-				poly[1].vert.y = res.y;
-			}
-		}
-		else {
-			TRACE_ERROR("ERROR! add_pos_edge_pattern.1.no intersect");
-		}
-	}
+        if (line_sect(&p0, &p1, &p2, &p3, &res) != 0) {
+            if (sensor == ENUM_PD)
+            {
+                poly[0].vert.x = res.x;
+                poly[0].vert.y = res.y;
+            }
+            else {
+                poly[1].vert.x = res.x;
+                poly[1].vert.y = res.y;
+            }
+        }
+        else {
+            TRACE_ERROR("ERROR! add_pos_edge_pattern.1.no intersect");
+        }
+    }
 #endif
 
-	//-----------------------------------
-	//top left
-	//-----------------------------------
-	if (deadZone == ENUM_EP_DZ_LEFT) {
-		if (axis == ENUM_HOR_X) {
-			poly[2].vert.x = top_pd[maxPdNum]; //top left x
-			poly[2].vert.y = BS_sensor_end_y;
-		}
-		else {
-			poly[2].vert.x = BS_sensor_zero_x;
-			poly[2].vert.y = top_pd[maxPdNum]; //top left y
-		}
-		poly[2].edgeId = NO_CLIPPING_EDGEID;
-	}
-	else {
-		if (axis == ENUM_HOR_X) {
-			poly[2].vert.x = top_pd[e2]; //top left x
-			poly[2].vert.y = BS_sensor_end_y;
-		}
-		else {
-			poly[2].vert.x = BS_sensor_zero_x;
-			poly[2].vert.y = top_pd[e2]; //top left y
-		}
-		poly[2].edgeId = edgeId;
-	}
+    //-----------------------------------
+    //top left
+    //-----------------------------------
+    if (deadZone == ENUM_EP_DZ_LEFT) {
+        if (axis == ENUM_HOR_X) {
+            poly[2].vert.x = top_pd[maxPdNum]; //top left x
+            poly[2].vert.y = BS_sensor_end_y;
+        }
+        else {
+            poly[2].vert.x = BS_sensor_zero_x;
+            poly[2].vert.y = top_pd[maxPdNum]; //top left y
+        }
+        poly[2].edgeId = NO_CLIPPING_EDGEID;
+    }
+    else {
+        if (axis == ENUM_HOR_X) {
+            poly[2].vert.x = top_pd[e2]; //top left x
+            poly[2].vert.y = BS_sensor_end_y;
+        }
+        else {
+            poly[2].vert.x = BS_sensor_zero_x;
+            poly[2].vert.y = top_pd[e2]; //top left y
+        }
+        poly[2].edgeId = edgeId;
+    }
 
-	//-----------------------------------
-	//bottom left
-	//-----------------------------------
-	if (deadZone == ENUM_EP_DZ_LEFT) {
-		if (axis == ENUM_HOR_X) {
-			poly[3].vert.x = bot_led[maxPdNum]; //bottom left x
-			poly[3].vert.y = BS_sensor_zero_y;
-		}
-		else {
-			poly[3].vert.x = BS_sensor_end_x;
-			poly[3].vert.y = bot_led[maxPdNum]; //bottom left y
-		}
-	}
-	else {
-		if (axis == ENUM_HOR_X) {
-			poly[3].vert.x = bot_led[s2]; //bottom left x
-			poly[3].vert.y = BS_sensor_zero_y;
-		}
-		else {
-			poly[3].vert.x = BS_sensor_end_x;
-			poly[3].vert.y = bot_led[s2]; //bottom left y
-		}
-	}
-	poly[3].edgeId = NO_CLIPPING_EDGEID;
+    //-----------------------------------
+    //bottom left
+    //-----------------------------------
+    if (deadZone == ENUM_EP_DZ_LEFT) {
+        if (axis == ENUM_HOR_X) {
+            poly[3].vert.x = bot_led[maxPdNum]; //bottom left x
+            poly[3].vert.y = BS_sensor_zero_y;
+        }
+        else {
+            poly[3].vert.x = BS_sensor_end_x;
+            poly[3].vert.y = bot_led[maxPdNum]; //bottom left y
+        }
+    }
+    else {
+        if (axis == ENUM_HOR_X) {
+            poly[3].vert.x = bot_led[s2]; //bottom left x
+            poly[3].vert.y = BS_sensor_zero_y;
+        }
+        else {
+            poly[3].vert.x = BS_sensor_end_x;
+            poly[3].vert.y = bot_led[s2]; //bottom left y
+        }
+    }
+    poly[3].edgeId = NO_CLIPPING_EDGEID;
 
 #if (USE_HALF_EP_PAD == 1) 
-	{
-		p2.x = poly[2].vert.x;
-		p2.y = poly[2].vert.y;
-		p3.x = poly[3].vert.x;
-		p3.y = poly[3].vert.y;
-		if (line_sect(&p0, &p1, &p2, &p3, &res) != 0) {
-			if (sensor == ENUM_PD)
-			{ 
-				poly[3].vert.x = res.x;
-				poly[3].vert.y = res.y;
-			}
-			else {
-				poly[2].vert.x = res.x;
-				poly[2].vert.y = res.y;
-			}
-		}
-		else {
-			TRACE_ERROR("ERROR! add_pos_edge_pattern5.2.no intersect");
-		}
-	}
+    {
+        p2.x = poly[2].vert.x;
+        p2.y = poly[2].vert.y;
+        p3.x = poly[3].vert.x;
+        p3.y = poly[3].vert.y;
+        if (line_sect(&p0, &p1, &p2, &p3, &res) != 0) {
+            if (sensor == ENUM_PD)
+            {
+                poly[3].vert.x = res.x;
+                poly[3].vert.y = res.y;
+            }
+            else {
+                poly[2].vert.x = res.x;
+                poly[2].vert.y = res.y;
+            }
+        }
+        else {
+            TRACE_ERROR("ERROR! add_pos_edge_pattern5.2.no intersect");
+        }
+    }
 #endif
 
 #if (DEBUG_addEpaValueMulti > 1)
-	IS_DEBUG_FLAG{
-	int i;
-	TRACENR("%d::(%d-%d)(%d-%d)", bdType, epNo->s1, epNo->s2, epNo->e1, epNo->e2);
-	for (i = 0; i < 4; i++) {
-		TRACENR("(%0.2f,%0.2f)", poly[i].vert.x, poly[i].vert.y);
-	}
-	TRACENR("\r\n");
-	};
+    IS_DEBUG_FLAG{
+        int i;
+        TRACENR("%d::(%d-%d)(%d-%d)", bdType, epNo->s1, epNo->s2, epNo->e1, epNo->e2);
+        for (i = 0; i < 4; i++) {
+            TRACENR("(%0.2f,%0.2f)", poly[i].vert.x, poly[i].vert.y);
+        }
+        TRACENR("\r\n");
+    };
 #endif
 }
 #endif
@@ -3668,56 +3673,56 @@ static int checkLargeGap(bd_type_t bdType, ep_no_t *ep)
 ATTR_BACKEND_RAMFUNC
 void BS_addEpaPosMulti(bd_type_t bdType)
 {
-	ep_buf_t *epa;
-	int i, j, firstEp, lastEp, cnt;
-	int maxPdNum;
-	int numEp; //slopeIdx, slopeLedVal,
-	int maxSlopeVal, slopeVal1, slopeVal2;
+    ep_buf_t *epa;
+    int i, j, firstEp, lastEp, cnt;
+    int maxPdNum;
+    int numEp; //slopeIdx, slopeLedVal,
+    int maxSlopeVal, slopeVal1, slopeVal2;
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-	uint16_t axis_mask, edgeId;
+    uint16_t axis_mask, edgeId;
 #endif
-	//int dz_s1, dz_s2, dz_e1, dz_e2;
-	//uint8_t s1, s2, e1, e2;
+    //int dz_s1, dz_s2, dz_e1, dz_e2;
+    //uint8_t s1, s2, e1, e2;
 
     //vec_t *top_pd, *bot_led;
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-	ep_dz_t epDeadZone;
+    ep_dz_t epDeadZone;
 #endif
-	//vec_t *top_pd_dz, *bot_led_dz;
-	sen_type_t sensor;
+    //vec_t *top_pd_dz, *bot_led_dz;
+    sen_type_t sensor;
 
-	if (bdType != ENUM_TOP_BD && bdType != ENUM_BOT_BD && bdType != ENUM_RHT_BD && bdType != ENUM_LFT_BD) {
-		TRACE_ERROR("ERROR! addEpaPosMulti..invalid side %d [%d]", bdType, BG_frame_no);
-		return;
-	}
+    if (bdType != ENUM_TOP_BD && bdType != ENUM_BOT_BD && bdType != ENUM_RHT_BD && bdType != ENUM_LFT_BD) {
+        TRACE_ERROR("ERROR! addEpaPosMulti..invalid side %d [%d]", bdType, BG_frame_no);
+        return;
+    }
 
-	if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
-		maxPdNum = BS_maxHorPdNum - 1;
+    if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
+        maxPdNum = BS_maxHorPdNum - 1;
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-		axis_mask = AXIS_MASK_X;  //0x8000;
+        axis_mask = AXIS_MASK_X;  //0x8000;
 #endif
         maxSlopeVal = BS_slopeValMaxX; //BS_offsetTblX[BS_offsetTblLenX - 1];
         //top_pd = (vec_t *)&BS_pd_pos_x[0];
         //bot_led = (vec_t *)&BS_led_pos_x[0];
-		epa = EPA_ADDR_X;
-	}
-	else {
-		//(bdType == ENUM_RHT_BD || bdType == ENUM_LFT_BD)
-		maxPdNum = BS_maxVerPdNum - 1;
+        epa = EPA_ADDR_X;
+    }
+    else {
+        //(bdType == ENUM_RHT_BD || bdType == ENUM_LFT_BD)
+        maxPdNum = BS_maxVerPdNum - 1;
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-		axis_mask = AXIS_MASK_Y;
+        axis_mask = AXIS_MASK_Y;
 #endif
         maxSlopeVal = BS_slopeValMaxY; //BS_offsetTblY[BS_offsetTblLenY - 1];
         //top_pd = (vec_t *)&BS_pd_pos_y[0];
         //bot_led = (vec_t *)&BS_led_pos_y[0];
-		epa = EPA_ADDR_Y;
-	}
-	if (bdType == ENUM_TOP_BD || bdType == ENUM_RHT_BD) {
-		sensor = ENUM_PD;
-	}
-	else {
-		sensor = ENUM_LED;
-	}
+        epa = EPA_ADDR_Y;
+    }
+    if (bdType == ENUM_TOP_BD || bdType == ENUM_RHT_BD) {
+        sensor = ENUM_PD;
+    }
+    else {
+        sensor = ENUM_LED;
+    }
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
     uint8_t *senList;
     int senCnt, senIdx;
@@ -3749,7 +3754,7 @@ void BS_addEpaPosMulti(bd_type_t bdType)
         }
     }
 #endif
-	cnt = 0;
+    cnt = 0;
 
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
     for (senIdx = 0; senIdx < senCnt; senIdx++) {
@@ -3757,153 +3762,154 @@ void BS_addEpaPosMulti(bd_type_t bdType)
 #else
     for (i = 0; i <= maxPdNum; i++) {
 #endif
-		numEp = epa[i].len;
-		if (numEp < 1) continue; //for testing
+        numEp = epa[i].len;
+        if (numEp < 1) continue; //for testing
 
-		firstEp = 0;
-		lastEp = numEp - 1;
+        firstEp = 0;
+        lastEp = numEp - 1;
 
-		//SEND_POLY(0, 0x21, 0);
-		for (j = 0; j < numEp; j++) {
+        //SEND_POLY(0, 0x21, 0);
+        for (j = 0; j < numEp; j++) {
 #if (_DEBUG == 1) //for testing
-			if (epa[i].ep[j].s1 < 0 || epa[i].ep[j].e1 < 0) {
-				TRACE_ERROR("ERROR! invalid s1,e1: (%d,%d) %d %d [%d]", i, j, epa[i].ep[j].s1, epa[i].ep[j].e1, BG_frame_no);
-				continue;
-			}
-			if (epa[i].ep[j].s2 > maxPdNum || epa[i].ep[j].e2 > maxPdNum) {
-				TRACE_ERROR("ERROR! invalid s2,e2: (%d,%d) %d %d [%d]", i, j, epa[i].ep[j].s2, epa[i].ep[j].e2, BG_frame_no);
-				continue;
-			}
-			if (sensor == ENUM_PD && epa[i].ep[j].e1 != epa[i].ep[j].e2) {
-				TRACE_ERROR("ERROR! invalid e1,e2: (%d,%d) %d %d  [%d]", i, j, epa[i].ep[j].e1, epa[i].ep[j].e2, BG_frame_no);
-				continue;
-			}
-			if (sensor == ENUM_LED && epa[i].ep[j].s1 != epa[i].ep[j].s2) {
-				TRACE_ERROR("ERROR! invalid s1,s2: (%d,%d) %d %d  [%d]", i, j, epa[i].ep[j].s1, epa[i].ep[j].s2, BG_frame_no);
-				continue;
-			}
+            if (epa[i].ep[j].s1 < 0 || epa[i].ep[j].e1 < 0) {
+                TRACE_ERROR("ERROR! invalid s1,e1: (%d,%d) %d %d [%d]", i, j, epa[i].ep[j].s1, epa[i].ep[j].e1, BG_frame_no);
+                continue;
+            }
+            if (epa[i].ep[j].s2 > maxPdNum || epa[i].ep[j].e2 > maxPdNum) {
+                TRACE_ERROR("ERROR! invalid s2,e2: (%d,%d) %d %d [%d]", i, j, epa[i].ep[j].s2, epa[i].ep[j].e2, BG_frame_no);
+                continue;
+            }
+            if (sensor == ENUM_PD && epa[i].ep[j].e1 != epa[i].ep[j].e2) {
+                TRACE_ERROR("ERROR! invalid e1,e2: (%d,%d) %d %d  [%d]", i, j, epa[i].ep[j].e1, epa[i].ep[j].e2, BG_frame_no);
+                continue;
+            }
+            if (sensor == ENUM_LED && epa[i].ep[j].s1 != epa[i].ep[j].s2) {
+                TRACE_ERROR("ERROR! invalid s1,s2: (%d,%d) %d %d  [%d]", i, j, epa[i].ep[j].s1, epa[i].ep[j].s2, BG_frame_no);
+                continue;
+            }
 #endif
 #if defined(LARGE_SEN_GAP_16) //nsmoon@1903113
             checkLargeGap(bdType, &epa[i].ep[j]);
 #endif
-			cnt++;
+            cnt++;
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-			epDeadZone = ENUM_EP_DZ_NORMAL;
+            epDeadZone = ENUM_EP_DZ_NORMAL;
 #endif
             epa[i].dz[j] = 0; //init
 
-			if (j == firstEp) {
-				//check right-side
-				if (sensor == ENUM_PD && epa[i].ep[j].s1 == 0) {
+            if (j == firstEp) {
+                //check right-side
+                if (sensor == ENUM_PD && epa[i].ep[j].s1 == 0) {
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-					epDeadZone = ENUM_EP_DZ_RIGHT;
+                    epDeadZone = ENUM_EP_DZ_RIGHT;
 #endif
-					epa[i].dz[j] = epa[i].ep[j].e1; //save org ep 
-					epa[i].ep[j].e1 = 0;
-				}
-				else if (sensor == ENUM_LED && epa[i].ep[j].e1 == 0) {
+                    epa[i].dz[j] = epa[i].ep[j].e1; //save org ep
+                    epa[i].ep[j].e1 = 0;
+                }
+                else if (sensor == ENUM_LED && epa[i].ep[j].e1 == 0) {
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-					epDeadZone = ENUM_EP_DZ_RIGHT;
+                    epDeadZone = ENUM_EP_DZ_RIGHT;
 #endif
-					epa[i].dz[j] = epa[i].ep[j].s1; //save org ep no.
-					epa[i].ep[j].s1 = 0;
-				}
-	        }
-			if (j == lastEp) {
-				//left-side
-				if (sensor == ENUM_PD && epa[i].ep[j].s2 == maxPdNum) {
+                    epa[i].dz[j] = epa[i].ep[j].s1; //save org ep no.
+                    epa[i].ep[j].s1 = 0;
+                }
+            }
+            if (j == lastEp) {
+                //left-side
+                if (sensor == ENUM_PD && epa[i].ep[j].s2 == maxPdNum) {
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-					epDeadZone = ENUM_EP_DZ_LEFT;
+                    epDeadZone = ENUM_EP_DZ_LEFT;
 #endif
-					epa[i].dz[j] = epa[i].ep[j].e2; //save org ep 
-					epa[i].ep[j].e2 = (uint8_t)maxPdNum;
-				}
-				if (sensor == ENUM_LED && epa[i].ep[j].e2 >= maxPdNum) {
+                    epa[i].dz[j] = epa[i].ep[j].e2; //save org ep
+                    epa[i].ep[j].e2 = (uint8_t)maxPdNum;
+                }
+                if (sensor == ENUM_LED && epa[i].ep[j].e2 >= maxPdNum) {
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-					epDeadZone = ENUM_EP_DZ_LEFT;
+                    epDeadZone = ENUM_EP_DZ_LEFT;
 #endif
-					epa[i].dz[j] = epa[i].ep[j].s2; //save org ep 
-					epa[i].ep[j].s2 = (uint8_t)maxPdNum;
-				}
-			}
+                    epa[i].dz[j] = epa[i].ep[j].s2; //save org ep
+                    epa[i].ep[j].s2 = (uint8_t)maxPdNum;
+                }
+            }
 
-			if (sensor == ENUM_PD) {
+            if (sensor == ENUM_PD) {
                 //check max slope (led-pd)
-				slopeVal1 = epa[i].ep[j].s1 - epa[i].ep[j].e1;
-				slopeVal2 = epa[i].ep[j].s2 - epa[i].ep[j].e2;
-			}
-			else {
-				//(sensor == ENUM_LED)
-				//check max slope (pd-led)
-				slopeVal1 = epa[i].ep[j].e1 - epa[i].ep[j].s1;
-				slopeVal2 = epa[i].ep[j].e2 - epa[i].ep[j].s2;
-			}
+                slopeVal1 = epa[i].ep[j].s1 - epa[i].ep[j].e1;
+                slopeVal2 = epa[i].ep[j].s2 - epa[i].ep[j].e2;
+            }
+            else {
+                //(sensor == ENUM_LED)
+                //check max slope (pd-led)
+                slopeVal1 = epa[i].ep[j].e1 - epa[i].ep[j].s1;
+                slopeVal2 = epa[i].ep[j].e2 - epa[i].ep[j].s2;
+            }
 
-			if (slopeVal1 == -maxSlopeVal) {
+            if (slopeVal1 == -maxSlopeVal) {
 #if (DEBUG_addEpaValueMulti > 1)
-				IS_DEBUG_FLAG{
-				TRACE("right_dz = %d (%d %d)", slopeVal2, epa[i].ep[j].s1, epa[i].ep[j].e1);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("right_dz = %d (%d %d)", slopeVal2, epa[i].ep[j].s1, epa[i].ep[j].e1);
+                };
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-				epDeadZone = ENUM_EP_DZ_RIGHT;
+                epDeadZone = ENUM_EP_DZ_RIGHT;
 #endif
-				if (sensor == ENUM_PD) {
-					epa[i].dz[j] = epa[i].ep[j].e1; //save org ep no.
-				}
-				else {
-					epa[i].dz[j] = epa[i].ep[j].s1; //save org ep no.
-				}
-				epa[i].ep[j].s1 = 0;
-				epa[i].ep[j].e1 = 0;
-			}
-			if (slopeVal2 == maxSlopeVal) {
+                if (sensor == ENUM_PD) {
+                    epa[i].dz[j] = epa[i].ep[j].e1; //save org ep no.
+                }
+                else {
+                    epa[i].dz[j] = epa[i].ep[j].s1; //save org ep no.
+                }
+                epa[i].ep[j].s1 = 0;
+                epa[i].ep[j].e1 = 0;
+            }
+            if (slopeVal2 == maxSlopeVal) {
 #if (DEBUG_addEpaValueMulti > 1)
-				IS_DEBUG_FLAG{
-				TRACE("left_dz = %d (%d %d)", slopeVal2, epa[i].ep[j].s2, epa[i].ep[j].e2);
-				};
+                IS_DEBUG_FLAG{
+                    TRACE("left_dz = %d (%d %d)", slopeVal2, epa[i].ep[j].s2, epa[i].ep[j].e2);
+                };
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-				epDeadZone = ENUM_EP_DZ_LEFT;
+                epDeadZone = ENUM_EP_DZ_LEFT;
 #endif
-				if (sensor == ENUM_PD) {
-					epa[i].dz[j] = epa[i].ep[j].e2; //save org ep no.
-				}
-				else {
-					epa[i].dz[j] = epa[i].ep[j].s2; //save org ep no.
-				}
-				epa[i].ep[j].s2 = (uint8_t)maxPdNum;
-				epa[i].ep[j].e2 = (uint8_t)maxPdNum;
-			}
+                if (sensor == ENUM_PD) {
+                    epa[i].dz[j] = epa[i].ep[j].e2; //save org ep no.
+                }
+                else {
+                    epa[i].dz[j] = epa[i].ep[j].s2; //save org ep no.
+                }
+                epa[i].ep[j].s2 = (uint8_t)maxPdNum;
+                epa[i].ep[j].e2 = (uint8_t)maxPdNum;
+            }
 #ifndef USE_CUST_MALLOC //nsmoon@201012
-			edgeId = (uint16_t)(((int16_t)i << 8) + (int16_t)j) | axis_mask;
+            edgeId = (uint16_t)(((int16_t)i << 8) + (int16_t)j) | axis_mask;
 #endif
 #if (DEBUG_addEpaValueMulti > 1)
-			IS_DEBUG_FLAG{
-			TRACE("bdType,i,j,epa->ep: %d %d %d %x", bdType, i, j, &epa[i].ep[j]);
-			};
+            IS_DEBUG_FLAG{
+                TRACE("bdType,i,j,epa->ep: %d %d %d %x", bdType, i, j, &epa[i].ep[j]);
+            };
 #endif
 #ifndef USE_CUST_MALLOC //nsmoon@201012
             add_pos_edge_pattern(bdType, &epa[i].poly[j][0], &epa[i].ep[j], epDeadZone, edgeId);
 #endif    
-    #if (DEBUG_addEpaValueMulti > 0)
-			IS_DEBUG_FLAG
-			{
-				//TRACE("(bdType,i,j)(epDeadZone)(s1,e1,s2,e2)(dz)=(,%d,%d,%d,)(,%d,)(,%d,%d,%d,%d,(,%d,)", bdType, i, j, epDeadZone, epa[i].ep[j].s1, epa[i].ep[j].e1, epa[i].ep[j].s2, epa[i].ep[j].e2, epa[i].dz[j]);
-				//SEND_POLY(0, 0x21, 0);
-				//if (bdType == ENUM_BOT_BD || bdType == ENUM_RHT_BD)
-				{
+#if (DEBUG_addEpaValueMulti > 0)
+            IS_DEBUG_FLAG
+            {
+                //TRACE("(bdType,i,j)(epDeadZone)(s1,e1,s2,e2)(dz)=(,%d,%d,%d,)(,%d,)(,%d,%d,%d,%d,(,%d,)", bdType, i, j, epDeadZone, epa[i].ep[j].s1, epa[i].ep[j].e1, epa[i].ep[j].s2, epa[i].ep[j].e2, epa[i].dz[j]);
+                //SEND_POLY(0, 0x21, 0);
+                //if (bdType == ENUM_BOT_BD || bdType == ENUM_RHT_BD)
+                {
                     if (BG_show_ep)
-                    //if (axis_mask != AXIS_MASK_X)
-					{
-						DEBUG_SHOW_POLY(&epa[i].poly[j][0], INITIAL_POLYGON_VERTEX_NO, 3);
+                        //if (axis_mask != AXIS_MASK_X)
+                    {
+                        DEBUG_SHOW_POLY(&epa[i].poly[j][0], INITIAL_POLYGON_VERTEX_NO, 3);
+                        //DEBUG_show_poly_(&epa[i].poly[j][0], INITIAL_POLYGON_VERTEX_NO, 3);
                         TRACE_NOP;
-				}
-				}
-			//TRACENR("\r\n");
-			TRACE_NOP;
-			}
-    #endif
+                    }
+                }
+                //TRACENR("\r\n");
+                TRACE_NOP;
+            }
+#endif
 #ifdef DEBUG_EP_TEST //for test //nsmoon@210216
             if (BG_show_ep) {
                 vec_e_t polyTmp[INITIAL_POLYGON_VERTEX_NO];
@@ -3916,98 +3922,98 @@ void BS_addEpaPosMulti(bd_type_t bdType)
             }
 #endif
         } //for (j = 0; j < numEp; j++)
-		TRACE_NOP;
-	} //for (i = 0; i < MAX_NUM_PD; i++)
-	//TRACE("BG_edge_pattern_cnt[]: %d (%d)", BG_edge_pattern_cnt[bdType], bdType);
-	if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
-		BG_edge_pattern_cnt_x = cnt;
-	}
-	else {
-		BG_edge_pattern_cnt_y = cnt;
-	}
-	TRACE_NOP;
+        TRACE_NOP;
+    } //for (i = 0; i < MAX_NUM_PD; i++)
+    //TRACE("BG_edge_pattern_cnt[]: %d (%d)", BG_edge_pattern_cnt[bdType], bdType);
+    if (bdType == ENUM_TOP_BD || bdType == ENUM_BOT_BD) {
+        BG_edge_pattern_cnt_x = cnt;
+    }
+    else {
+        BG_edge_pattern_cnt_y = cnt;
+    }
+    TRACE_NOP;
 }
 
 #if 0
 ATTR_BACKEND_RAMFUNC
 static void sort_inbuf_by_axis(bd_type_t bd, DEF_PD_INFO *InBuf)
 {
-	int i, j, start_i, start_j, len, slopeVal_i, slopeVal_j, s_flag;
-	DEF_PD lineTmp, *touch_pd;
-	int8_t *offsetTbl;
-	int offsetTblLen;
+    int i, j, start_i, start_j, len, slopeVal_i, slopeVal_j, s_flag;
+    DEF_PD lineTmp, *touch_pd;
+    int8_t *offsetTbl;
+    int offsetTblLen;
 
-	if (bd == ENUM_BOT_BD || bd == ENUM_TOP_BD) {
-		len = InBuf->hor_len;
-		touch_pd = &InBuf->hor_touch_pd[0];
-		offsetTbl = &BS_offsetTblX[0];
-		offsetTblLen = BS_offsetTblLenX;
-	}
-	else {
-		//(bd == ENUM_LFT_BD || bd == ENUM_RHT_BD)
-		len = InBuf->ver_len;
-		touch_pd = &InBuf->ver_touch_pd[0];
-		offsetTbl = &BS_offsetTblY[0];
-		offsetTblLen = BS_offsetTblLenY;
-	}
+    if (bd == ENUM_BOT_BD || bd == ENUM_TOP_BD) {
+        len = InBuf->hor_len;
+        touch_pd = &InBuf->hor_touch_pd[0];
+        offsetTbl = &BS_offsetTblX[0];
+        offsetTblLen = BS_offsetTblLenX;
+    }
+    else {
+        //(bd == ENUM_LFT_BD || bd == ENUM_RHT_BD)
+        len = InBuf->ver_len;
+        touch_pd = &InBuf->ver_touch_pd[0];
+        offsetTbl = &BS_offsetTblY[0];
+        offsetTblLen = BS_offsetTblLenY;
+    }
 
-	for (i = 0; i < (len - 1); i++) {
-		for (j = (i + 1); j < len; j++) {
-			slopeVal_i = offsetTbl[touch_pd[i].led];
-			slopeVal_j = offsetTbl[touch_pd[j].led];
-			if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
-				start_i = touch_pd[i].pd + slopeVal_i;
-				start_j = touch_pd[j].pd + slopeVal_j;
-			}
-			else {
-				//(bd == ENUM_TOP_BD ||bd == ENUM_RHT_BD)
-				start_i = touch_pd[i].pd;
-				start_j = touch_pd[j].pd;
-			}
-			//TRACE("start_i,start_j,slopeVal_i,slopeVal_j: %d %d %d %d", start_i, start_j, slopeVal_i, slopeVal_j);
-			if (start_j < 0) {
-				continue;
-			}
+    for (i = 0; i < (len - 1); i++) {
+        for (j = (i + 1); j < len; j++) {
+            slopeVal_i = offsetTbl[touch_pd[i].led];
+            slopeVal_j = offsetTbl[touch_pd[j].led];
+            if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
+                start_i = touch_pd[i].pd + slopeVal_i;
+                start_j = touch_pd[j].pd + slopeVal_j;
+            }
+            else {
+                //(bd == ENUM_TOP_BD ||bd == ENUM_RHT_BD)
+                start_i = touch_pd[i].pd;
+                start_j = touch_pd[j].pd;
+            }
+            //TRACE("start_i,start_j,slopeVal_i,slopeVal_j: %d %d %d %d", start_i, start_j, slopeVal_i, slopeVal_j);
+            if (start_j < 0) {
+                continue;
+            }
 
-			if (start_i < 0) {
-				s_flag = 1;
-			}
-			else {
-				if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
-					slopeVal_i = -slopeVal_i;
-					slopeVal_j = -slopeVal_j;
-				}
-				if ((start_i > start_j) || ((start_i == start_j) && (slopeVal_i > slopeVal_j))) {
-					s_flag = 1;
-				}
-				else {
-					s_flag = 0;
-				}
-			}
+            if (start_i < 0) {
+                s_flag = 1;
+            }
+            else {
+                if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
+                    slopeVal_i = -slopeVal_i;
+                    slopeVal_j = -slopeVal_j;
+                }
+                if ((start_i > start_j) || ((start_i == start_j) && (slopeVal_i > slopeVal_j))) {
+                    s_flag = 1;
+                }
+                else {
+                    s_flag = 0;
+                }
+            }
 
-			if (s_flag) {
-				lineTmp = touch_pd[i];
-				touch_pd[i] = touch_pd[j];
-				touch_pd[j] = lineTmp;
-			}
-		} //for (j = (i + 1); j < len; j++)
-	} //for (i = 0; i < (len - 1); i++)
+            if (s_flag) {
+                lineTmp = touch_pd[i];
+                touch_pd[i] = touch_pd[j];
+                touch_pd[j] = lineTmp;
+            }
+        } //for (j = (i + 1); j < len; j++)
+    } //for (i = 0; i < (len - 1); i++)
 #if 0 //for testing
-	TRACENR("sort_inbuf_by_axis: ");
-	for (i = 0; i < len; i++) {
-		if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
-			slopeVal_i = offsetTbl[touch_pd[i].led];
-			start_i = touch_pd[i].pd + offsetTbl[touch_pd[i].led];
-		}
-		else {
-			//(bd == ENUM_TOP_BD || bd == ENUM_RHT_BD)
-			slopeVal_i = offsetTbl[touch_pd[i].led];
-			start_i = touch_pd[i].pd;
-		}
-		if (((i + 1) % 20) == 0) TRACE(".");
-		TRACENR("(%d,%d)", start_i, slopeVal_i);
-	}
-	TRACE(".");
+    TRACENR("sort_inbuf_by_axis: ");
+    for (i = 0; i < len; i++) {
+        if (bd == ENUM_BOT_BD || bd == ENUM_LFT_BD) {
+            slopeVal_i = offsetTbl[touch_pd[i].led];
+            start_i = touch_pd[i].pd + offsetTbl[touch_pd[i].led];
+        }
+        else {
+            //(bd == ENUM_TOP_BD || bd == ENUM_RHT_BD)
+            slopeVal_i = offsetTbl[touch_pd[i].led];
+            start_i = touch_pd[i].pd;
+        }
+        if (((i + 1) % 20) == 0) TRACE(".");
+        TRACENR("(%d,%d)", start_i, slopeVal_i);
+    }
+    TRACE(".");
 #endif
 }
 #endif
@@ -4016,114 +4022,114 @@ static void sort_inbuf_by_axis(bd_type_t bd, DEF_PD_INFO *InBuf)
 ATTR_BACKEND_RAMFUNC
 static int drawIntersect(bd_type_t bd)
 {
-	ep_buf_t *epaPd;
-	int i, j, k, m;
-	vec_t s0, s1, s2, s3, sR;
-	vec_t e0, e1, e2, e3, eR;
+    ep_buf_t *epaPd;
+    int i, j, k, m;
+    vec_t s0, s1, s2, s3, sR;
+    vec_t e0, e1, e2, e3, eR;
 
-	if (bd == ENUM_BOT_BD || bd == ENUM_TOP_BD) {
-		epaPd = EPA_ADDR_X;
-	}
-	else {
-		epaPd = EPA_ADDR_Y;
-	}
+    if (bd == ENUM_BOT_BD || bd == ENUM_TOP_BD) {
+        epaPd = EPA_ADDR_X;
+    }
+    else {
+        epaPd = EPA_ADDR_Y;
+    }
 
-	for (i = 0; i < BS_maxHorPdNum; i++) {
-		if (epaPd[i].len < 1) continue;
-		for (j = 0; j < epaPd[i].len; j++) {
-			//if (epaPd[i].ep[j].e1 == 0) continue;
-			//if (epaPd[i].ep[j].e2 == BS_maxHorPdNum - 1) continue;
-			s0 = epaPd[i].poly[j][0].vert;
-			s1 = epaPd[i].poly[j][1].vert;
-			e0 = epaPd[i].poly[j][2].vert;
-			e1 = epaPd[i].poly[j][3].vert;
-			for (k = 0; k < BS_maxHorPdNum; k++) {
-				if (epaPd[k].len < 1) continue;
-				for (m = 0; m < epaPd[k].len; m++) {
-					if (k == i && m == j) continue;
-					//if (epaPd[k].ep[m].e1 == 0) continue;
-					//if (epaPd[k].ep[m].e2 == BS_maxHorPdNum - 1) continue;
-					s2 = epaPd[k].poly[m][0].vert;
-					s3 = epaPd[k].poly[m][1].vert;
-					e2 = epaPd[k].poly[m][2].vert;
-					e3 = epaPd[k].poly[m][3].vert;
+    for (i = 0; i < BS_maxHorPdNum; i++) {
+        if (epaPd[i].len < 1) continue;
+        for (j = 0; j < epaPd[i].len; j++) {
+            //if (epaPd[i].ep[j].e1 == 0) continue;
+            //if (epaPd[i].ep[j].e2 == BS_maxHorPdNum - 1) continue;
+            s0 = epaPd[i].poly[j][0].vert;
+            s1 = epaPd[i].poly[j][1].vert;
+            e0 = epaPd[i].poly[j][2].vert;
+            e1 = epaPd[i].poly[j][3].vert;
+            for (k = 0; k < BS_maxHorPdNum; k++) {
+                if (epaPd[k].len < 1) continue;
+                for (m = 0; m < epaPd[k].len; m++) {
+                    if (k == i && m == j) continue;
+                    //if (epaPd[k].ep[m].e1 == 0) continue;
+                    //if (epaPd[k].ep[m].e2 == BS_maxHorPdNum - 1) continue;
+                    s2 = epaPd[k].poly[m][0].vert;
+                    s3 = epaPd[k].poly[m][1].vert;
+                    e2 = epaPd[k].poly[m][2].vert;
+                    e3 = epaPd[k].poly[m][3].vert;
                     if (BS_line_intersection(&s0, &s1, &s2, &s3, &sR)) {
-						DEBUG_SHOW_POS(&sR, 0.2f, 0.2f, 1);
-					}
-					else {
-						//TRACE("S:no-intersect: (%d %d) (%d %d)", i, j, k, m);
-					}
+                        DEBUG_SHOW_POS(&sR, 0.2f, 0.2f, 1);
+                    }
+                    else {
+                        //TRACE("S:no-intersect: (%d %d) (%d %d)", i, j, k, m);
+                    }
                     if (BS_line_intersection(&e0, &e1, &e2, &e3, &eR)) {
-						DEBUG_SHOW_POS(&eR, 0.2f, 0.2f, 2);
-					}
-					else {
-						//TRACE("E:no-intersect: (%d %d) (%d %d)", i, j, k, m);
-					}
-				}
-			}
-		}
-	}
+                        DEBUG_SHOW_POS(&eR, 0.2f, 0.2f, 2);
+                    }
+                    else {
+                        //TRACE("E:no-intersect: (%d %d) (%d %d)", i, j, k, m);
+                    }
+                }
+            }
+        }
+    }
 
-	return 0; //no error
+    return 0; //no error
 }
 
 ATTR_BACKEND_RAMFUNC
 static int drawEpaMulti(bd_type_t bd)
 {
-	ep_buf_t *epa;
-	int i, j, s1, s2, e1, e2;
-	sen_type_t sensor;
-	axis_t axis;
+    ep_buf_t *epa;
+    int i, j, s1, s2, e1, e2;
+    sen_type_t sensor;
+    axis_t axis;
 
-	if (bd == ENUM_TOP_BD || bd == ENUM_BOT_BD) {
-		axis = ENUM_HOR_X;
-		epa = EPA_ADDR_X;
-	}
-	else {
-		axis = ENUM_VER_Y;
-		epa = EPA_ADDR_Y;
-	}
+    if (bd == ENUM_TOP_BD || bd == ENUM_BOT_BD) {
+        axis = ENUM_HOR_X;
+        epa = EPA_ADDR_X;
+    }
+    else {
+        axis = ENUM_VER_Y;
+        epa = EPA_ADDR_Y;
+    }
 
-	if (bd == ENUM_TOP_BD || bd == ENUM_RHT_BD) {
-		sensor = ENUM_PD;
-	}
-	else {
-		sensor = ENUM_LED;
-	}
-	TRACE("drawEpaMulti...bd,axis,sensor: %d %d %d", bd, axis, sensor);
-	for (i = 0; i < BS_maxHorPdNum; i++) {
-		if (epa[i].len < 1) continue;
-		for (j = 0; j < epa[i].len; j++) {
-			e1 = epa[i].ep[j].e1;
-			s1 = epa[i].ep[j].s1;
-			e2 = epa[i].ep[j].e2;
-			s2 = epa[i].ep[j].s2;
-			//if (e1 == 0 || e2 == BS_maxHorPdNum - 1) continue;
-			TRACE("s1,e1,s2,e2: %d %d %d %d", s1, e1, s2, e2);
-			//SEND_POLY(0, 0x20, 0);
-			if (sensor == ENUM_PD) {
-				if (s1 == s2) {
-					DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 3);
-				}
-				else {
-					DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 1);
-					DEBUG_SHOW_LINE_PD_LED(axis, e2, s2, 2);
-				}
-			}
-			else {
-				if (e1 == e2) {
-					DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 3);
-				}
-				else {
-					DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 1);
-					DEBUG_SHOW_LINE_PD_LED(axis, e2, s2, 2);
-				}
-			}
-			TRACE_NOP;
-		}
-	}
+    if (bd == ENUM_TOP_BD || bd == ENUM_RHT_BD) {
+        sensor = ENUM_PD;
+    }
+    else {
+        sensor = ENUM_LED;
+    }
+    TRACE("drawEpaMulti...bd,axis,sensor: %d %d %d", bd, axis, sensor);
+    for (i = 0; i < BS_maxHorPdNum; i++) {
+        if (epa[i].len < 1) continue;
+        for (j = 0; j < epa[i].len; j++) {
+            e1 = epa[i].ep[j].e1;
+            s1 = epa[i].ep[j].s1;
+            e2 = epa[i].ep[j].e2;
+            s2 = epa[i].ep[j].s2;
+            //if (e1 == 0 || e2 == BS_maxHorPdNum - 1) continue;
+            TRACE("s1,e1,s2,e2: %d %d %d %d", s1, e1, s2, e2);
+            //SEND_POLY(0, 0x20, 0);
+            if (sensor == ENUM_PD) {
+                if (s1 == s2) {
+                    DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 3);
+                }
+                else {
+                    DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 1);
+                    DEBUG_SHOW_LINE_PD_LED(axis, e2, s2, 2);
+                }
+            }
+            else {
+                if (e1 == e2) {
+                    DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 3);
+                }
+                else {
+                    DEBUG_SHOW_LINE_PD_LED(axis, e1, s1, 1);
+                    DEBUG_SHOW_LINE_PD_LED(axis, e2, s2, 2);
+                }
+            }
+            TRACE_NOP;
+        }
+    }
 
-	return 0; //no error
+    return 0; //no error
 }
 #endif
 
@@ -4144,73 +4150,73 @@ static int drawEpaMulti(bd_type_t bd)
 #if 1 //nsmoon@190926
 int BS_set_line_buffer(axis_t axis, int led, int pd)
 {
-	uint8_t *inlineUsed;
-	uint8_t *inlinePd, *inlineLed;
-	int inBufPdIdx, maxInLineBufLed;
-	int ledMask;
+    uint8_t *inlineUsed;
+    uint8_t *inlinePd, *inlineLed;
+    int inBufPdIdx, maxInLineBufLed;
+    int ledMask;
 
-	if (axis == (int)ENUM_HOR_X) {
-		inlinePd = IN_LINE_BUF_ADDR_X_PD;
-		inlineLed = IN_LINE_BUF_ADDR_X_LED;
+    if (axis == (int)ENUM_HOR_X) {
+        inlinePd = IN_LINE_BUF_ADDR_X_PD;
+        inlineLed = IN_LINE_BUF_ADDR_X_LED;
         inlineUsed = LINE_USED2_BUF_ADDR_X;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_x; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif
-						}
-						else {
-		inlinePd = IN_LINE_BUF_ADDR_Y_PD;
-		inlineLed = IN_LINE_BUF_ADDR_Y_LED;
+    }
+    else {
+        inlinePd = IN_LINE_BUF_ADDR_Y_PD;
+        inlineLed = IN_LINE_BUF_ADDR_Y_LED;
         inlineUsed = LINE_USED2_BUF_ADDR_Y;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_y; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-	}
+    }
 
-	inBufPdIdx = GET_IN_LINE_IDX(pd, led); //(pd * ledLen) + led;
-	ledMask = GET_LED_BIT_MASK(led);
-	inlinePd[inBufPdIdx] |= (uint8_t)ledMask;
+    inBufPdIdx = GET_IN_LINE_IDX(pd, led); //(pd * ledLen) + led;
+    ledMask = GET_LED_BIT_MASK(led);
+    inlinePd[inBufPdIdx] |= (uint8_t)ledMask;
     inlineUsed[inBufPdIdx] &= ~(uint8_t)ledMask; //make used line
 
-	inBufPdIdx = GET_IN_LINE_IDX(led, pd);
-	ledMask = GET_LED_BIT_MASK(pd);
-	inlineLed[inBufPdIdx] |= (uint8_t)ledMask;
+    inBufPdIdx = GET_IN_LINE_IDX(led, pd);
+    ledMask = GET_LED_BIT_MASK(pd);
+    inlineLed[inBufPdIdx] |= (uint8_t)ledMask;
 
-	return 0;
+    return 0;
 }
 
 int BS_is_set_line_buffer(axis_t axis, int pd, int led)
 {
-	uint8_t *inlinePd;
-	int inBufPdIdx, maxInLineBufLed;
-	int ledMask, ret;
+    uint8_t *inlinePd;
+    int inBufPdIdx, maxInLineBufLed;
+    int ledMask, ret;
 
-	if (axis == (int)ENUM_HOR_X) {
-		inlinePd = IN_LINE_BUF_ADDR_X_PD;
+    if (axis == (int)ENUM_HOR_X) {
+        inlinePd = IN_LINE_BUF_ADDR_X_PD;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_x; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif
-	}
-	else {
-		inlinePd = IN_LINE_BUF_ADDR_Y_PD;
+    }
+    else {
+        inlinePd = IN_LINE_BUF_ADDR_Y_PD;
 #ifdef USE_CUST_MALLOC //nsmoon@201012
         maxInLineBufLed = BS_max_in_line_buf_led_y; //nsmoon@201014
 #else
         maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-	}
+    }
 
-	inBufPdIdx = GET_IN_LINE_IDX(pd, led); //(pd * ledLen) + led;
-	ledMask = GET_LED_BIT_MASK(led);
-	ret = inlinePd[inBufPdIdx] & (uint8_t)ledMask;
+    inBufPdIdx = GET_IN_LINE_IDX(pd, led); //(pd * ledLen) + led;
+    ledMask = GET_LED_BIT_MASK(led);
+    ret = inlinePd[inBufPdIdx] & (uint8_t)ledMask;
 
-	return ret; //0:not-found
-						}
+    return ret; //0:not-found
+}
 
 int BS_is_used_line_buffer(axis_t axis, int pd, int led)
 {
@@ -4259,7 +4265,7 @@ static int add_dead_sensor_used(void)
     int inBufPdIdx,  maxInLineBufLed;
     int ledMask;
     IS_DEBUG_FLAG {
-      TRACE_NOP;
+        TRACE_NOP;
     };
 
     for (axis = 0; axis < (int)ENUM_AXIS_END; axis++)
@@ -4282,7 +4288,7 @@ static int add_dead_sensor_used(void)
 #else
                 maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
 #endif					
-					}
+            }
             else {
                 slopeValMax = BS_slopeValMaxY;
                 maxPd = BS_maxVerPdNum;
@@ -4299,7 +4305,7 @@ static int add_dead_sensor_used(void)
 #else
                 maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
 #endif
-				}
+            }
 
             //invalid led table
             for (i = 0; i < invalidTblLedLen; i++) {
@@ -4319,13 +4325,13 @@ static int add_dead_sensor_used(void)
                 inBufPdIdx = GET_IN_LINE_IDX(pd, 0); //(pd * ledLen) + led;
                 for (m = 0; m < maxInLineBufLed; m++) {
                     inlineUsed[inBufPdIdx + m] = 0x00; //make used line
-			}
+                }
             } //for (i = 0; i < invalidTblLedLen; i++)
 
         } //for (sen = 0; sen < (int)ENUM_SEN_END; sen++)
     } //for (axis = 0; axis < (int)ENUM_AXIS_END; axis++)
 
-	return 0; //not-found
+    return 0; //not-found
 }
 #endif //DEAD_CELL_TBL
 #if 0 //for test
@@ -4353,8 +4359,8 @@ void BS_debug_inlines(void)
             continue;
         }
         if (GET_ABS(slopeVal) > 30)
-        //if (GET_ABS(slopeVal) < 5)
-        DEBUG_SHOW_LINE_PD_LED(ENUM_HOR_X, pd, led, color);
+            //if (GET_ABS(slopeVal) < 5)
+            DEBUG_SHOW_LINE_PD_LED(ENUM_HOR_X, pd, led, color);
     } //for (i = 0; i < InBuf->hor_len; i++)
 #endif
 #if 1 //y-axis
@@ -4372,7 +4378,7 @@ void BS_debug_inlines(void)
             continue;
         }
         if (GET_ABS(slopeVal) > 38)
-        DEBUG_SHOW_LINE_PD_LED(ENUM_VER_Y, pd, led, color);
+            DEBUG_SHOW_LINE_PD_LED(ENUM_VER_Y, pd, led, color);
     }
 #endif
 }
@@ -4502,7 +4508,7 @@ static int sensor_list_add(axis_t axis, sen_type_t sen, int senNo)
 ATTR_BACKEND_RAMFUNC
 static void get_input_buffer(DEF_PD_INFO *InBuf)
 {
-    int i, lineBufIdx, pd, led, maxInLineBufLed; //j, ledMask, 
+    int i, lineBufIdx, pd, led, maxInLineBufLed; //j, ledMask,
     uint8_t *inlineBuf_pd, *inlineBuf_led, ledMask;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
     uint8_t *inlineStat_pd;
@@ -4676,27 +4682,29 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
 #if (DEBUG_get_input_buffer > 1)
             if (show_line) DEBUG_SHOW_LINE_PD_LED((axis_t)axis, pd, led, line_color);
 #endif
-#if (defined(DEBUG_FUNCTION_ENABLE_RELEASE) || defined(DEBUG_FUNCTION_ENABLE_ALL)) && (DEBUG_packEdgePatternInitial == 0)
+            //#if (defined(DEBUG_FUNCTION_ENABLE_RELEASE) || defined(DEBUG_FUNCTION_ENABLE_ALL)) && (DEBUG_packEdgePatternInitial == 0)
 #ifdef FRONTEND_LINE_THRESHOLD
             //int slopeValMax = (axis == ENUM_HOR_X) ? BS_slopeValMaxX : BS_slopeValMaxY;
             //int slopePdIdx = slopePdVal + slopeValMax;
             int slopePdIdx = inBuf[i].led;
-            if (BG_show_line_all && !BG_show_line_rem) {
-                if (BS_is_set_threshold(axis, pd, slopePdIdx)) {
-                    //TRACE_RELEASE("pd,led(th10)= %d %d", pd, led);
-                    DEBUG_SHOW_LINE_PD_LED(axis, pd, led, MY_COLOR - 2);
-                }
-                else {
-                    //TRACE_RELEASE("pd,led= %d %d", pd, led);
-                    DEBUG_SHOW_LINE_PD_LED(axis, pd, led, MY_COLOR - 1);
-                }
+            //if (BG_show_line_all && !BG_show_line_rem) {
+            if (BS_is_set_threshold(axis, pd, slopePdIdx)) {
+                //TRACE_RELEASE("pd,led(th10)= %d %d", pd, led);
+                DEBUG_SHOW_LINE_PD_LED(axis, pd, led, MY_COLOR - 3);
+                DEBUG_show_line_pd_led_(axis, pd, led, 6);
             }
+            else {
+                //TRACE_RELEASE("pd,led= %d %d", pd, led);
+                DEBUG_SHOW_LINE_PD_LED(axis, pd, led, MY_COLOR - 1);
+                DEBUG_show_line_pd_led_(axis, pd, led, MY_COLOR - 1);
+            }
+            //}
 #else
             if (BG_show_line_all && !BG_show_line_rem) {
                 DEBUG_SHOW_LINE_PD_LED(axis, pd, led, MY_COLOR - 4);
             }
 #endif
-#endif
+            //#endif
             //pd table
             lineBufIdx = GET_IN_LINE_IDX(pd, led);
             ledMask = GET_LED_BIT_MASK(led);
@@ -4768,19 +4776,19 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
 ATTR_BACKEND_RAMFUNC
 static void get_input_buffer(DEF_PD_INFO *InBuf)
 {
-	int i, lineBufIdx, pd, led, ledMask, maxInLineBufLed; //j, 
-	uint8_t *inlineBuf_pd, *inlineBuf_led;
+    int i, lineBufIdx, pd, led, ledMask, maxInLineBufLed; //j,
+    uint8_t *inlineBuf_pd, *inlineBuf_led;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-	uint8_t *inlineStat_pd;
+    uint8_t *inlineStat_pd;
 #endif
-	uint8_t *inlineUsed2_pd;
-	int8_t *offsetTbl;
+    uint8_t *inlineUsed2_pd;
+    int8_t *offsetTbl;
 #ifdef GET_SLOPE_0
-	uint8_t slope0 = 0, slope1p = 0, slope1m = 0;
+    uint8_t slope0 = 0, slope1p = 0, slope1m = 0;
 #endif
 #if (DEBUG_get_input_buffer > 1)
-	int show_line = 1; // BG_show_line_all;
-	int line_color = (MY_COLOR - 4);
+    int show_line = 1; // BG_show_line_all;
+    int line_color = (MY_COLOR - 4);
 #endif
 
 #ifdef SHOW_DEBUG_SIZE
@@ -4793,74 +4801,74 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
 #endif
 
 #if 0
-	for (i = 0; i < MAX_IN_LINE_BUF_PD_X; i++) {
-		for (j = 0; j < MAX_IN_LINE_BUF_LED_X; j++) {
-			BS_inlineBuf_x_pd[i][j] = 0;
-			BS_inlineBuf_x_led[i][j] = 0;
-		}
-	}
-	for (i = 0; i < MAX_IN_LINE_BUF_PD_Y; i++) {
-		for (j = 0; j < MAX_IN_LINE_BUF_LED_Y; j++) {
-			BS_inlineBuf_y_pd[i][j] = 0;
-			BS_inlineBuf_y_led[i][j] = 0;
-		}
-	}
+    for (i = 0; i < MAX_IN_LINE_BUF_PD_X; i++) {
+        for (j = 0; j < MAX_IN_LINE_BUF_LED_X; j++) {
+            BS_inlineBuf_x_pd[i][j] = 0;
+            BS_inlineBuf_x_led[i][j] = 0;
+        }
+    }
+    for (i = 0; i < MAX_IN_LINE_BUF_PD_Y; i++) {
+        for (j = 0; j < MAX_IN_LINE_BUF_LED_Y; j++) {
+            BS_inlineBuf_y_pd[i][j] = 0;
+            BS_inlineBuf_y_led[i][j] = 0;
+        }
+    }
 #endif
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
     sensor_list_init();
 #endif
 
-	//x-axis
-	inlineBuf_pd = IN_LINE_BUF_ADDR_X_PD;
-	inlineBuf_led = IN_LINE_BUF_ADDR_X_LED;
+    //x-axis
+    inlineBuf_pd = IN_LINE_BUF_ADDR_X_PD;
+    inlineBuf_led = IN_LINE_BUF_ADDR_X_LED;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-	inlineStat_pd = LINE_STAT_BUF_ADDR_X;
+    inlineStat_pd = LINE_STAT_BUF_ADDR_X;
 #endif
-	inlineUsed2_pd = LINE_USED2_BUF_ADDR_X;
-	offsetTbl = &BS_offsetTblX[0];
-	IS_DEBUG_FLAG{ TRACE_GIB("X inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->hor_len); };
-	//IS_DEBUG_FLAG{ TRACE("X inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->hor_len); }
+    inlineUsed2_pd = LINE_USED2_BUF_ADDR_X;
+    offsetTbl = &BS_offsetTblX[0];
+    IS_DEBUG_FLAG{ TRACE_GIB("X inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->hor_len); };
+    //IS_DEBUG_FLAG{ TRACE("X inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->hor_len); }
 
     maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
-	memset(inlineBuf_pd, 0, MAX_IN_LINE_BUF_PD_X * MAX_IN_LINE_BUF_LED_X);
-	memset(inlineBuf_led, 0, MAX_IN_LINE_BUF_PD_X * MAX_IN_LINE_BUF_LED_X);
+    memset(inlineBuf_pd, 0, MAX_IN_LINE_BUF_PD_X * MAX_IN_LINE_BUF_LED_X);
+    memset(inlineBuf_led, 0, MAX_IN_LINE_BUF_PD_X * MAX_IN_LINE_BUF_LED_X);
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-	memset(inlineStat_pd, 0, MAX_LINE_STAT_BUF_PD_X * MAX_LINE_STAT_BUF_LED_X);
+    memset(inlineStat_pd, 0, MAX_LINE_STAT_BUF_PD_X * MAX_LINE_STAT_BUF_LED_X);
 #else
     memset(inlineUsed2_pd, 0, MAX_LINE_USED_BUF_PD_X * MAX_LINE_USED_BUF_LED_X);
 #endif
 
-	for (i = 0; i < InBuf->hor_len; i++) {
+    for (i = 0; i < InBuf->hor_len; i++) {
 #if 0 //(USE_ADC_DATA == 1), for debugging
-		int8_t adcTmp = InBuf->hor_touch_pd[i].adc;
-		//if (adcTmp > 40)
-			TRACE("X%d\r\n", adcTmp);
+        int8_t adcTmp = InBuf->hor_touch_pd[i].adc;
+        //if (adcTmp > 40)
+        TRACE("X%d\r\n", adcTmp);
 #endif
-		pd = InBuf->hor_touch_pd[i].pd;
-		if (InBuf->hor_touch_pd[i].led >= BS_offsetTblLenX) {
-			TRACE_ERROR("ERROR! X invalid led offset %d [%d]", InBuf->hor_touch_pd[i].led, BG_frame_no);
-			continue;
-		}
-		led = InBuf->hor_touch_pd[i].pd + offsetTbl[InBuf->hor_touch_pd[i].led];
-		if (led < 0 || led >= BS_maxHorPdNum) {
-		    TRACE_ERROR("ERROR! X invalid led %d/%d/%d [%d]", pd, led, BS_maxHorPdNum, BG_frame_no);
-			continue;
-		}
+        pd = InBuf->hor_touch_pd[i].pd;
+        if (InBuf->hor_touch_pd[i].led >= BS_offsetTblLenX) {
+            TRACE_ERROR("ERROR! X invalid led offset %d [%d]", InBuf->hor_touch_pd[i].led, BG_frame_no);
+            continue;
+        }
+        led = InBuf->hor_touch_pd[i].pd + offsetTbl[InBuf->hor_touch_pd[i].led];
+        if (led < 0 || led >= BS_maxHorPdNum) {
+            TRACE_ERROR("ERROR! X invalid led %d/%d/%d [%d]", pd, led, BS_maxHorPdNum, BG_frame_no);
+            continue;
+        }
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
         sensor_list_add(ENUM_HOR_X, ENUM_PD, pd);
         sensor_list_add(ENUM_HOR_X, ENUM_LED, led);
 #endif
 
 #ifdef GET_SLOPE_0
-		if (InBuf->hor_touch_pd[i].led == MAX_X_SLOPE_VAL) {
-			slope0++;
-		}
-		else if (InBuf->hor_touch_pd[i].led == (MAX_X_SLOPE_VAL - 1)) {
-			slope1m++;
-		}
-		else if (InBuf->hor_touch_pd[i].led == (MAX_X_SLOPE_VAL + 1)) {
-			slope1p++;
-		}
+        if (InBuf->hor_touch_pd[i].led == MAX_X_SLOPE_VAL) {
+            slope0++;
+        }
+        else if (InBuf->hor_touch_pd[i].led == (MAX_X_SLOPE_VAL - 1)) {
+            slope1m++;
+        }
+        else if (InBuf->hor_touch_pd[i].led == (MAX_X_SLOPE_VAL + 1)) {
+            slope1p++;
+        }
 #endif
 #ifdef SHOW_DEBUG_SIZE
         int slopeValX = led - pd;
@@ -4878,82 +4886,82 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
         if (show_line) DEBUG_SHOW_LINE_PD_LED(ENUM_HOR_X, pd, led, line_color);
 #endif
         //x-pd table
-		lineBufIdx = GET_IN_LINE_IDX(pd, led);
-		ledMask = GET_LED_BIT_MASK(led);
-		inlineBuf_pd[lineBufIdx] |= (uint8_t)ledMask;
+        lineBufIdx = GET_IN_LINE_IDX(pd, led);
+        ledMask = GET_LED_BIT_MASK(led);
+        inlineBuf_pd[lineBufIdx] |= (uint8_t)ledMask;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-		inlineStat_pd[lineBufIdx] |= (uint8_t)ledMask;
+        inlineStat_pd[lineBufIdx] |= (uint8_t)ledMask;
 #else
         inlineUsed2_pd[lineBufIdx] |= (uint8_t)ledMask;
 #endif
 #if 0 //for testing
-		if (pd == 28) //for testing
+        if (pd == 28) //for testing
 #endif
-			IS_DEBUG_FLAG{ TRACE_GIB("--pd,led,lineBufIdx,ledMask:, %d, %d, %d, %x, (%x)", pd, led, lineBufIdx, ledMask, inlineBuf_pd[lineBufIdx]); };
+            IS_DEBUG_FLAG{ TRACE_GIB("--pd,led,lineBufIdx,ledMask:, %d, %d, %d, %x, (%x)", pd, led, lineBufIdx, ledMask, inlineBuf_pd[lineBufIdx]); };
 
         //x-led table
-		lineBufIdx = GET_IN_LINE_IDX(led, pd);
-		ledMask = GET_LED_BIT_MASK(pd);
-		inlineBuf_led[lineBufIdx] |= (uint8_t)ledMask;
-		IS_DEBUG_FLAG{ TRACE_GIB("--led,pd,lineBufIdx,ledMask:, %d, %d, %d, %x, (%x)", led, pd, lineBufIdx, ledMask, inlineBuf_led[lineBufIdx]); };
-		TRACE_NOP;
-	} //for (i = 0; i < InBuf->hor_len; i++)
+        lineBufIdx = GET_IN_LINE_IDX(led, pd);
+        ledMask = GET_LED_BIT_MASK(pd);
+        inlineBuf_led[lineBufIdx] |= (uint8_t)ledMask;
+        IS_DEBUG_FLAG{ TRACE_GIB("--led,pd,lineBufIdx,ledMask:, %d, %d, %d, %x, (%x)", led, pd, lineBufIdx, ledMask, inlineBuf_led[lineBufIdx]); };
+        TRACE_NOP;
+    } //for (i = 0; i < InBuf->hor_len; i++)
 #ifdef GET_SLOPE_0
-	slope_cnt0_x = GET_MAX(slope1m, slope1p);
-	slope_cnt0_x = GET_MAX(slope0, slope_cnt0_x);
+    slope_cnt0_x = GET_MAX(slope1m, slope1p);
+    slope_cnt0_x = GET_MAX(slope0, slope_cnt0_x);
     IS_DEBUG_FLAG{ TRACE_GIB0("X:slope0: %d %d %d", slope0, slope1p, slope1m); };
     //TRACE_RELEASE("X:slope0: %d %d %d", slope0, slope1p, slope1m);
 #endif
 
-	//y-axis
-	inlineBuf_pd = IN_LINE_BUF_ADDR_Y_PD;
-	inlineBuf_led = IN_LINE_BUF_ADDR_Y_LED;
+    //y-axis
+    inlineBuf_pd = IN_LINE_BUF_ADDR_Y_PD;
+    inlineBuf_led = IN_LINE_BUF_ADDR_Y_LED;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-	inlineStat_pd = LINE_STAT_BUF_ADDR_Y;
+    inlineStat_pd = LINE_STAT_BUF_ADDR_Y;
 #endif
-	inlineUsed2_pd = LINE_USED2_BUF_ADDR_Y;
+    inlineUsed2_pd = LINE_USED2_BUF_ADDR_Y;
     IS_DEBUG_FLAG{ TRACE_GIB("Y inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->ver_len); };
     //IS_DEBUG_FLAG{ TRACE("Y inlineBuf_led in get_input_buffer: %x %d ", inlineBuf_led, InBuf->ver_len); }
 
-	offsetTbl = &BS_offsetTblY[0];
-	maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
-	memset(inlineBuf_pd, 0, MAX_IN_LINE_BUF_PD_Y * MAX_IN_LINE_BUF_LED_Y);
-	memset(inlineBuf_led, 0, MAX_IN_LINE_BUF_PD_Y * MAX_IN_LINE_BUF_LED_Y);
+    offsetTbl = &BS_offsetTblY[0];
+    maxInLineBufLed = MAX_IN_LINE_BUF_LED_Y;
+    memset(inlineBuf_pd, 0, MAX_IN_LINE_BUF_PD_Y * MAX_IN_LINE_BUF_LED_Y);
+    memset(inlineBuf_led, 0, MAX_IN_LINE_BUF_PD_Y * MAX_IN_LINE_BUF_LED_Y);
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-	memset(inlineStat_pd, 0, MAX_LINE_STAT_BUF_PD_Y * MAX_LINE_STAT_BUF_LED_Y);
+    memset(inlineStat_pd, 0, MAX_LINE_STAT_BUF_PD_Y * MAX_LINE_STAT_BUF_LED_Y);
 #endif
-	memset(inlineUsed2_pd, 0, MAX_LINE_USED_BUF_PD_Y * MAX_LINE_USED_BUF_LED_Y);
+    memset(inlineUsed2_pd, 0, MAX_LINE_USED_BUF_PD_Y * MAX_LINE_USED_BUF_LED_Y);
 
-	for (i = 0; i < InBuf->ver_len; i++) {
+    for (i = 0; i < InBuf->ver_len; i++) {
 #if 0 //(USE_ADC_DATA == 1), for debugging
-		int8_t adcTmp = InBuf->ver_touch_pd[i].adc;
-		//if (adcTmp > 40)
-			TRACE("Y%d\r\n", adcTmp);
+        int8_t adcTmp = InBuf->ver_touch_pd[i].adc;
+        //if (adcTmp > 40)
+        TRACE("Y%d\r\n", adcTmp);
 #endif
-		pd = InBuf->ver_touch_pd[i].pd;
-		if (InBuf->ver_touch_pd[i].led >= BS_offsetTblLenY) {
-			TRACE_ERROR("ERROR! Y invalid led offset %d [%d]", InBuf->ver_touch_pd[i].led, BG_frame_no);
-			continue;
-		}
-		led = InBuf->ver_touch_pd[i].pd + offsetTbl[InBuf->ver_touch_pd[i].led];
-		if (led < 0 || led >= BS_maxVerPdNum) {
-		    TRACE_ERROR("ERROR! Y invalid led %d/%d/%d [%d]", pd, led, BS_maxVerPdNum, BG_frame_no);
-			continue;
-		}
+        pd = InBuf->ver_touch_pd[i].pd;
+        if (InBuf->ver_touch_pd[i].led >= BS_offsetTblLenY) {
+            TRACE_ERROR("ERROR! Y invalid led offset %d [%d]", InBuf->ver_touch_pd[i].led, BG_frame_no);
+            continue;
+        }
+        led = InBuf->ver_touch_pd[i].pd + offsetTbl[InBuf->ver_touch_pd[i].led];
+        if (led < 0 || led >= BS_maxVerPdNum) {
+            TRACE_ERROR("ERROR! Y invalid led %d/%d/%d [%d]", pd, led, BS_maxVerPdNum, BG_frame_no);
+            continue;
+        }
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
         sensor_list_add(ENUM_VER_Y, ENUM_PD, pd);
         sensor_list_add(ENUM_VER_Y, ENUM_LED, led);
 #endif
 #ifdef GET_SLOPE_0
-		if (InBuf->ver_touch_pd[i].led == MAX_Y_SLOPE_VAL) {
-			slope0++;
-		}
-		else if (InBuf->ver_touch_pd[i].led == (MAX_Y_SLOPE_VAL - 1)) {
-			slope1m++;
-		}
-		else if (InBuf->ver_touch_pd[i].led == (MAX_Y_SLOPE_VAL + 1)) {
-			slope1p++;
-		}
+        if (InBuf->ver_touch_pd[i].led == MAX_Y_SLOPE_VAL) {
+            slope0++;
+        }
+        else if (InBuf->ver_touch_pd[i].led == (MAX_Y_SLOPE_VAL - 1)) {
+            slope1m++;
+        }
+        else if (InBuf->ver_touch_pd[i].led == (MAX_Y_SLOPE_VAL + 1)) {
+            slope1p++;
+        }
 #endif
 #ifdef SHOW_DEBUG_SIZE
         int slopeValY = led - pd;
@@ -4971,38 +4979,38 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
         if (show_line) DEBUG_SHOW_LINE_PD_LED(ENUM_VER_Y, pd, led, line_color);
 #endif
         //y-pd-table
-		lineBufIdx = GET_IN_LINE_IDX(pd, led);
-		ledMask = GET_LED_BIT_MASK(led);
+        lineBufIdx = GET_IN_LINE_IDX(pd, led);
+        ledMask = GET_LED_BIT_MASK(led);
 
-		inlineBuf_pd[lineBufIdx] |= (uint8_t)ledMask;
+        inlineBuf_pd[lineBufIdx] |= (uint8_t)ledMask;
 #ifdef USED_LINE_METHOD_OLD //nsmoon@200119
-		inlineStat_pd[lineBufIdx] |= (uint8_t)ledMask;
+        inlineStat_pd[lineBufIdx] |= (uint8_t)ledMask;
 #endif
-		inlineUsed2_pd[lineBufIdx] |= (uint8_t)ledMask;
-		IS_DEBUG_FLAG{ TRACE_GIB("==pd,led,lineBufIdx,ledMask:, %d, %d, %d, %x", pd, led, lineBufIdx, ledMask); };
+        inlineUsed2_pd[lineBufIdx] |= (uint8_t)ledMask;
+        IS_DEBUG_FLAG{ TRACE_GIB("==pd,led,lineBufIdx,ledMask:, %d, %d, %d, %x", pd, led, lineBufIdx, ledMask); };
 
         //y-led-table
-		lineBufIdx = GET_IN_LINE_IDX(led, pd);
-		ledMask = GET_LED_BIT_MASK(pd);
-		inlineBuf_led[lineBufIdx] |= (uint8_t)ledMask;
-		IS_DEBUG_FLAG{ TRACE_GIB("==led,pd,lineBufIdx,ledMask:, %d, %d, %d, %x", led, pd, lineBufIdx, ledMask); };
-		TRACE_NOP;
-	} //for (i = 0; i < InBuf->ver_len; i++)
+        lineBufIdx = GET_IN_LINE_IDX(led, pd);
+        ledMask = GET_LED_BIT_MASK(pd);
+        inlineBuf_led[lineBufIdx] |= (uint8_t)ledMask;
+        IS_DEBUG_FLAG{ TRACE_GIB("==led,pd,lineBufIdx,ledMask:, %d, %d, %d, %x", led, pd, lineBufIdx, ledMask); };
+        TRACE_NOP;
+    } //for (i = 0; i < InBuf->ver_len; i++)
 #ifdef GET_SLOPE_0
-	slope_cnt0_y = GET_MAX(slope1m, slope1p);
-	slope_cnt0_y = GET_MAX(slope0, slope_cnt0_y);
+    slope_cnt0_y = GET_MAX(slope1m, slope1p);
+    slope_cnt0_y = GET_MAX(slope0, slope_cnt0_y);
     IS_DEBUG_FLAG{ TRACE_GIB0("Y:slope0: %d %d %d", slope0, slope1p, slope1m); };
     //TRACE_RELEASE("Y:slope0: %d %d %d", slope0, slope1p, slope1m);
 #endif
 
 #if 0 //for testing
-	led = 29;
-	pd = 0;
-	inlineBuf_pd = IN_LINE_BUF_ADDR_X_LED;
-	maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
-	lineBufIdx = GET_IN_LINE_IDX(led, pd);
-	ledMask = GET_LED_BIT_MASK(pd);
-	IS_DEBUG_FLAG{ TRACE_GIB("..led,pd,lineBufIdx,ledMask: %d %d %d %x (%x)(%x)", led, pd, lineBufIdx, ledMask, inlineBuf_pd[lineBufIdx], BS_inlineBuf_x_led[led][pd]); };
+    led = 29;
+    pd = 0;
+    inlineBuf_pd = IN_LINE_BUF_ADDR_X_LED;
+    maxInLineBufLed = MAX_IN_LINE_BUF_LED_X;
+    lineBufIdx = GET_IN_LINE_IDX(led, pd);
+    ledMask = GET_LED_BIT_MASK(pd);
+    IS_DEBUG_FLAG{ TRACE_GIB("..led,pd,lineBufIdx,ledMask: %d %d %d %x (%x)(%x)", led, pd, lineBufIdx, ledMask, inlineBuf_pd[lineBufIdx], BS_inlineBuf_x_led[led][pd]); };
 #endif
 #ifdef USE_SENSOR_LIST //for test, nsmoon@200327
     IS_DEBUG_FLAG{ TRACE("BS_pd_x_cnt:,%d,%d,%d,%d", BS_pd_x_cnt, BS_led_x_cnt, BS_pd_y_cnt, BS_led_y_cnt); };
@@ -5034,8 +5042,8 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
     }
     TRACE_NOP;
 #endif
-	IS_DEBUG_FLAG{
-	    //TRACE("slope_cnt0_x,slope_cnt0_y: %d, %d", slope_cnt0_x, slope_cnt0_y);
+    IS_DEBUG_FLAG{
+        //TRACE("slope_cnt0_x,slope_cnt0_y: %d, %d", slope_cnt0_x, slope_cnt0_y);
         TRACE_NOP;
     };
 }
@@ -5048,112 +5056,112 @@ static void get_input_buffer(DEF_PD_INFO *InBuf)
 #ifdef MULTI_SKIP_USED_VB //nsmoon@210218
 static int save_initial_polygon(initial_polygon_t *initial_polygon, int *initialTouchCnt, vec_t pR, pos_min_max_t minMaxPos, initial_line_no_t initial_lineNo)
 {
-	side_type_t	side;
-	sen_type_t senX, senY;
+    side_type_t	side;
+    sen_type_t senX, senY;
 
-	if (*initialTouchCnt < MAX_RESULT_POLYGON_NO) {
+    if (*initialTouchCnt < MAX_RESULT_POLYGON_NO) {
         initial_polygon[*initialTouchCnt].pos.minX = minMaxPos.minX;
         initial_polygon[*initialTouchCnt].pos.maxX = minMaxPos.maxX;
         initial_polygon[*initialTouchCnt].pos.minY = minMaxPos.minY;
         initial_polygon[*initialTouchCnt].pos.maxY = minMaxPos.maxY;
-		side = BS_getSideFromPos(&pR);
-		initial_polygon[*initialTouchCnt].side = side;
-		if (side == ENUM_BOT_RHT) {
-			senX = ENUM_LED;
-			senY = ENUM_PD;
-			//bdX = ENUM_BOT_BD;
-			//bdY = ENUM_RHT_BD;
-		}
-		else if (side == ENUM_TOP_RHT) {
-			senX = ENUM_PD;
-			senY = ENUM_PD;
-			//bdX = ENUM_TOP_BD;
-			//bdY = ENUM_RHT_BD;
-		}
-		else if (side == ENUM_TOP_LFT) {
-			senX = ENUM_PD;
-			senY = ENUM_LED;
-			//bdX = ENUM_TOP_BD;
-			//bdY = ENUM_LFT_BD;
-		}
-		else {
-			//(side == ENUM_BOT_LFT)
-			senX = ENUM_LED;
-			senY = ENUM_LED;
-			//bdX = ENUM_BOT_BD;
-			//bdY = ENUM_LFT_BD;
-		}
+        side = BS_getSideFromPos(&pR);
+        initial_polygon[*initialTouchCnt].side = side;
+        if (side == ENUM_BOT_RHT) {
+            senX = ENUM_LED;
+            senY = ENUM_PD;
+            //bdX = ENUM_BOT_BD;
+            //bdY = ENUM_RHT_BD;
+        }
+        else if (side == ENUM_TOP_RHT) {
+            senX = ENUM_PD;
+            senY = ENUM_PD;
+            //bdX = ENUM_TOP_BD;
+            //bdY = ENUM_RHT_BD;
+        }
+        else if (side == ENUM_TOP_LFT) {
+            senX = ENUM_PD;
+            senY = ENUM_LED;
+            //bdX = ENUM_TOP_BD;
+            //bdY = ENUM_LFT_BD;
+        }
+        else {
+            //(side == ENUM_BOT_LFT)
+            senX = ENUM_LED;
+            senY = ENUM_LED;
+            //bdX = ENUM_BOT_BD;
+            //bdY = ENUM_LFT_BD;
+        }
         initial_polygon[*initialTouchCnt].ep.minX = (uint8_t)BS_getSenNumPos(ENUM_HOR_X, senX, minMaxPos.minX, 0); //0:before
         initial_polygon[*initialTouchCnt].ep.maxX = (uint8_t)BS_getSenNumPos(ENUM_HOR_X, senX, minMaxPos.maxX, 1); //1:after
         initial_polygon[*initialTouchCnt].ep.minY = (uint8_t)BS_getSenNumPos(ENUM_VER_Y, senY, minMaxPos.minY, 0); //0:before
         initial_polygon[*initialTouchCnt].ep.maxY = (uint8_t)BS_getSenNumPos(ENUM_VER_Y, senY, minMaxPos.maxY, 1); //1:after
-		initial_polygon[*initialTouchCnt].firstX = 1;
-		initial_polygon[*initialTouchCnt].firstY = 1;
-		initial_polygon[*initialTouchCnt].stat = 0; //init
+        initial_polygon[*initialTouchCnt].firstX = 1;
+        initial_polygon[*initialTouchCnt].firstY = 1;
+        initial_polygon[*initialTouchCnt].stat = 0; //init
         initial_polygon[*initialTouchCnt].xNo = initial_lineNo.xNo;
         initial_polygon[*initialTouchCnt].yNo = initial_lineNo.yNo;
-		//DEBUG_SHOW_MIN_MAX(&initial_polygon[initialTouchCnt].pos, 3, 1);
-		(*initialTouchCnt)++;
-	}
-	else {
+        //DEBUG_SHOW_MIN_MAX(&initial_polygon[initialTouchCnt].pos, 3, 1);
+        (*initialTouchCnt)++;
+    }
+    else {
         TRACE_ERROR("ERROR! save_initial_polygon... invalid initialTouchCnt");
-		return -1; //mem-error
-	}
-	return 0;
+        return -1; //mem-error
+    }
+    return 0;
 }
 #else
 static int save_initial_polygon(initial_polygon_t *initial_polygon, int *initialTouchCnt, vec_t pR, pos_min_max_t minMaxPos)
 {
-	side_type_t	side;
-	sen_type_t senX, senY;
+    side_type_t	side;
+    sen_type_t senX, senY;
 
-	if (*initialTouchCnt < MAX_RESULT_POLYGON_NO) {
-		initial_polygon[*initialTouchCnt].pos.minX = minMaxPos.minX;
-		initial_polygon[*initialTouchCnt].pos.maxX = minMaxPos.maxX;
-		initial_polygon[*initialTouchCnt].pos.minY = minMaxPos.minY;
-		initial_polygon[*initialTouchCnt].pos.maxY = minMaxPos.maxY;
-		side = BS_getSideFromPos(&pR);
-		initial_polygon[*initialTouchCnt].side = side;
-		if (side == ENUM_BOT_RHT) {
-			senX = ENUM_LED;
-			senY = ENUM_PD;
-			//bdX = ENUM_BOT_BD;
-			//bdY = ENUM_RHT_BD;
-		}
-		else if (side == ENUM_TOP_RHT) {
-			senX = ENUM_PD;
-			senY = ENUM_PD;
-			//bdX = ENUM_TOP_BD;
-			//bdY = ENUM_RHT_BD;
-		}
-		else if (side == ENUM_TOP_LFT) {
-			senX = ENUM_PD;
-			senY = ENUM_LED;
-			//bdX = ENUM_TOP_BD;
-			//bdY = ENUM_LFT_BD;
-		}
-		else {
-			//(side == ENUM_BOT_LFT)
-			senX = ENUM_LED;
-			senY = ENUM_LED;
-			//bdX = ENUM_BOT_BD;
-			//bdY = ENUM_LFT_BD;
-		}
-		initial_polygon[*initialTouchCnt].ep.minX = (uint8_t)BS_getSenNumPos(ENUM_HOR_X, senX, minMaxPos.minX, 0); //0:before
+    if (*initialTouchCnt < MAX_RESULT_POLYGON_NO) {
+        initial_polygon[*initialTouchCnt].pos.minX = minMaxPos.minX;
+        initial_polygon[*initialTouchCnt].pos.maxX = minMaxPos.maxX;
+        initial_polygon[*initialTouchCnt].pos.minY = minMaxPos.minY;
+        initial_polygon[*initialTouchCnt].pos.maxY = minMaxPos.maxY;
+        side = BS_getSideFromPos(&pR);
+        initial_polygon[*initialTouchCnt].side = side;
+        if (side == ENUM_BOT_RHT) {
+            senX = ENUM_LED;
+            senY = ENUM_PD;
+            //bdX = ENUM_BOT_BD;
+            //bdY = ENUM_RHT_BD;
+        }
+        else if (side == ENUM_TOP_RHT) {
+            senX = ENUM_PD;
+            senY = ENUM_PD;
+            //bdX = ENUM_TOP_BD;
+            //bdY = ENUM_RHT_BD;
+        }
+        else if (side == ENUM_TOP_LFT) {
+            senX = ENUM_PD;
+            senY = ENUM_LED;
+            //bdX = ENUM_TOP_BD;
+            //bdY = ENUM_LFT_BD;
+        }
+        else {
+            //(side == ENUM_BOT_LFT)
+            senX = ENUM_LED;
+            senY = ENUM_LED;
+            //bdX = ENUM_BOT_BD;
+            //bdY = ENUM_LFT_BD;
+        }
+        initial_polygon[*initialTouchCnt].ep.minX = (uint8_t)BS_getSenNumPos(ENUM_HOR_X, senX, minMaxPos.minX, 0); //0:before
         initial_polygon[*initialTouchCnt].ep.maxX = (uint8_t)BS_getSenNumPos(ENUM_HOR_X, senX, minMaxPos.maxX, 1); //1:after
-		initial_polygon[*initialTouchCnt].ep.minY = (uint8_t)BS_getSenNumPos(ENUM_VER_Y, senY, minMaxPos.minY, 0); //0:before
+        initial_polygon[*initialTouchCnt].ep.minY = (uint8_t)BS_getSenNumPos(ENUM_VER_Y, senY, minMaxPos.minY, 0); //0:before
         initial_polygon[*initialTouchCnt].ep.maxY = (uint8_t)BS_getSenNumPos(ENUM_VER_Y, senY, minMaxPos.maxY, 1); //1:after
-		initial_polygon[*initialTouchCnt].firstX = 1;
-		initial_polygon[*initialTouchCnt].firstY = 1;
-		initial_polygon[*initialTouchCnt].stat = 0; //init
-		//DEBUG_SHOW_MIN_MAX(&initial_polygon[initialTouchCnt].pos, 3, 1);
-		(*initialTouchCnt)++;
-	}
-	else {
+        initial_polygon[*initialTouchCnt].firstX = 1;
+        initial_polygon[*initialTouchCnt].firstY = 1;
+        initial_polygon[*initialTouchCnt].stat = 0; //init
+        //DEBUG_SHOW_MIN_MAX(&initial_polygon[initialTouchCnt].pos, 3, 1);
+        (*initialTouchCnt)++;
+    }
+    else {
         TRACE_ERROR("ERROR! save_initial_polygon... invalid initialTouchCnt");
-		return -1; //mem-error
-	}
-	return 0;
+        return -1; //mem-error
+    }
+    return 0;
 }
 #endif
 
@@ -5163,50 +5171,50 @@ static int save_initial_polygon(initial_polygon_t *initial_polygon, int *initial
 #define MULTI_OVERLAP_DIST_3	8.0f
 static int is_overlap_min_max_initial_polygon(int stIdx, int edIdx, pos_min_max_t mM, int mode)
 {
-	//mode: 0:include all, 1:exclude removed touch
+    //mode: 0:include all, 1:exclude removed touch
     int ol_x1, ol_x2, ol_x3, ol_x4, ol_y1, ol_y2, ol_y3, ol_y4;
-	initial_polygon_t *initial = &BS_initial_polygon[0];
-	int i;
-	float distX, distY, distMax = MULTI_OVERLAP_DIST_3;
-	vec_t cent, cent2;
-	cent.x = (mM.minX + mM.maxX) * 0.5f;
-	cent.y = (mM.minY + mM.maxY) * 0.5f;
+    initial_polygon_t *initial = &BS_initial_polygon[0];
+    int i;
+    float distX, distY, distMax = MULTI_OVERLAP_DIST_3;
+    vec_t cent, cent2;
+    cent.x = (mM.minX + mM.maxX) * 0.5f;
+    cent.y = (mM.minY + mM.maxY) * 0.5f;
 
-	//TRACE("cent.x,cent.y=%0.1f, %0.1f", cent.x, cent.y);
-	for (i = stIdx; i < edIdx; i++) {
-		//DEBUG_SHOW_MIN_MAX(&info[i].mM, MY_COLOR, 1);
-		if (mode) {
-			if (initial[i].stat == 1) continue; //removed
-		}
+    //TRACE("cent.x,cent.y=%0.1f, %0.1f", cent.x, cent.y);
+    for (i = stIdx; i < edIdx; i++) {
+        //DEBUG_SHOW_MIN_MAX(&info[i].mM, MY_COLOR, 1);
+        if (mode) {
+            if (initial[i].stat == 1) continue; //removed
+        }
 #if 1 //for test
-		cent2.x = (initial[i].pos.minX + initial[i].pos.maxX) * 0.5f;
-		cent2.y = (initial[i].pos.minY + initial[i].pos.maxY) * 0.5f;
-		distX = GET_ABS(cent.x - cent2.x);
-		distY = GET_ABS(cent.y - cent2.y);
-		//TRACE("distX,distY=%0.1f %0.1f (%0.1f)", distX, distY, distMax);
-		if (distX < distMax && distY < distMax) {
-			return 1; //overlapped
-		}
+        cent2.x = (initial[i].pos.minX + initial[i].pos.maxX) * 0.5f;
+        cent2.y = (initial[i].pos.minY + initial[i].pos.maxY) * 0.5f;
+        distX = GET_ABS(cent.x - cent2.x);
+        distY = GET_ABS(cent.y - cent2.y);
+        //TRACE("distX,distY=%0.1f %0.1f (%0.1f)", distX, distY, distMax);
+        if (distX < distMax && distY < distMax) {
+            return 1; //overlapped
+        }
 #else
-		if (initial[i].pos.minX > initial[i].pos.maxX || mM.minX > mM.maxX) {
-			TRACE_ERROR("ERROR! invalid min,max: %f,%f %f,%f", initial[i].pos.minX, initial[i].pos.maxX, mM.minX, mM.maxX);
-		}
-		ol_x1 = (mM.minX > (initial[i].pos.minX - INITIAL_OVERLAP_TOL) && mM.minX < (initial[i].pos.maxX + INITIAL_OVERLAP_TOL));
-		ol_x2 = (mM.maxX >(initial[i].pos.minX - INITIAL_OVERLAP_TOL) && mM.maxX < (initial[i].pos.maxX + INITIAL_OVERLAP_TOL));
-		ol_y1 = (mM.minY >(initial[i].pos.minY - INITIAL_OVERLAP_TOL) && mM.minY < (initial[i].pos.maxY + INITIAL_OVERLAP_TOL));
-		ol_y2 = (mM.maxY >(initial[i].pos.minY - INITIAL_OVERLAP_TOL) && mM.maxY < (initial[i].pos.maxY + INITIAL_OVERLAP_TOL));
+        if (initial[i].pos.minX > initial[i].pos.maxX || mM.minX > mM.maxX) {
+            TRACE_ERROR("ERROR! invalid min,max: %f,%f %f,%f", initial[i].pos.minX, initial[i].pos.maxX, mM.minX, mM.maxX);
+        }
+        ol_x1 = (mM.minX > (initial[i].pos.minX - INITIAL_OVERLAP_TOL) && mM.minX < (initial[i].pos.maxX + INITIAL_OVERLAP_TOL));
+        ol_x2 = (mM.maxX >(initial[i].pos.minX - INITIAL_OVERLAP_TOL) && mM.maxX < (initial[i].pos.maxX + INITIAL_OVERLAP_TOL));
+        ol_y1 = (mM.minY >(initial[i].pos.minY - INITIAL_OVERLAP_TOL) && mM.minY < (initial[i].pos.maxY + INITIAL_OVERLAP_TOL));
+        ol_y2 = (mM.maxY >(initial[i].pos.minY - INITIAL_OVERLAP_TOL) && mM.maxY < (initial[i].pos.maxY + INITIAL_OVERLAP_TOL));
         ol_x3 = (initial[i].pos.minX > (mM.minX - INITIAL_OVERLAP_TOL) && initial[i].pos.minX < (mM.maxX + INITIAL_OVERLAP_TOL));
         ol_x4 = (initial[i].pos.maxX >(mM.minX - INITIAL_OVERLAP_TOL) && initial[i].pos.maxX < (mM.maxX + INITIAL_OVERLAP_TOL));
         ol_y3 = (initial[i].pos.minY >(mM.minY - INITIAL_OVERLAP_TOL) && initial[i].pos.minY < (mM.maxY + INITIAL_OVERLAP_TOL));
         ol_y4 = (initial[i].pos.maxY >(mM.minY - INITIAL_OVERLAP_TOL) && initial[i].pos.maxY < (mM.maxY + INITIAL_OVERLAP_TOL));
         if ((ol_x1 || ol_x2 || ol_x3 || ol_x4) && (ol_y1 || ol_y2 || ol_y3 || ol_y4)) {
-			//TRACE("overlapped~~");
-			return 1;
-		}
+            //TRACE("overlapped~~");
+            return 1;
+        }
 #endif
-	}
+    }
 
-	return 0; //not-overlapped
+    return 0; //not-overlapped
 }
 #endif //1
 
@@ -5315,54 +5323,54 @@ static int remaied_multi_initial_merge(pos_min_max_t *initial_mM, int initial_mM
 #define DEBUG_remaied_multi_initial     1
 static int remaied_multi_initial(void)
 {
-	uint16_t *remLineX = &BS_remained_x[0];
-	int remLineCntX = BS_remained_x_cnt;
-	uint16_t *remLineY = &BS_remained_y[0];
-	int remLineCntY = BS_remained_y_cnt;
-	int line_idx_x, line_idx_y;
-	initial_polygon_t *initial_polygon = &BS_initial_polygon[0];
+    uint16_t *remLineX = &BS_remained_x[0];
+    int remLineCntX = BS_remained_x_cnt;
+    uint16_t *remLineY = &BS_remained_y[0];
+    int remLineCntY = BS_remained_y_cnt;
+    int line_idx_x, line_idx_y;
+    initial_polygon_t *initial_polygon = &BS_initial_polygon[0];
     pos_min_max_t *initial_mM = &BS_initial_minMax[0];
     int initialTouchCnt, initial_mM_cnt;
     initial_line_a_t *initial_line_x = &BS_initial_line_a_x[0];
     initial_line_a_t *initial_line_y = &BS_initial_line_a_y[0];
-	int pdX, ledX, pdY, ledY;
-	float *pdXpos = &BS_pd_pos_x[0];
-	float *ledXpos = &BS_led_pos_x[0];
-	float *pdYpos = &BS_pd_pos_y[0];
-	float *ledYpos = &BS_led_pos_y[0];
-	vec_t p0, p1, p2, p3, pR;
+    int pdX, ledX, pdY, ledY;
+    float *pdXpos = &BS_pd_pos_x[0];
+    float *ledXpos = &BS_led_pos_x[0];
+    float *pdYpos = &BS_pd_pos_y[0];
+    float *ledYpos = &BS_led_pos_y[0];
+    vec_t p0, p1, p2, p3, pR;
     vec_t cent;
-	pos_min_max_t minMaxPos;
-	int retTmp; 
-    int i; 
+    pos_min_max_t minMaxPos;
+    int retTmp;
+    int i;
     float initial_half_size = REMAINED_MULTI_INITIAL_HALFSIZE;
 #ifdef MULTI_SKIP_USED_VB //nsmoon@210218
     initial_line_no_t *initial_lineNo = &BS_initial_lineNo[0];
     TRACE_MSUV("****BG_frame_no=%d ", BG_frame_no);
 #endif
-	IS_DEBUG_FLAG{
-		TRACE_NOP;
-	};
+    IS_DEBUG_FLAG{
+        TRACE_NOP;
+    };
 
-	retTmp = BS_fine_get_initial_ep5(ENUM_HOR_X, remLineX, &remLineCntX);
-	if (retTmp) {
-		TRACE_ERROR("ERROR! remaied_multi_initial..0 mem over flow");
-		return -1; //mem error
-	}
+    retTmp = BS_fine_get_initial_ep5(ENUM_HOR_X, remLineX, &remLineCntX);
+    if (retTmp) {
+        TRACE_ERROR("ERROR! remaied_multi_initial..0 mem over flow");
+        return -1; //mem error
+    }
 
-	retTmp = BS_fine_get_initial_ep5(ENUM_VER_Y, remLineY, &remLineCntY);
-	if (retTmp) {
-		TRACE_ERROR("ERROR! remaied_multi_initial..0 mem over flow");
-		return -1; //mem error
-	}
+    retTmp = BS_fine_get_initial_ep5(ENUM_VER_Y, remLineY, &remLineCntY);
+    if (retTmp) {
+        TRACE_ERROR("ERROR! remaied_multi_initial..0 mem over flow");
+        return -1; //mem error
+    }
 
-	//////////////////////////////////
-	//make real initial polygon
-	//////////////////////////////////
+    //////////////////////////////////
+    //make real initial polygon
+    //////////////////////////////////
     initial_mM_cnt = 0;
-	for (line_idx_x = 0; line_idx_x < BS_initial_line_a_x_cnt; line_idx_x++) {
-		pdX = initial_line_x[line_idx_x].line.pd;
-		ledX = initial_line_x[line_idx_x].line.led;
+    for (line_idx_x = 0; line_idx_x < BS_initial_line_a_x_cnt; line_idx_x++) {
+        pdX = initial_line_x[line_idx_x].line.pd;
+        ledX = initial_line_x[line_idx_x].line.led;
 #ifdef DEBUG_EP_TEST //nsmoon@210216
         //TRACE("line_idx_x=%d %d %d", line_idx_x, pdX, ledX);
         DEBUG_SHOW_LINE_PD_LED(ENUM_HOR_X, pdX, ledX, line_idx_x/*0*/);
@@ -5370,14 +5378,14 @@ static int remaied_multi_initial(void)
 #if (DEBUG_remaied_multi_initial > 0)
         IS_DEBUG_FLAG{ DEBUG_SHOW_LINE_PD_LED(ENUM_HOR_X, pdX, ledX, 0); }; //initial line
 #endif
-		p0.x = ledXpos[ledX];
-		p0.y = BS_sensor_zero_y;
-		p1.x = pdXpos[pdX];
-		p1.y = BS_sensor_end_y;
+        p0.x = ledXpos[ledX];
+        p0.y = BS_sensor_zero_y;
+        p1.x = pdXpos[pdX];
+        p1.y = BS_sensor_end_y;
 
-		for (line_idx_y = 0; line_idx_y < BS_initial_line_a_y_cnt; line_idx_y++) {
-			pdY = initial_line_y[line_idx_y].line.pd;
-			ledY = initial_line_y[line_idx_y].line.led;
+        for (line_idx_y = 0; line_idx_y < BS_initial_line_a_y_cnt; line_idx_y++) {
+            pdY = initial_line_y[line_idx_y].line.pd;
+            ledY = initial_line_y[line_idx_y].line.led;
 #ifdef DEBUG_EP_TEST //nsmoon@210216
             //TRACE("line_idx_y=%d %d %d", line_idx_y, pdY, ledY);
             DEBUG_SHOW_LINE_PD_LED(ENUM_VER_Y, pdY, ledY, line_idx_y/*0*/);
@@ -5385,11 +5393,11 @@ static int remaied_multi_initial(void)
 #if (DEBUG_remaied_multi_initial > 0)
             IS_DEBUG_FLAG{ DEBUG_SHOW_LINE_PD_LED(ENUM_VER_Y, pdY, ledY, 0); }; //initial line
 #endif
-			p2.y = ledYpos[ledY];
-			p2.x = BS_sensor_end_x;
-			p3.y = pdYpos[pdY];
-			p3.x = BS_sensor_zero_x;
-			if (BS_line_intersection(&p0, &p1, &p2, &p3, &pR)) {
+            p2.y = ledYpos[ledY];
+            p2.x = BS_sensor_end_x;
+            p3.y = pdYpos[pdY];
+            p3.x = BS_sensor_zero_x;
+            if (BS_line_intersection(&p0, &p1, &p2, &p3, &pR)) {
 #if (DEBUG_remaied_multi_initial > 1)
                 DEBUG_SHOW_POS(&pR, 1.0f, 1.0f, MY_COLOR);
 #endif
@@ -5404,30 +5412,30 @@ static int remaied_multi_initial(void)
                     continue;
                 }
 #ifdef MULTI_VIRTUAL_INITIALL_MERGE_ENABLE
-  #ifdef MULTI_SKIP_USED_VB //nsmoon@210218
+#ifdef MULTI_SKIP_USED_VB //nsmoon@210218
                 remaied_multi_initial_merge(initial_mM, &initial_mM_cnt, minMaxPos, line_idx_x, line_idx_y);
-  #else
+#else
                 initial_mM_cnt = remaied_multi_initial_merge(initial_mM, initial_mM_cnt, minMaxPos);
-  #endif
+#endif
 #else
                 if (initial_mM_cnt < MAX_RESULT_POLYGON_NO) {
-                initial_mM[initial_mM_cnt].minX = minMaxPos.minX;
-                initial_mM[initial_mM_cnt].maxX = minMaxPos.maxX;
-                initial_mM[initial_mM_cnt].minY = minMaxPos.minY;
-                initial_mM[initial_mM_cnt].maxY = minMaxPos.maxY;
-                initial_mM_cnt++;
+                    initial_mM[initial_mM_cnt].minX = minMaxPos.minX;
+                    initial_mM[initial_mM_cnt].maxX = minMaxPos.maxX;
+                    initial_mM[initial_mM_cnt].minY = minMaxPos.minY;
+                    initial_mM[initial_mM_cnt].maxY = minMaxPos.maxY;
+                    initial_mM_cnt++;
                 }
                 else {
                     TRACE_ERROR("ERROR! invalid initial_mM_cnt %d", initial_mM_cnt);
                 }
 #endif
-			}
-			else {
-				//TRACE_ERROR("ERROR! remaied_multi_initial..no inst");
-				TRACE_NOP;
-			}
-		} //for (line_idx_y = 0; line_idx_y < BS_initial_line_y_cnt; line_idx_y++)
-	} //for (line_idx_x = 0; line_idx_x < BS_initial_line_x_cnt; line_idx_x++)
+            }
+            else {
+                //TRACE_ERROR("ERROR! remaied_multi_initial..no inst");
+                TRACE_NOP;
+            }
+        } //for (line_idx_y = 0; line_idx_y < BS_initial_line_y_cnt; line_idx_y++)
+    } //for (line_idx_x = 0; line_idx_x < BS_initial_line_x_cnt; line_idx_x++)
 
     initialTouchCnt = 0;
     for (i = 0; i < initial_mM_cnt; i++) {
@@ -5444,19 +5452,19 @@ static int remaied_multi_initial(void)
     }
 
 #if defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_RELEASE)
-	IS_DEBUG_FLAG
-	{
+    IS_DEBUG_FLAG
+    {
         int m;
-		//SEND_POLY(0, 0x21, MY_COLOR);
+        //SEND_POLY(0, 0x21, MY_COLOR);
         for (m = 0; m < initialTouchCnt; m++) {
             DEBUG_SHOW_MIN_MAX(&initial_polygon[m].pos, MY_COLOR-2, 1);
-			TRACE_NOP;
-		}
-	};
+            TRACE_NOP;
+        }
+    };
 #endif
 
-	BS_initial_polygon_cnt = initialTouchCnt;
-	return initialTouchCnt;
+    BS_initial_polygon_cnt = initialTouchCnt;
+    return initialTouchCnt;
 }
 
 #if 0 //reserved
@@ -5647,26 +5655,26 @@ static int remaied_multi_initial2()
 #if 0 //for test
 static int inst_test()
 {
-	vec_t p0, p1, p2, p3, pR;
+    vec_t p0, p1, p2, p3, pR;
 
-	p0.x = BS_led_pos_x[10];
-	p0.y = BS_sensor_zero_y;
-	p1.x = BS_led_pos_x[10];
-	p1.y = BS_sensor_end_y;
+    p0.x = BS_led_pos_x[10];
+    p0.y = BS_sensor_zero_y;
+    p1.x = BS_led_pos_x[10];
+    p1.y = BS_sensor_end_y;
 
-	p2.x = BS_led_pos_x[10] + EPSILON;
-	p2.y = BS_sensor_end_y / 2;
-	p3.x = BS_led_pos_x[10] + 10.0f;
-	p3.y = BS_sensor_end_y / 2;
+    p2.x = BS_led_pos_x[10] + EPSILON;
+    p2.y = BS_sensor_end_y / 2;
+    p3.x = BS_led_pos_x[10] + 10.0f;
+    p3.y = BS_sensor_end_y / 2;
 
-	//if (BS_line_intersection(&p0, &p1, &p2, &p3, &pR)) 
-	if (BS_line_intersection(&p2, &p3, &p0, &p1, &pR))
-	{
-		TRACE("p0: %0.3f %0.3f", p0.x, p0.y);
-		TRACE("p2: %0.3f %0.3f", p2.x, p2.y);
-		TRACE("pR: %0.3f %0.3f", pR.x, pR.y);
-		TRACE_NOP;
-	}
+    //if (BS_line_intersection(&p0, &p1, &p2, &p3, &pR))
+    if (BS_line_intersection(&p2, &p3, &p0, &p1, &pR))
+    {
+        TRACE("p0: %0.3f %0.3f", p0.x, p0.y);
+        TRACE("p2: %0.3f %0.3f", p2.x, p2.y);
+        TRACE("pR: %0.3f %0.3f", pR.x, pR.y);
+        TRACE_NOP;
+    }
 }
 #endif
 
@@ -5715,28 +5723,28 @@ static int test_data(void)
 
 ATTR_BACKEND_RAMFUNC
 BACKEND_STATUS BG_call_backend2(
-	DEF_PD_INFO *InBuf,       // (hor_pd_num + ver_pd_num)
-    DEF_DATA_INFO2 *OutBuf2,      // data out
-	next_scan_t *nextScan     // next scan infomation
-) {
+        DEF_PD_INFO *InBuf,       // (hor_pd_num + ver_pd_num)
+        DEF_DATA_INFO2 *OutBuf2,      // data out
+        next_scan_t *nextScan     // next scan infomation
+        ) {
     //BACKEND_STATUS ret = NO_BACKEND_ERROR;
-	int retTmp; //i,
+    int retTmp; //i,
     int multiLoopCnt, fineLoop;
     int inLineMax = 0;
     int skip_multi_2 = 0; //nsmoon@210218-bugfix
     int rmlineCnt = 0; //nsmoon@210430
     //int remainedLineMax = 0;
-	//side_type_t side;
+    //side_type_t side;
     //int retAdj;
     //int touch_count_prev;
     //TRACE("BG_call_backend2..");
     DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_START);
     nextScan->x1 = nextScan->y1 = 0; //remained lines //nsmoon@210430
 
-	if (backend_initialized != TRUE) {
-		TRACE_ERROR("ERROR! call_backend...not init backend!! [%d]", BG_frame_no);
-		return NOT_INITIALIZED; // 10 error, not initialized
-	}
+    if (backend_initialized != TRUE) {
+        TRACE_ERROR("ERROR! call_backend...not init backend!! [%d]", BG_frame_no);
+        return NOT_INITIALIZED; // 10 error, not initialized
+    }
 
 #if (BRUSH_MODE_ENABLE == 1)
     if (nextScan->brushMode)
@@ -5765,92 +5773,92 @@ BACKEND_STATUS BG_call_backend2(
     BG_touch_data_edge.y = 0;
 #endif
 
-	//////////////////////////////////////
-	// init debug variables
-	//////////////////////////////////////
+    //////////////////////////////////////
+    // init debug variables
+    //////////////////////////////////////
     BG_frame_no++;
 #if defined(DEBUG_SKIP_FRAME_NO)
-	if (BG_frame_no <= DEBUG_SKIP_FRAME_NO) {
-		goto L_BG_call_backend_tracking;
-	}
+    if (BG_frame_no <= DEBUG_SKIP_FRAME_NO) {
+        goto L_BG_call_backend_tracking;
+    }
 #endif
     //START_STOP_POLY_TRACE(0xFD); //nsmoon@211125 move to out of lib
 #if defined(DEBUG_FRAME_NO)
-	if (BG_frame_no >= DEBUG_FRAME_NO) {
-	BG_debug_flag = 1;
-		BG_debug_flag2 = 0;
-  #ifndef DEBUG_FRAME_PAUSE
-		BG_debug_pause = 1;
-  #endif
+    if (BG_frame_no >= DEBUG_FRAME_NO) {
+        BG_debug_flag = 1;
+        BG_debug_flag2 = 0;
+#ifndef DEBUG_FRAME_PAUSE
+        BG_debug_pause = 1;
+#endif
     }
     else {
-	    BG_debug_flag = 0;
+        BG_debug_flag = 0;
         BG_debug_flag2 = 0;
-  #ifndef DEBUG_FRAME_PAUSE
-		BG_debug_pause = 0;
-  #endif
+#ifndef DEBUG_FRAME_PAUSE
+        BG_debug_pause = 0;
+#endif
     }
 #else
-	BG_debug_flag = 0;
-  #ifndef DEBUG_FRAME_PAUSE
-	BG_debug_pause = 0;
-  #endif
+    BG_debug_flag = 0;
+#ifndef DEBUG_FRAME_PAUSE
+    BG_debug_pause = 0;
+#endif
 #endif
 #ifdef DEBUG_FRAME_PAUSE
-  #if (DEBUG_FRAME_PAUSE == 1)
-	BG_debug_pause = 1;
-  #else
-	BG_debug_pause = 0;
-  #endif
+#if (DEBUG_FRAME_PAUSE == 1)
+    BG_debug_pause = 1;
+#else
+    BG_debug_pause = 0;
+#endif
 #endif
 
-	//////////////////////////////////////
+    //////////////////////////////////////
     // Init variable for frontend
-	//////////////////////////////////////
+    //////////////////////////////////////
 #ifdef TEST_DATA_ENABLE //for test
     test_data();
     InBuf = &test_input_buffer;
 #endif
-	BS_inBuf = InBuf;
-	BG_touch_count = 0;
+    BS_inBuf = InBuf;
+    BG_touch_count = 0;
     BG_touch_count_multi = BG_touch_count_fine = 0;
 
 #if 1 //for test, nsmoon@190703
-	maxVertex = 0; //for test
-	maxProcessCnt = 0;
-	maxSubjCnt = 0;
-	maxClipIdx = 0;
+    maxVertex = 0; //for test
+    maxProcessCnt = 0;
+    maxSubjCnt = 0;
+    maxClipIdx = 0;
 #endif
-	multiLoopCnt = 0;
+    multiLoopCnt = 0;
 
 #if 0 //save BS_large_touch_idx_cnt, nsmoon@191224
-	int i;
+    int i;
     for (i = 0; i < BS_large_touch_idx_cnt_prev[0]; i++) {
         BS_large_touch_idx_prev[1][i] = BS_large_touch_idx_prev[0][i];
     }
     BS_large_touch_idx_cnt_prev[1] = BS_large_touch_idx_cnt_prev[0];
 
-	for (i = 0; i < BS_large_touch_idx_cnt; i++) {
+    for (i = 0; i < BS_large_touch_idx_cnt; i++) {
         BS_large_touch_idx_prev[0][i] = BS_large_touch_idx[i];
-	}
+    }
     BS_large_touch_idx_cnt_prev[0] = BS_large_touch_idx_cnt;
-	BS_large_touch_idx_cnt = 0;
+    BS_large_touch_idx_cnt = 0;
 #endif
 
     inLineMax = GET_MAX(InBuf->hor_len, InBuf->ver_len);
     if (inLineMax < MIN_NUM_IN_LINES) {
-		goto L_BG_call_backend_tracking;
-	}
+        goto L_BG_call_backend_tracking;
+    }
 #if (DEBUG_SHOW_FRAME_NO > 0) //&& defined(DEBUG_FRAME_NO)
 #ifdef FRONTEND_LINE_THRESHOLD
-	TRACE("---[%d](%d,%d)(%d,%d)", BG_frame_no, InBuf->hor_len, InBuf->ver_len, InBuf->threshold_x_cnt, InBuf->threshold_y_cnt); //BG_frame_no:
+    TRACE("---[%d](%d,%d)(%d,%d)", BG_frame_no, InBuf->hor_len, InBuf->ver_len, InBuf->threshold_x_cnt, InBuf->threshold_y_cnt); //BG_frame_no:
 #else
-	TRACE("---[%d](%d,%d)", BG_frame_no, (int)InBuf->hor_len, (int)InBuf->ver_len); //BG_frame_no:
+    TRACE("---[%d](%d,%d)", BG_frame_no, (int)InBuf->hor_len, (int)InBuf->ver_len); //BG_frame_no:
 #endif
 #endif
-	IS_DEBUG_FLAG{
-		TRACE_NOP;
-	};
+    IS_DEBUG_FLAG{
+        TRACE_NOP;
+    };
 
 #if defined(DEBUG_FUNCTION_ENABLE_ALL) || defined(DEBUG_FUNCTION_ENABLE_RELEASE)
     BG_cal_slot_cur_cnt = 0;
@@ -5858,10 +5866,10 @@ BACKEND_STATUS BG_call_backend2(
     BG_cal_slot_buf_idx = 0;
 #endif
 
-	//////////////////////////
-	//update input buffer
-	//////////////////////////
-	get_input_buffer(InBuf);
+    //////////////////////////
+    //update input buffer
+    //////////////////////////
+    get_input_buffer(InBuf);
 #if 0 //for test
     BS_packEdgePattern(ENUM_HOR_X, 0);
     BS_packEdgePattern(ENUM_VER_Y, 0);
@@ -5888,15 +5896,15 @@ BACKEND_STATUS BG_call_backend2(
 #ifdef MULTI_PACK_EP4_ENABLE
     retTmp = packEdgePatternInitial4();
     if (retTmp < 0) {
-		goto L_BG_call_backend_mem_error; //mem-error
+        goto L_BG_call_backend_mem_error; //mem-error
     }
     retTmp = BG_clipping_multi_initial4();
 #endif
 
 #if 0 //for evaluation
-        //drawIntersect(ENUM_BOT_BD);
-        //drawEpaMulti(ENUM_BOT_BD);
-        //DEBUG_drawPolyScore();
+    //drawIntersect(ENUM_BOT_BD);
+    //drawEpaMulti(ENUM_BOT_BD);
+    //DEBUG_drawPolyScore();
 #endif
     BS_touch_info_multi_cnt = 0; //init
     while (multiLoopCnt++ < MAX_MULTI_LOOP_CNT) //2 times loop
@@ -5911,9 +5919,9 @@ BACKEND_STATUS BG_call_backend2(
         }
 #if 0 //(MAX_TOUCH_LIMIT_FINE == 8) //ndef DEBUG_EP_TEST //nsmoon@210226 //nsmoon@210510 1=>0
         if (multiLoopCnt == 1 && retTmp < 1) {
-        	//skip multi-2
+            //skip multi-2
             skip_multi_2 = 1;
-        	break;
+            break;
         }
 #endif
         IS_DEBUG_FLAG{
@@ -5971,27 +5979,27 @@ BACKEND_STATUS BG_call_backend2(
     } //while (multiLoopCnt++ < 2)
 
     if (skip_multi_2 == 0) //nsmoon@210218-bugfix
-	{
-    retTmp = BG_clipping_multi_post(multiLoopCnt);
+    {
+        retTmp = BG_clipping_multi_post(multiLoopCnt);
         DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_MULTI_POST);
-    if (retTmp < 0) {
-        goto L_BG_call_backend_mem_error; //mem-error
-    }
-    if (retTmp > 0) {
-#if (DEBUG_SHOW_FRAME_NO > 0)
-        TRACE("-multi-,%d,%d, %d,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, maxVertex, maxProcessCnt, maxSubjCnt, maxClipIdx, BG_touch_area[0], BG_touch_area[1]);
-		IS_DEBUG_FLAG{
-			TRACE_NOP;
-		};
-#endif
-	}
-    if (BG_touch_count >= ALLOWABLE_TOUCH_BE) {
-        if (BG_touch_count > ALLOWABLE_TOUCH_BE) {
-            TRACE_ERROR("ERROR! invalid BG_touch_count...%d", BG_touch_count);
-            BG_touch_count = ALLOWABLE_TOUCH_BE;
+        if (retTmp < 0) {
+            goto L_BG_call_backend_mem_error; //mem-error
         }
-        goto L_BG_call_backend_tracking;
-    }
+        if (retTmp > 0) {
+#if (DEBUG_SHOW_FRAME_NO > 0)
+            TRACE("-multi-,%d,%d, %d,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, maxVertex, maxProcessCnt, maxSubjCnt, maxClipIdx, BG_touch_area[0], BG_touch_area[1]);
+            IS_DEBUG_FLAG{
+                TRACE_NOP;
+            };
+#endif
+        }
+        if (BG_touch_count >= ALLOWABLE_TOUCH_BE) {
+            if (BG_touch_count > ALLOWABLE_TOUCH_BE) {
+                TRACE_ERROR("ERROR! invalid BG_touch_count...%d", BG_touch_count);
+                BG_touch_count = ALLOWABLE_TOUCH_BE;
+            }
+            goto L_BG_call_backend_tracking;
+        }
     }
 #endif //1
 
@@ -6004,39 +6012,39 @@ BACKEND_STATUS BG_call_backend2(
     // fine-touch
     //////////////////////////
 #if 1 //for fine
-        //get remained line
+    //get remained line
     rmlineCnt = BS_get_remained_line(ENUM_HOR_X, REM_LOOP_CNT_FINE5);
     if (rmlineCnt < 0) {
-            goto L_BG_call_backend_mem_error; //mem-error
-        }
+        goto L_BG_call_backend_mem_error; //mem-error
+    }
     rmlineCnt = BS_get_remained_line(ENUM_VER_Y, REM_LOOP_CNT_FINE5);
     if (rmlineCnt < 0) {
-            goto L_BG_call_backend_mem_error; //mem-error
-        }
+        goto L_BG_call_backend_mem_error; //mem-error
+    }
     //if (BS_remained_x_cnt >= MIN_NUM_IN_LINES || BS_remained_y_cnt >= MIN_NUM_IN_LINES)
     if (BS_remained_x_cnt > MIN_NUM_IN_LINES || BS_remained_y_cnt > MIN_NUM_IN_LINES) //nsmoon@211022
     {
 #if (DEBUG_SHOW_FRAME_NO > 0)
-            TRACE("(fine5)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
-            IS_DEBUG_FLAG{
-                TRACE_NOP;
-            };
+        TRACE("(fine5)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
+        IS_DEBUG_FLAG{
+            TRACE_NOP;
+        };
 #endif
-        }
-        else {
+    }
+    else {
 #if (BRUSH_MODE_ENABLE == 1)
-            if (BS_brushMode) {
-                goto L_BG_call_backend_brush;
-            }
+        if (BS_brushMode) {
+            goto L_BG_call_backend_brush;
+        }
 #endif
 #ifdef HOR_EDGE_TOUCH_ENABLE //nsmoon@220118
         goto L_BG_call_backend_edge;
 #else
-            goto L_BG_call_backend_tracking;
+        goto L_BG_call_backend_tracking;
 #endif
-        }
+    }
     //remainedLineMax = GET_MAX(BS_remained_x_cnt, BS_remained_y_cnt);
-    //if (remainedLineMax > MIN_NUM_REMAINED_FINE) 
+    //if (remainedLineMax > MIN_NUM_REMAINED_FINE)
     //if (BS_remained_x_cnt >= MIN_NUM_REMAINED_FINE && BS_remained_y_cnt >= MIN_NUM_REMAINED_FINE)
     retTmp = -1; //reset, nsmoon@201117
     if (BS_remained_x_cnt > MIN_NUM_REMAINED_FINE && BS_remained_y_cnt > MIN_NUM_REMAINED_FINE)
@@ -6047,9 +6055,9 @@ BACKEND_STATUS BG_call_backend2(
         DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_FINE_PRE);
         retTmp = BG_clipping_fine5(FINE_LOOP_FINE5);
         DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_FINE);
-            if (retTmp < 0) {
-                goto L_BG_call_backend_mem_error;
-            }
+        if (retTmp < 0) {
+            goto L_BG_call_backend_mem_error;
+        }
 #if (DEBUG_SHOW_FRAME_NO > 0)
         if (retTmp > 0) {
             TRACE("-fine-,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, BG_touch_area[0], BG_touch_area[1]);
@@ -6073,18 +6081,18 @@ BACKEND_STATUS BG_call_backend2(
 #else
     else {
         retTmp = GET_MAX(BS_remained_x_cnt, BS_remained_y_cnt);
-        }
+    }
 #endif
 #endif //for fine
     IS_DEBUG_FLAG {
-    //goto L_BG_call_backend_test; //for test
+        //goto L_BG_call_backend_test; //for test
         //goto L_BG_call_backend_mem_error; //for test
     };
 
 #if 1 //incompleted multi-pen, nsmoon@200107 FIXME
-	//////////////////////////
-	//remained fine-touch
-	//////////////////////////
+    //////////////////////////
+    //remained fine-touch
+    //////////////////////////
     for (fineLoop = FINE_LOOP_XY_ST; fineLoop <= FINE_LOOP_XY_ED; fineLoop++) {
         //TRACE("retTmp(1)=%d,%d,%d ", retTmp, BS_remained_x_cnt, BS_remained_y_cnt);
         if (retTmp > 0) {
@@ -6127,7 +6135,7 @@ BACKEND_STATUS BG_call_backend2(
 
         retTmp = -1; //reset, nsmoon@201117
         if ((BS_remained_x_cnt > 0 && BS_remained_y_cnt > 0) &&
-            (BS_remained_x_cnt >= FINE_MIN_REMAINED_LINE_X2 || BS_remained_y_cnt >= FINE_MIN_REMAINED_LINE_Y2)) {
+                (BS_remained_x_cnt >= FINE_MIN_REMAINED_LINE_X2 || BS_remained_y_cnt >= FINE_MIN_REMAINED_LINE_Y2)) {
 #if (DEBUG_SHOW_FRAME_NO > 0)
             TRACE("xy..(%d)%d,%d ", fineLoop, BS_remained_x_cnt, BS_remained_y_cnt);
 #endif
@@ -6143,12 +6151,12 @@ BACKEND_STATUS BG_call_backend2(
             }
             //retAdj = 0; //reset
 #if (DEBUG_SHOW_FRAME_NO > 0)
-        if (retTmp > 0) {
-            TRACE("-xy-,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, fineLoop, BG_touch_area[0], BG_touch_area[1]);
-            IS_DEBUG_FLAG{
-                TRACE_NOP;
-            };
-        }
+            if (retTmp > 0) {
+                TRACE("-xy-,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, fineLoop, BG_touch_area[0], BG_touch_area[1]);
+                IS_DEBUG_FLAG{
+                    TRACE_NOP;
+                };
+            }
 #endif
 #if 1 //nsmoon@211021
             if (BG_touch_count_fine  == MAX_TOUCH_LIMIT_FINE) {
@@ -6166,86 +6174,86 @@ BACKEND_STATUS BG_call_backend2(
 #if 1 //large or edge multi-pen, nsmoon@200107 FIXME
     if (BG_touch_count > 0) //nsmoon@211130
     {
-	//////////////////////////
-	//remained fine-touch
-	//////////////////////////
+        //////////////////////////
+        //remained fine-touch
+        //////////////////////////
 #if 0 //nsmoon@220116 //for test
-    IS_DEBUG_FLAG{
-        TRACE_NOP;
-    };
-    BS_adj_used_lines_tp(0, BG_touch_count, ADJUST_USED_LINE_SHADOW);
-    retTmp = 1;
+        IS_DEBUG_FLAG{
+            TRACE_NOP;
+        };
+        BS_adj_used_lines_tp(0, BG_touch_count, ADJUST_USED_LINE_SHADOW);
+        retTmp = 1;
 #endif
-    for (fineLoop = FINE_LOOP_SHADOW_ST; fineLoop <= FINE_LOOP_SHADOW_ED; fineLoop++) {
-        if (retTmp > 0)
-        {
-            rmlineCnt = BS_get_remained_line(ENUM_HOR_X, REM_LOOP_CNT_SHADOW);
-            if (rmlineCnt < 0) {
-                goto L_BG_call_backend_mem_error; //mem-error
-            }
-            rmlineCnt = BS_get_remained_line(ENUM_VER_Y, REM_LOOP_CNT_SHADOW);
-            if (rmlineCnt < 0) {
-                goto L_BG_call_backend_mem_error; //mem-error
-            }
-            //goto L_BG_call_backend_tracking; //for testing
+        for (fineLoop = FINE_LOOP_SHADOW_ST; fineLoop <= FINE_LOOP_SHADOW_ED; fineLoop++) {
+            if (retTmp > 0)
+            {
+                rmlineCnt = BS_get_remained_line(ENUM_HOR_X, REM_LOOP_CNT_SHADOW);
+                if (rmlineCnt < 0) {
+                    goto L_BG_call_backend_mem_error; //mem-error
+                }
+                rmlineCnt = BS_get_remained_line(ENUM_VER_Y, REM_LOOP_CNT_SHADOW);
+                if (rmlineCnt < 0) {
+                    goto L_BG_call_backend_mem_error; //mem-error
+                }
+                //goto L_BG_call_backend_tracking; //for testing
 
-            if (BS_remained_x_cnt > MIN_NUM_REMAINED_FINE || BS_remained_y_cnt > MIN_NUM_REMAINED_FINE) { //nsmoon@211021 MIN_NUM_IN_LINES=>MIN_NUM_REMAINED_FINE
+                if (BS_remained_x_cnt > MIN_NUM_REMAINED_FINE || BS_remained_y_cnt > MIN_NUM_REMAINED_FINE) { //nsmoon@211021 MIN_NUM_IN_LINES=>MIN_NUM_REMAINED_FINE
 #if (DEBUG_SHOW_FRAME_NO > 0)
-                TRACE("(shadow)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
-                IS_DEBUG_FLAG{
-                    TRACE_NOP;
-                };
+                    TRACE("(shadow)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
+                    IS_DEBUG_FLAG{
+                        TRACE_NOP;
+                    };
+#endif
+                }
+                else {
+#if (BRUSH_MODE_ENABLE == 1)
+                    if (BS_brushMode) {
+                        goto L_BG_call_backend_brush;
+                    }
+#endif
+#ifdef HOR_EDGE_TOUCH_ENABLE //nsmoon@220118
+                    goto L_BG_call_backend_edge;
+#else
+                    goto L_BG_call_backend_tracking;
+#endif
+                }
+            } //if (retTmp > 0)
+
+            retTmp = -1; //reset, nsmoon@201117
+            if (BS_remained_x_cnt >= FINE_MIN_REMAINED_LINE_X2 || BS_remained_y_cnt >= FINE_MIN_REMAINED_LINE_Y2) {
+#if (DEBUG_SHOW_FRAME_NO > 0)
+                TRACE("shadow..(%d)%d,%d ", fineLoop, BS_remained_x_cnt, BS_remained_y_cnt);
+#endif
+                //touch_count_prev = BG_touch_count;
+                DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_SHADOW_PRE);
+                retTmp = BS_fine_add_remained_touch_shadow(fineLoop);
+                DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_SHADOW);
+                if (retTmp < 0) {
+                    goto L_BG_call_backend_mem_error;
+                }
+                if (retTmp == 0) {
+                    break;
+                }
+#if (DEBUG_SHOW_FRAME_NO > 0)
+                if (retTmp > 0) {
+                    TRACE("-shdow-,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, fineLoop,BG_touch_area[0], BG_touch_area[1]);
+                    IS_DEBUG_FLAG{
+                        TRACE_NOP;
+                    };
+                }
+#endif
+#if 1 //nsmoon@211021
+                if (BG_touch_count_fine  == MAX_TOUCH_LIMIT_FINE) {
+                    goto L_BG_call_backend_tracking;
+                }
 #endif
             }
             else {
-#if (BRUSH_MODE_ENABLE == 1)
-                if (BS_brushMode) {
-                    goto L_BG_call_backend_brush;
-                }
-#endif
-#ifdef HOR_EDGE_TOUCH_ENABLE //nsmoon@220118
-                goto L_BG_call_backend_edge;
-#else
-                goto L_BG_call_backend_tracking;
-#endif
-            }
-        } //if (retTmp > 0)
-
-        retTmp = -1; //reset, nsmoon@201117
-        if (BS_remained_x_cnt >= FINE_MIN_REMAINED_LINE_X2 || BS_remained_y_cnt >= FINE_MIN_REMAINED_LINE_Y2) {
-#if (DEBUG_SHOW_FRAME_NO > 0)
-            TRACE("shadow..(%d)%d,%d ", fineLoop, BS_remained_x_cnt, BS_remained_y_cnt);
-#endif
-            //touch_count_prev = BG_touch_count;
-            DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_SHADOW_PRE);
-            retTmp = BS_fine_add_remained_touch_shadow(fineLoop);
-            DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_SHADOW);
-            if (retTmp < 0) {
-                goto L_BG_call_backend_mem_error;
-            }
-            if (retTmp == 0) {
                 break;
             }
-#if (DEBUG_SHOW_FRAME_NO > 0)
-        if (retTmp > 0) {
-            TRACE("-shdow-,%d,%d,%d %0.2f,%0.2f,", BG_touch_count, BG_frame_no, fineLoop,BG_touch_area[0], BG_touch_area[1]);
-            IS_DEBUG_FLAG{
-                TRACE_NOP;
-            };
-        }
-#endif
-#if 1 //nsmoon@211021
-            if (BG_touch_count_fine  == MAX_TOUCH_LIMIT_FINE) {
-                goto L_BG_call_backend_tracking;
-            }
-#endif
-        }
-        else {
-            break;
-        }
-    } //for
+        } //for
 #endif //1
-    //goto L_BG_call_backend_test; //for testing
+        //goto L_BG_call_backend_test; //for testing
     }
 
 #ifdef HOR_EDGE_TOUCH_ENABLE //nsmoon@201118
@@ -6279,25 +6287,25 @@ L_BG_call_backend_edge:
 L_BG_call_backend_brush:
     if (BS_brushMode) {
         if (retTmp > 0) {
-        /////////////////////////////////////////
-        //remained fine-touch for brush mode
-        /////////////////////////////////////////
+            /////////////////////////////////////////
+            //remained fine-touch for brush mode
+            /////////////////////////////////////////
             rmlineCnt = BS_get_remained_line(ENUM_HOR_X, REM_LOOP_CNT_BRUSH);
             if (rmlineCnt < 0) {
-            goto L_BG_call_backend_mem_error; //mem-error
-        }
+                goto L_BG_call_backend_mem_error; //mem-error
+            }
             rmlineCnt = BS_get_remained_line(ENUM_VER_Y, REM_LOOP_CNT_BRUSH);
             if (rmlineCnt < 0) {
-            goto L_BG_call_backend_mem_error; //mem-error
-        }
-        //goto L_BG_call_backend_tracking; //for testing
+                goto L_BG_call_backend_mem_error; //mem-error
+            }
+            //goto L_BG_call_backend_tracking; //for testing
 #if (DEBUG_SHOW_FRAME_NO > 0)
-        if (BS_remained_x_cnt > 0 || BS_remained_y_cnt > 0) {
-            TRACE("(brush)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
-            IS_DEBUG_FLAG{
-                TRACE_NOP;
-            };
-        }
+            if (BS_remained_x_cnt > 0 || BS_remained_y_cnt > 0) {
+                TRACE("(brush)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d", BS_remained_x_cnt, BS_remained_y_cnt);
+                IS_DEBUG_FLAG{
+                    TRACE_NOP;
+                };
+            }
 #endif
         }
 
@@ -6310,10 +6318,10 @@ L_BG_call_backend_brush:
             retTmp = BS_fine_add_remained_touch_brush(FINE_LOOP_BRUSH);
             DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_BRUSH);
 #if (DEBUG_SHOW_FRAME_NO > 0)
-        if (retTmp > 0) {
-            TRACE("-brush-,%d,%d, %0.2f,%0.2f,", BG_touch_count, BG_frame_no, BG_touch_area[0], BG_touch_area[1]);
-            TRACE_NOP;
-        }
+            if (retTmp > 0) {
+                TRACE("-brush-,%d,%d, %0.2f,%0.2f,", BG_touch_count, BG_frame_no, BG_touch_area[0], BG_touch_area[1]);
+                TRACE_NOP;
+            }
 #endif
         }
         else if (BS_remained_x_cnt > 1 || BS_remained_y_cnt > 1) {
@@ -6324,20 +6332,20 @@ L_BG_call_backend_brush:
             retTmp = BS_fine_add_remained_touch_brush2(FINE_LOOP_BRUSH);
             DEBUG_GET_TIME_DIFF(DEBUG_TIME_DIFF_BRUSH);
 #if (DEBUG_SHOW_FRAME_NO > 0)
-        if (retTmp > 0) {
-            TRACE("-brush2-,%d,%d, %0.2f,%0.2f,", BG_touch_count, BG_frame_no, BG_touch_area[0], BG_touch_area[1]);
-            TRACE_NOP;
-        }
+            if (retTmp > 0) {
+                TRACE("-brush2-,%d,%d, %0.2f,%0.2f,", BG_touch_count, BG_frame_no, BG_touch_area[0], BG_touch_area[1]);
+                TRACE_NOP;
+            }
 #endif
         }
     } //if (BS_brushMode)
 #endif
 
-	//TRACE("(70)BS_slopeValMaxY=%d", BS_slopeValMaxY); //FIXME
+    //TRACE("(70)BS_slopeValMaxY=%d", BS_slopeValMaxY); //FIXME
 #ifdef ONE_POINT_FAST_WRITING_TEST //for testing
-	if (BG_touch_count > 1) {
-	    TRACE_ERROR("@%d", BG_touch_count);
-	}
+    if (BG_touch_count > 1) {
+        TRACE_ERROR("@%d", BG_touch_count);
+    }
 #endif
 
 L_BG_call_backend_tracking: //nsmoon@211021
@@ -6349,8 +6357,8 @@ L_BG_call_backend_tracking: //nsmoon@211021
         }
         retTmp = BS_is_edge(ENUM_VER_Y, BG_touch_data_edge.y);
         if (retTmp == EDGE_INNER_PD_Y || retTmp == EDGE_INNER_LED_Y) {
-        BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_X);
-    }
+            BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_X);
+        }
         BS_adj_used_lines_tp(0, 0, ADJUST_USED_LINE_EDGE_X); //nsmoon@220115
 #endif
     }
@@ -6370,20 +6378,20 @@ L_BG_call_backend_tracking: //nsmoon@211021
             goto L_BG_call_backend_mem_error; //mem-error
         }
         //goto L_BG_call_backend_tracking; //for testing
-    #if (DEBUG_SHOW_FRAME_NO > 0)
+#if (DEBUG_SHOW_FRAME_NO > 0)
         if (BS_remained_x_cnt > 0 || BS_remained_y_cnt > 0) {
             TRACE("(final)BS_remained_x_cnt,BS_remained_y_cnt: %d,%d ", BS_remained_x_cnt, BS_remained_y_cnt);
             IS_DEBUG_FLAG{
                 TRACE_NOP;
             };
         }
-    #endif
+#endif
     }
     nextScan->x1 = BS_remained_x_cnt;
     nextScan->y1 = BS_remained_y_cnt;
 #endif
 
-//L_BG_call_backend_test:
+    //L_BG_call_backend_test:
 #ifdef HOR_EDGE_TOUCH_ENABLE
     //TRACE("(B)touch_data_edge= %0.1f %0.1f", BG_touch_data_edge.x, BG_touch_data_edge.y);
     OutBuf2->touch_data_edge = BG_touch_data_edge;
@@ -6416,12 +6424,12 @@ L_BG_call_backend_tracking: //nsmoon@211021
         }
 #endif
 #endif
-		IS_DEBUG_FLAG{
-            //if (BG_touch_count != 2) 
-			{
-		    TRACE_NOP;
+        IS_DEBUG_FLAG{
+            //if (BG_touch_count != 2)
+            {
+                TRACE_NOP;
             }
-		};
+        };
     }
 #ifdef NORMAL_EDGE_ONLY_ONE_USED //nsmoon@210512a
     else
@@ -6445,7 +6453,7 @@ L_BG_call_backend_tracking: //nsmoon@211021
 #endif
         //TRACE_RELEASE("touch_count=,[%d],%d,:,%d,%d,", BG_frame_no, BG_touch_count, (int)InBuf->hor_len, (int)InBuf->ver_len);
         IS_DEBUG_FLAG{
-            //if (BG_touch_count != 2) 
+            //if (BG_touch_count != 2)
             {
                 TRACE_NOP;
             }

@@ -1368,7 +1368,7 @@ int BS_get_pos_on_line(vec_t *p0, vec_t *p1, axis_t axis, float *pos, float *pos
     return 0;
 }
 
-#define DEBUG_BS_get_clipping_range	0
+#define DEBUG_BS_get_clipping_range	1
 #define DEBUG_BS_get_virtual_range	0
 #if (DEBUG_BS_get_clipping_range > 0)
 #define TRACE_MGCR(...)	TRACE(__VA_ARGS__)
@@ -2323,6 +2323,7 @@ int BS_get_clipping_range(axis_t axis, ep_min_max_t *minMaxEp, pos_min_max_t *mi
     //TRACE_POLYGON_MULTI(0, 0x21, 0);
         //DEBUG_SHOW_BS_INITIAL_POLYGON();
         DEBUG_SHOW_MIN_MAX(minMaxEpPos, 1, 0); //color, mode:1(show it at debug on)
+        DEBUG_show_min_max_(minMaxEpPos, 1, 0);
     };
 #endif
 
@@ -2333,7 +2334,9 @@ int BS_get_clipping_range(axis_t axis, ep_min_max_t *minMaxEp, pos_min_max_t *mi
 #if (DEBUG_BS_get_clipping_range > 0)
         IS_DEBUG_FLAG2{
         DEBUG_SHOW_LINE_POS(&pSt0, &pSt1, 1);
+        DEBUG_show_line_pos_(&pSt0, &pSt1, 1);
         DEBUG_SHOW_POS(&pDtSt, 0.5f, 0.5f, 1);
+        DEBUG_show_pos_(&pDtSt, 0.5f, 0.5f, 1);
         };
 #endif
         ret = BS_left_of(&pSt0, &pSt1, &pDtSt);
@@ -2348,7 +2351,9 @@ int BS_get_clipping_range(axis_t axis, ep_min_max_t *minMaxEp, pos_min_max_t *mi
 #if (DEBUG_BS_get_clipping_range > 0)
             IS_DEBUG_FLAG2{
             DEBUG_SHOW_LINE_POS(&pSt0, &pSt1, 1);
+            DEBUG_show_line_pos_(&pSt0, &pSt1, 1);
             DEBUG_SHOW_POS(&pDtSt, 0.5f, 0.5f, 1);
+            DEBUG_show_pos_(&pDtSt, 0.5f, 0.5f, 1);
             };
 #endif
             ret = BS_left_of(&pSt0, &pSt1, &pDtSt);
@@ -2374,7 +2379,9 @@ int BS_get_clipping_range(axis_t axis, ep_min_max_t *minMaxEp, pos_min_max_t *mi
 #if (DEBUG_BS_get_clipping_range > 0)
         IS_DEBUG_FLAG2{
         DEBUG_SHOW_LINE_POS(&pEd0, &pEd1, 1);
+        DEBUG_show_line_pos_(&pEd0, &pEd1, 1);
         DEBUG_SHOW_POS(&pDtEd, 0.5f, 0.5f, 1);
+        DEBUG_show_pos_(&pDtEd, 0.5f, 0.5f, 1);
         };
 #endif
         ret = BS_left_of(&pEd0, &pEd1, &pDtEd);
@@ -2389,7 +2396,9 @@ int BS_get_clipping_range(axis_t axis, ep_min_max_t *minMaxEp, pos_min_max_t *mi
 #if (DEBUG_BS_get_clipping_range > 0)
             IS_DEBUG_FLAG2{
             DEBUG_SHOW_LINE_POS(&pEd0, &pEd1, 1);
+            DEBUG_show_line_pos_(&pEd0, &pEd1, 1);
             DEBUG_SHOW_POS(&pDtEd, 0.5f, 0.5f, 1);
+            DEBUG_show_pos_(&pDtEd, 0.5f, 0.5f, 1);
             };
 #endif
             ret = BS_left_of(&pEd0, &pEd1, &pDtEd);
