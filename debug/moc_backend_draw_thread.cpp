@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_Backend_Draw_Thread_t {
-    QByteArrayData data[9];
-    char stringdata0[86];
+    QByteArrayData data[10];
+    char stringdata0[97];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,11 +39,13 @@ QT_MOC_LITERAL(4, 45, 2), // "y0"
 QT_MOC_LITERAL(5, 48, 2), // "x1"
 QT_MOC_LITERAL(6, 51, 2), // "y1"
 QT_MOC_LITERAL(7, 54, 7), // "color__"
-QT_MOC_LITERAL(8, 62, 23) // "threadSigDrawOutOnePoly"
+QT_MOC_LITERAL(8, 62, 10), // "wakeStatus"
+QT_MOC_LITERAL(9, 73, 23) // "threadSigDrawOutOnePoly"
 
     },
     "Backend_Draw_Thread\0threadSigDrawOutPoly\0"
-    "\0x0\0y0\0x1\0y1\0color__\0threadSigDrawOutOnePoly"
+    "\0x0\0y0\0x1\0y1\0color__\0wakeStatus\0"
+    "threadSigDrawOutOnePoly"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,12 +63,12 @@ static const uint qt_meta_data_Backend_Draw_Thread[] = {
        2,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    5,   24,    2, 0x06 /* Public */,
-       8,    5,   35,    2, 0x06 /* Public */,
+       1,    6,   24,    2, 0x06 /* Public */,
+       9,    6,   37,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong,    3,    4,    5,    6,    7,
-    QMetaType::Void, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong,    3,    4,    5,    6,    7,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong, QMetaType::Int,    3,    4,    5,    6,    7,    8,
+    QMetaType::Void, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong, QMetaType::Int,    3,    4,    5,    6,    7,    8,
 
        0        // eod
 };
@@ -77,22 +79,22 @@ void Backend_Draw_Thread::qt_static_metacall(QObject *_o, QMetaObject::Call _c, 
         Backend_Draw_Thread *_t = static_cast<Backend_Draw_Thread *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->threadSigDrawOutPoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5]))); break;
-        case 1: _t->threadSigDrawOutOnePoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5]))); break;
+        case 0: _t->threadSigDrawOutPoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6]))); break;
+        case 1: _t->threadSigDrawOutOnePoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         void **func = reinterpret_cast<void **>(_a[1]);
         {
-            typedef void (Backend_Draw_Thread::*_t)(float , float , float , float , unsigned long );
+            typedef void (Backend_Draw_Thread::*_t)(float , float , float , float , unsigned long , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Backend_Draw_Thread::threadSigDrawOutPoly)) {
                 *result = 0;
                 return;
             }
         }
         {
-            typedef void (Backend_Draw_Thread::*_t)(float , float , float , float , unsigned long );
+            typedef void (Backend_Draw_Thread::*_t)(float , float , float , float , unsigned long , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Backend_Draw_Thread::threadSigDrawOutOnePoly)) {
                 *result = 1;
                 return;
@@ -138,16 +140,16 @@ int Backend_Draw_Thread::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void Backend_Draw_Thread::threadSigDrawOutPoly(float _t1, float _t2, float _t3, float _t4, unsigned long _t5)
+void Backend_Draw_Thread::threadSigDrawOutPoly(float _t1, float _t2, float _t3, float _t4, unsigned long _t5, int _t6)
 {
-    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)), const_cast<void*>(reinterpret_cast<const void*>(&_t5)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)), const_cast<void*>(reinterpret_cast<const void*>(&_t5)), const_cast<void*>(reinterpret_cast<const void*>(&_t6)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void Backend_Draw_Thread::threadSigDrawOutOnePoly(float _t1, float _t2, float _t3, float _t4, unsigned long _t5)
+void Backend_Draw_Thread::threadSigDrawOutOnePoly(float _t1, float _t2, float _t3, float _t4, unsigned long _t5, int _t6)
 {
-    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)), const_cast<void*>(reinterpret_cast<const void*>(&_t5)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)), const_cast<void*>(reinterpret_cast<const void*>(&_t4)), const_cast<void*>(reinterpret_cast<const void*>(&_t5)), const_cast<void*>(reinterpret_cast<const void*>(&_t6)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 QT_WARNING_POP

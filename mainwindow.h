@@ -16,11 +16,9 @@
 #include <QDateTime>
 #include "WorkThread.h"
 
-
 extern "C"
 {
 #include "backend_postp.h" //for test
-#include "common.h"
 }
 
 //#define ENABLE_NEW_PD_FORMAT //nsmoon@170215
@@ -311,8 +309,6 @@ public:
         return mainWindow;
     }
 
-    Backend_Draw_Thread *m_Backend_Draw_Thread;
-
     //////////////////////////////////////////
     void InitLine();
     void InitMarkLines();
@@ -329,8 +325,8 @@ public slots:
     bool USB_open(void);
     bool USB_close(void);
     bool drawOutPoly(void);
-    bool threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__);
-    bool threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__);
+    bool threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus);
+    bool threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus);
     void drawTouchPoint(touch_point_t *tp);
 #if defined(USE_WIN_USB) //nsmoon@190124
     bool CheckIfPresentAndGetUSBDevicePath(void);

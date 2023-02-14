@@ -1,5 +1,6 @@
 #include "backend_draw_thread.h"
-#include "common.h"
+#include "backendLib/backend_common.h"
+#include "backend.h"
 
 pthread_mutex_t m_drawMutex;
 pthread_cond_t m_drawCond;
@@ -49,6 +50,7 @@ void Backend_Draw_Thread::run()
         if (polgon_draw_idx < polgon_saved_idx) {
             float x1, x2, y1, y2;
             int i, k;
+            int wakeStatus = 0;
                 //TRACE("..len: (%d) %d", j, polygon_saved[j].len);
             for (i = 0; i < polygon_saved[polgon_draw_idx].len; i++) {
                 if (polygon_saved[polgon_draw_idx].len == 2 && i > 0) break;
@@ -60,22 +62,28 @@ void Backend_Draw_Thread::run()
                 x2 = polygon_saved[polgon_draw_idx].vert[k].x;
                 //TRACE("drawOutPoly...2: %d, %d, %d, %0.1f, %02232.1f, %0.1f, %0.1f", j, i, k, x1, y1, x2, y2);
                 msleep(1);
+
+                if ((i == polygon_saved[polgon_draw_idx].len - 1) || (polgon_draw_idx == polgon_saved_idx - 1)) {
+                    wakeStatus = 1;
+                }
+
+                if ( !polgon_draw_idx && i == 0) drawRemove = 0;
                 if (i == 0) {
                     if (!drawRemove) {
                         drawRemove = 1;
-                        emit threadSigDrawOutPoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color);
+                        emit threadSigDrawOutPoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color, wakeStatus);
                     } else {
-                        emit threadSigDrawOutOnePoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color);
+                        emit threadSigDrawOutOnePoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color, wakeStatus);
                     }
                 } else {
-                    emit threadSigDrawOutOnePoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color);
+                    emit threadSigDrawOutOnePoly(x1, y1, x2, y2, polygon_saved[polgon_draw_idx].color, wakeStatus);
                 }
             }
 
             polgon_draw_idx++;
         } else {
             msleep(1);
-            drawRemove = 0;
+
         }
     }
 }

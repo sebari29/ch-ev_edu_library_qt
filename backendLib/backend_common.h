@@ -21,6 +21,8 @@
 extern "C" {
 #endif
 
+#include <pthread.h>
+
 ///////////////////////////////////////////////////////////
 // Models
 ///////////////////////////////////////////////////////////
@@ -341,6 +343,11 @@ extern "C" {
 #endif
 
 #define MAX_EP_COUNT			(MAX_NUM_PD * ALLOWABLE_TOUCH_BE * 3) //nsmoon@190725, FIXME
+
+extern pthread_mutex_t m_drawMutex;
+extern pthread_cond_t m_drawCond;
+extern int draw_pause;
+extern int polgon_draw_idx;
 
 /* Provide C++ Compatibility */
 #ifdef __cplusplus

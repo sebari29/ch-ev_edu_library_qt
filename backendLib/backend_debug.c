@@ -19,7 +19,6 @@
 #include "backend_fine.h"
 #include "backend_debug.h"
 #include "IRTP_layout.h"
-#include "common.h"
 
 #ifdef DEBUG_GET_TIME_DIFF_ENABLE //nsmoon@220119
 #include <stdio.h>

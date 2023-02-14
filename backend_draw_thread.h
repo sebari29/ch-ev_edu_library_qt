@@ -26,8 +26,8 @@ private:
     void run();
 
 signals:
-    void threadSigDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__);
-    void threadSigDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__);
+    void threadSigDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus);
+    void threadSigDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus);
 
 public slots:
 

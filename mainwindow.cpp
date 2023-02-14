@@ -15,6 +15,8 @@
 //#include <QDebug>
 #include <QSettings>
 #include <QMessageBox>
+#include "backend_draw_thread.h"
+#include "backendLib/backend_common.h"
 
 extern "C"
 {
@@ -329,9 +331,9 @@ MainWindow::MainWindow(QWidget *parent) :
     makeLogFile();
     BG_set_debug_func(debug_func);
 
-    m_Backend_Draw_Thread = new Backend_Draw_Thread();
-    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutPoly(float, float, float, float, unsigned long)), this, SLOT(threadSlotDrawOutPoly(float, float, float, float, unsigned long)), Qt::QueuedConnection);
-    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutOnePoly(float, float, float, float, unsigned long)), this, SLOT(threadSlotDrawOutOnePoly(float, float, float, float, unsigned long)), Qt::QueuedConnection);
+    Backend_Draw_Thread *m_Backend_Draw_Thread = new Backend_Draw_Thread();
+    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutPoly(float, float, float, float, unsigned long, int)), this, SLOT(threadSlotDrawOutPoly(float, float, float, float, unsigned long, int)), Qt::QueuedConnection);
+    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutOnePoly(float, float, float, float, unsigned long, int)), this, SLOT(threadSlotDrawOutOnePoly(float, float, float, float, unsigned long, int)), Qt::QueuedConnection);
     m_Backend_Draw_Thread->startDrawThread();
 }
 
@@ -2342,7 +2344,7 @@ bool MainWindow::drawOutPoly() {
     return true;
 }
 
-bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__) {
+bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus) {
     //setScreenSize();
     //initDispParm();
     float x2, x3, y2, y3;
@@ -2358,6 +2360,8 @@ bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, u
 
     draw_line(x2, y2, x3, y3, color__);
 
+    if (!wakeStatus) return true;
+
     if(draw_pause == 1) {
       draw_pause = 0;
       pthread_cond_signal(&m_drawCond);
@@ -2366,7 +2370,7 @@ bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, u
     return true;
 }
 
-bool MainWindow::threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__) {
+bool MainWindow::threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__, int wakeStatus) {
 
     float x2, x3, y2, y3;
 
@@ -2376,6 +2380,8 @@ bool MainWindow::threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1
     y3 = posY(y1);
 
     draw_line(x2, y2, x3, y3, color__);
+
+    if (!wakeStatus) return true;
 
     if(draw_pause == 1) {
       draw_pause = 0;

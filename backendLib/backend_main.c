@@ -5874,11 +5874,13 @@ BACKEND_STATUS BG_call_backend2(
     get_input_buffer(InBuf);
 
     IS_DEBUG_FLAG{
-        draw_pause = 1;
-        pthread_mutex_lock(&m_drawMutex);
-        pthread_cond_wait(&m_drawCond, &m_drawMutex);
-        pthread_mutex_unlock(&m_drawMutex);
-        draw_pause = 0;
+        if (polgon_draw_idx != polgon_saved_idx) {
+            draw_pause = 1;
+            pthread_mutex_lock(&m_drawMutex);
+            pthread_cond_wait(&m_drawCond, &m_drawMutex);
+            pthread_mutex_unlock(&m_drawMutex);
+            draw_pause = 0;
+        }
         TRACE_NOP;
     };
 
@@ -5908,11 +5910,13 @@ BACKEND_STATUS BG_call_backend2(
 #ifdef MULTI_PACK_EP4_ENABLE
     retTmp = packEdgePatternInitial4();
     IS_DEBUG_FLAG{
-        draw_pause = 1;
-        pthread_mutex_lock(&m_drawMutex);
-        pthread_cond_wait(&m_drawCond, &m_drawMutex);
-        pthread_mutex_unlock(&m_drawMutex);
-        draw_pause = 0;
+        if (polgon_draw_idx != polgon_saved_idx) {
+            draw_pause = 1;
+            pthread_mutex_lock(&m_drawMutex);
+            pthread_cond_wait(&m_drawCond, &m_drawMutex);
+            pthread_mutex_unlock(&m_drawMutex);
+            draw_pause = 0;
+        }
         TRACE_NOP;
     };
     if (retTmp < 0) {
@@ -5920,11 +5924,13 @@ BACKEND_STATUS BG_call_backend2(
     }
     retTmp = BG_clipping_multi_initial4();
     IS_DEBUG_FLAG{
-        draw_pause = 1;
-        pthread_mutex_lock(&m_drawMutex);
-        pthread_cond_wait(&m_drawCond, &m_drawMutex);
-        pthread_mutex_unlock(&m_drawMutex);
-        draw_pause = 0;
+        if (polgon_draw_idx != polgon_saved_idx) {
+            draw_pause = 1;
+            pthread_mutex_lock(&m_drawMutex);
+            pthread_cond_wait(&m_drawCond, &m_drawMutex);
+            pthread_mutex_unlock(&m_drawMutex);
+            draw_pause = 0;
+        }
         TRACE_NOP;
     };
 #endif

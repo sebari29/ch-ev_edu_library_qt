@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[21];
-    char stringdata0[234];
+    QByteArrayData data[22];
+    char stringdata0[245];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -49,9 +49,10 @@ QT_MOC_LITERAL(14, 163, 2), // "y0"
 QT_MOC_LITERAL(15, 166, 2), // "x1"
 QT_MOC_LITERAL(16, 169, 2), // "y1"
 QT_MOC_LITERAL(17, 172, 7), // "color__"
-QT_MOC_LITERAL(18, 180, 24), // "threadSlotDrawOutOnePoly"
-QT_MOC_LITERAL(19, 205, 14), // "drawTouchPoint"
-QT_MOC_LITERAL(20, 220, 13) // "USB_enumerate"
+QT_MOC_LITERAL(18, 180, 10), // "wakeStatus"
+QT_MOC_LITERAL(19, 191, 24), // "threadSlotDrawOutOnePoly"
+QT_MOC_LITERAL(20, 216, 14), // "drawTouchPoint"
+QT_MOC_LITERAL(21, 231, 13) // "USB_enumerate"
 
     },
     "MainWindow\0CallUsbOpen\0\0CallUsbClose\0"
@@ -59,7 +60,7 @@ QT_MOC_LITERAL(20, 220, 13) // "USB_enumerate"
     "touch_point_t*\0tp\0usb_check_n_open\0"
     "USB_open\0USB_close\0drawOutPoly\0"
     "threadSlotDrawOutPoly\0x0\0y0\0x1\0y1\0"
-    "color__\0threadSlotDrawOutOnePoly\0"
+    "color__\0wakeStatus\0threadSlotDrawOutOnePoly\0"
     "drawTouchPoint\0USB_enumerate"
 };
 #undef QT_MOC_LITERAL
@@ -88,10 +89,10 @@ static const uint qt_meta_data_MainWindow[] = {
        9,    0,   81,    2, 0x0a /* Public */,
       10,    0,   82,    2, 0x0a /* Public */,
       11,    0,   83,    2, 0x0a /* Public */,
-      12,    5,   84,    2, 0x0a /* Public */,
-      18,    5,   95,    2, 0x0a /* Public */,
-      19,    1,  106,    2, 0x0a /* Public */,
-      20,    0,  109,    2, 0x0a /* Public */,
+      12,    6,   84,    2, 0x0a /* Public */,
+      19,    6,   97,    2, 0x0a /* Public */,
+      20,    1,  110,    2, 0x0a /* Public */,
+      21,    0,  113,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Bool,
@@ -104,8 +105,8 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Bool,
     QMetaType::Bool,
     QMetaType::Bool,
-    QMetaType::Bool, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong,   13,   14,   15,   16,   17,
-    QMetaType::Bool, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong,   13,   14,   15,   16,   17,
+    QMetaType::Bool, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong, QMetaType::Int,   13,   14,   15,   16,   17,   18,
+    QMetaType::Bool, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::Float, QMetaType::ULong, QMetaType::Int,   13,   14,   15,   16,   17,   18,
     QMetaType::Void, 0x80000000 | 6,    7,
     QMetaType::Int,
 
@@ -133,9 +134,9 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         case 7: { bool _r = _t->drawOutPoly();
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 8: { bool _r = _t->threadSlotDrawOutPoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])));
+        case 8: { bool _r = _t->threadSlotDrawOutPoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
-        case 9: { bool _r = _t->threadSlotDrawOutOnePoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])));
+        case 9: { bool _r = _t->threadSlotDrawOutOnePoly((*reinterpret_cast< float(*)>(_a[1])),(*reinterpret_cast< float(*)>(_a[2])),(*reinterpret_cast< float(*)>(_a[3])),(*reinterpret_cast< float(*)>(_a[4])),(*reinterpret_cast< ulong(*)>(_a[5])),(*reinterpret_cast< int(*)>(_a[6])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = _r; }  break;
         case 10: _t->drawTouchPoint((*reinterpret_cast< touch_point_t*(*)>(_a[1]))); break;
         case 11: { int _r = _t->USB_enumerate();
