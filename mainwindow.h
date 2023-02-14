@@ -15,11 +15,12 @@
 #include <QFile>
 #include <QDateTime>
 #include "WorkThread.h"
-#include "backend_draw_thread.h"
+
 
 extern "C"
 {
 #include "backend_postp.h" //for test
+#include "common.h"
 }
 
 //#define ENABLE_NEW_PD_FORMAT //nsmoon@170215

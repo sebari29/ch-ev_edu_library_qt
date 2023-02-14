@@ -31,7 +31,7 @@ extern "C" {
 #if defined(_WIN32) || defined(WIN32)
 #if (_DEBUG == 1) || defined(DEBUG) || ((DEBUG_TOOL_QT == 1) && QT_NO_DEBUG == 0)
 #ifndef DEBUG_FRAME_NO
-#define DEBUG_FRAME_NO      100
+#define DEBUG_FRAME_NO      30
 #endif
 #ifndef DEBUG_FRAME_PAUSE
 #define DEBUG_FRAME_PAUSE   0 //1 //1:enable
@@ -221,6 +221,8 @@ extern int BG_debug_flag, BG_debug_flag2, BS_debug_nop;
 #define PS_APPEND   0x10
 #define PS_RESTART  0x20
 
+#include <pthread.h>
+
 typedef struct {
     int len;
     int flag;
@@ -229,7 +231,7 @@ typedef struct {
 } polygon_tmp_t;
 
 extern polygon_tmp_t polygon_saved[MAX_PS_SIZE];
-extern int polgon_saved_idx, polgon_draw_idx;
+extern int polgon_saved_idx;
 extern int bStartAddPol;
 
 extern int _myDrawPolygon(poly_e res, uint8_t flag, uint8_t color);

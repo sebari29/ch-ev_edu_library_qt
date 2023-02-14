@@ -20,6 +20,8 @@
 #include "backend_debug.h"
 #include "IRTP_layout.h"
 //#include "pd_led_tbl.h"
+#include <pthread.h>
+
 #if (MODEL_MCU == RT1052) || (MODEL_MCU == RT1064)
 //#include <cr_section_macros.h>
 #endif
@@ -5870,6 +5872,16 @@ BACKEND_STATUS BG_call_backend2(
     //update input buffer
     //////////////////////////
     get_input_buffer(InBuf);
+
+    IS_DEBUG_FLAG{
+        draw_pause = 1;
+        pthread_mutex_lock(&m_drawMutex);
+        pthread_cond_wait(&m_drawCond, &m_drawMutex);
+        pthread_mutex_unlock(&m_drawMutex);
+        draw_pause = 0;
+        TRACE_NOP;
+    };
+
 #if 0 //for test
     BS_packEdgePattern(ENUM_HOR_X, 0);
     BS_packEdgePattern(ENUM_VER_Y, 0);
@@ -5895,10 +5907,26 @@ BACKEND_STATUS BG_call_backend2(
 #endif
 #ifdef MULTI_PACK_EP4_ENABLE
     retTmp = packEdgePatternInitial4();
+    IS_DEBUG_FLAG{
+        draw_pause = 1;
+        pthread_mutex_lock(&m_drawMutex);
+        pthread_cond_wait(&m_drawCond, &m_drawMutex);
+        pthread_mutex_unlock(&m_drawMutex);
+        draw_pause = 0;
+        TRACE_NOP;
+    };
     if (retTmp < 0) {
         goto L_BG_call_backend_mem_error; //mem-error
     }
     retTmp = BG_clipping_multi_initial4();
+    IS_DEBUG_FLAG{
+        draw_pause = 1;
+        pthread_mutex_lock(&m_drawMutex);
+        pthread_cond_wait(&m_drawCond, &m_drawMutex);
+        pthread_mutex_unlock(&m_drawMutex);
+        draw_pause = 0;
+        TRACE_NOP;
+    };
 #endif
 
 #if 0 //for evaluation

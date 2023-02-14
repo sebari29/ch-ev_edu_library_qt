@@ -19,6 +19,8 @@
 #include "backend_fine.h"
 #include "backend_debug.h"
 #include "IRTP_layout.h"
+#include "common.h"
+
 #ifdef DEBUG_GET_TIME_DIFF_ENABLE //nsmoon@220119
 #include <stdio.h>
 #endif
@@ -109,7 +111,7 @@ static BOOL _writeTraceToFile(char *dbgStr, int dbgStrLen)
 #if (DEBUG_TOOL_QT == 1)
 #if 1 //nsmoon@181001
 ATTR_BACKEND_RAM polygon_tmp_t polygon_saved[MAX_PS_SIZE];
-ATTR_BACKEND_RAM int polgon_saved_idx, polgon_draw_idx;
+ATTR_BACKEND_RAM int polgon_saved_idx;
 ATTR_BACKEND_RAM int bStartAddPol;
 
 #if 0 //for testing

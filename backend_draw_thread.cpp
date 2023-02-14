@@ -1,5 +1,10 @@
 #include "backend_draw_thread.h"
-#include "backendLib/backend_debug.h"
+#include "common.h"
+
+pthread_mutex_t m_drawMutex;
+pthread_cond_t m_drawCond;
+int draw_pause;
+int polgon_draw_idx;
 
 Backend_Draw_Thread::Backend_Draw_Thread(QObject *parent) :
     QThread(parent)
@@ -7,6 +12,9 @@ Backend_Draw_Thread::Backend_Draw_Thread(QObject *parent) :
     setTerminationEnabled(true);
     threadStop = false;
     drawRemove = 0;
+
+    pthread_mutex_init(&m_drawMutex,NULL);
+    pthread_cond_init(&m_drawCond,NULL);
 }
 
 Backend_Draw_Thread::~Backend_Draw_Thread()
@@ -33,14 +41,12 @@ void Backend_Draw_Thread::run()
 
         if (!threadStop) break;
 
-        if (bStartAddPol == TRUE) {
+        /*if (bStartAddPol == TRUE) {
             Sleep(1);
             continue;
-        }
+        }*/
         //if (is_myDrawPolygon()) {
         if (polgon_draw_idx < polgon_saved_idx) {
-            Sleep(1);
-
             float x1, x2, y1, y2;
             int i, k;
                 //TRACE("..len: (%d) %d", j, polygon_saved[j].len);
@@ -52,8 +58,8 @@ void Backend_Draw_Thread::run()
                 y1 = polygon_saved[polgon_draw_idx].vert[i].y;
                 y2 = polygon_saved[polgon_draw_idx].vert[k].y;
                 x2 = polygon_saved[polgon_draw_idx].vert[k].x;
-                //TRACE("drawOutPoly...2: %d, %d, %d, %0.1f, %0.1f, %0.1f, %0.1f", j, i, k, x1, y1, x2, y2);
-                Sleep(1);
+                //TRACE("drawOutPoly...2: %d, %d, %d, %0.1f, %02232.1f, %0.1f, %0.1f", j, i, k, x1, y1, x2, y2);
+                msleep(1);
                 if (i == 0) {
                     if (!drawRemove) {
                         drawRemove = 1;
@@ -68,6 +74,7 @@ void Backend_Draw_Thread::run()
 
             polgon_draw_idx++;
         } else {
+            msleep(1);
             drawRemove = 0;
         }
     }

@@ -2358,6 +2358,11 @@ bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, u
 
     draw_line(x2, y2, x3, y3, color__);
 
+    if(draw_pause == 1) {
+      draw_pause = 0;
+      pthread_cond_signal(&m_drawCond);
+    }
+
     return true;
 }
 
@@ -2371,6 +2376,11 @@ bool MainWindow::threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1
     y3 = posY(y1);
 
     draw_line(x2, y2, x3, y3, color__);
+
+    if(draw_pause == 1) {
+      draw_pause = 0;
+      pthread_cond_signal(&m_drawCond);
+    }
 
     return true;
 }
