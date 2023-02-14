@@ -3468,7 +3468,7 @@ int BS_multi_is_overlap_min_max_tp(pos_min_max_t mM, int excludeRemoved, int com
 }
 
 #ifdef DEBUG_FUNCTION_ENABLE_ALL
-#define DEBUG_clipping_multi_remained	1 //1:enable
+#define DEBUG_clipping_multi_remained	0 //1:enable
 #endif
 #if (DEBUG_clipping_multi_remained > 1)
 #define TRACE_CMR(...)	TRACE(__VA_ARGS__)

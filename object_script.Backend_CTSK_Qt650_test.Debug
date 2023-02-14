@@ -12,7 +12,9 @@ INPUT(
 ./debug/ctrldialog.o
 ./debug/backend_postp.o
 ./debug/hid.o
+./debug/backend_draw_thread.o
 ./debug/moc_mainwindow.o
 ./debug/moc_CTouchPanelView.o
 ./debug/moc_ctrldialog.o
+./debug/moc_backend_draw_thread.o
 );

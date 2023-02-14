@@ -314,13 +314,13 @@ MainWindow::MainWindow(QWidget *parent) :
     recordLabel->setStyleSheet("QLabel { color : black; }");
     recordLabel->move(this->scene->width()-10, 20);
     recordLabel->setFixedWidth(LABEL_TP_WIDTH);
-    recordLabel->setFont(QFont("SansSerif", 18));//10));
+    recordLabel->setFont(QFont("SansSerif", 18));//10));z
     recordLabel->show();
 #endif
 
     connect(this, SIGNAL(CallUsbOpen()), this, SLOT(USB_open()), Qt::QueuedConnection);
     connect(this, SIGNAL(CallUsbClose()), this, SLOT(USB_close()), Qt::QueuedConnection);
-    connect(this, SIGNAL(CallDrawOutPoly()), this, SLOT(drawOutPoly()), Qt::QueuedConnection);
+    //connect(this, SIGNAL(CallDrawOutPoly()), this, SLOT(drawOutPoly()), Qt::QueuedConnection);
     connect(this, SIGNAL(CallDrawTouchPoint(touch_point_t*)), this, SLOT(drawTouchPoint(touch_point_t*)), Qt::QueuedConnection);
 
     pWorkThreak = new WorkThread(hidThrdUsb, this);
@@ -328,6 +328,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     makeLogFile();
     BG_set_debug_func(debug_func);
+
+    m_Backend_Draw_Thread = new Backend_Draw_Thread();
+    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutPoly(float, float, float, float, unsigned long)), this, SLOT(threadSlotDrawOutPoly(float, float, float, float, unsigned long)), Qt::QueuedConnection);
+    connect(m_Backend_Draw_Thread, SIGNAL(threadSigDrawOutOnePoly(float, float, float, float, unsigned long)), this, SLOT(threadSlotDrawOutOnePoly(float, float, float, float, unsigned long)), Qt::QueuedConnection);
+    m_Backend_Draw_Thread->startDrawThread();
 }
 
 void MainWindow::newFileWrite(char const *format, ...)
@@ -2317,7 +2322,7 @@ bool MainWindow::drawOutPoly() {
 
     draw_axis();
 
-    //TRACE("drawOutMy()..%d", polgon_saved_idx);o
+    //TRACE("drawOutMy()..%d", polgon_saved_idx);
     for (j = 0; j < polgon_saved_idx; j++)
     {
         //TRACE("..len: (%d) %d", j, polygon_saved[j].len);
@@ -2333,11 +2338,42 @@ bool MainWindow::drawOutPoly() {
             draw_line(x1, y1, x2, y2, polygon_saved[j].color);
         }
     }
-
     bDrawOutPoly = false;
     return true;
 }
 
+bool MainWindow::threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__) {
+    //setScreenSize();
+    //initDispParm();
+    float x2, x3, y2, y3;
+
+    x2 = posX(x0);
+    x3 = posX(x1);
+    y2 = posY(y0);
+    y3 = posY(y1);
+
+    remove_draw_line();
+
+    draw_axis();
+
+    draw_line(x2, y2, x3, y3, color__);
+
+    return true;
+}
+
+bool MainWindow::threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__) {
+
+    float x2, x3, y2, y3;
+
+    x2 = posX(x0);
+    x3 = posX(x1);
+    y2 = posY(y0);
+    y3 = posY(y1);
+
+    draw_line(x2, y2, x3, y3, color__);
+
+    return true;
+}
 float MainWindow::posX(float pos)
 {
     float x = ((s_sensor_end_x - pos) + MARGIN_LEFT) * disp.ratioX;
@@ -3641,12 +3677,12 @@ int MainWindow::backend_process_line_data(int nBufNumber)
     bDrawTouchPoint = true;
     emit CallDrawTouchPoint(&touchPoint[0]);
 
-    if (is_myDrawPolygon()) {
+    /*if (is_myDrawPolygon()) {
         while (bDrawOutPoly) Sleep(1); //nsmoon@211019
         bDrawOutPoly = true;
         emit CallDrawOutPoly();
         TRACE_NOP;
-    }
+    }*/
 #if 1 //nsmoon@211019
     if (s_inBuf->hor_len == 0 && s_inBuf->ver_len == 0) {
         return 1; //no-input

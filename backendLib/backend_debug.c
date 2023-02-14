@@ -109,8 +109,9 @@ static BOOL _writeTraceToFile(char *dbgStr, int dbgStrLen)
 #if (DEBUG_TOOL_QT == 1)
 #if 1 //nsmoon@181001
 ATTR_BACKEND_RAM polygon_tmp_t polygon_saved[MAX_PS_SIZE];
-ATTR_BACKEND_RAM int polgon_saved_idx;
+ATTR_BACKEND_RAM int polgon_saved_idx, polgon_draw_idx;
 ATTR_BACKEND_RAM int bStartAddPol;
+
 #if 0 //for testing
 #define MY_RGB(r,g,b) ((unsigned long)(((unsigned char)(r)|((unsigned short)((unsigned char)(g))<<8))|(((unsigned long)(unsigned char)(b))<<16)))
 unsigned long rgb_color[MY_COLOR + 1] = {
@@ -138,28 +139,30 @@ void init_polygon_saved()
 		polygon_saved[i].flag = PS_NUSED;
 	}
 	polgon_saved_idx = 0;
+    polgon_draw_idx = 0;
+
 }
 
 int add_polygon_saved(poly_e s, int flag, unsigned long color)
 {
     //TRACE("<%d,%d>", polgon_saved_idx, bStartAddPol);
     if (polgon_saved_idx >= 0 && polgon_saved_idx < MAX_PS_SIZE) {
-	if (bStartAddPol != 0) {
-        //TRACE("flag,len,color= %d %d %d", flag, s->len, color);
-		polygon_saved[polgon_saved_idx].flag = flag;
-		polygon_saved[polgon_saved_idx].len = s->len;
-        polygon_saved[polgon_saved_idx].color = color;
-		if (s->len >= MAX_SLOPE_COUNT) {
-			TRACE_ERROR("ERROR! add_polygon_saved..invalid s->len %d", s->len);
-			s->len = MAX_SLOPE_COUNT;
-		}
-		for (int i = 0; i < s->len; i++) {
-			polygon_saved[polgon_saved_idx].vert[i].x = s->ve[i].vert.x;
-			polygon_saved[polgon_saved_idx].vert[i].y = s->ve[i].vert.y;
-		}
-		polgon_saved_idx++;
-		return TRUE;
-	}
+        if (bStartAddPol != 0) {
+            //TRACE("flag,len,color= %d %d %d", flag, s->len, color);
+            polygon_saved[polgon_saved_idx].flag = flag;
+            polygon_saved[polgon_saved_idx].len = s->len;
+            polygon_saved[polgon_saved_idx].color = color;
+            if (s->len >= MAX_SLOPE_COUNT) {
+                TRACE_ERROR("ERROR! add_polygon_saved..invalid s->len %d", s->len);
+                s->len = MAX_SLOPE_COUNT;
+            }
+            for (int i = 0; i < s->len; i++) {
+                polygon_saved[polgon_saved_idx].vert[i].x = s->ve[i].vert.x;
+                polygon_saved[polgon_saved_idx].vert[i].y = s->ve[i].vert.y;
+            }
+            polgon_saved_idx++;
+            return TRUE;
+        }
 	}
     else {
         TRACE_ERROR("Error! add_polygon_saved...polgon_saved_idx is %d => 0", polgon_saved_idx);
@@ -191,7 +194,8 @@ int _myDrawPolygon(poly_e res, uint8_t flag, uint8_t color)
 		return TRUE;
 	}
 	else if (flag & PS_RESTART) {
-		polgon_saved_idx = 0;
+        polgon_saved_idx = 0;
+        polgon_draw_idx = 0;
 	}
 
 	if (res == NULL) {

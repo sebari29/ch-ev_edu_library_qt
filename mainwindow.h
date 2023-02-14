@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QDateTime>
 #include "WorkThread.h"
+#include "backend_draw_thread.h"
 
 extern "C"
 {
@@ -309,6 +310,8 @@ public:
         return mainWindow;
     }
 
+    Backend_Draw_Thread *m_Backend_Draw_Thread;
+
     //////////////////////////////////////////
     void InitLine();
     void InitMarkLines();
@@ -325,6 +328,8 @@ public slots:
     bool USB_open(void);
     bool USB_close(void);
     bool drawOutPoly(void);
+    bool threadSlotDrawOutPoly(float x0, float y0, float x1, float y1, unsigned long color__);
+    bool threadSlotDrawOutOnePoly(float x0, float y0, float x1, float y1, unsigned long color__);
     void drawTouchPoint(touch_point_t *tp);
 #if defined(USE_WIN_USB) //nsmoon@190124
     bool CheckIfPresentAndGetUSBDevicePath(void);

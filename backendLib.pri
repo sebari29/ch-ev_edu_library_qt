@@ -15,4 +15,4 @@ HEADERS += $$PWD/backendLib/backend_qtlib.h \
     $$PWD/backendLib/backend_main.h \
     $$PWD/backendLib/backend_multi.h \
     $$PWD/backendLib/backend_utils.h \
-    $$PWD/backendLib/front_if.h \
+    $$PWD/backendLib/front_if.h
